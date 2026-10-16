@@ -1,6 +1,7 @@
 # Régénère et publie le tableau de bord sur GitHub Pages.
 #
-# Déclencheurs : un push qui modifie data/ (nouvel import fournisseur), une exécution
+# Déclencheurs : un push qui modifie les données (nouvel import fournisseur), le code, le
+# site ou ce workflow (toute correction est publiée immédiatement), une exécution
 # quotidienne (simulation de l'import quotidien) et un lancement manuel.
 # Les actions tierces sont figées sur l'empreinte exacte de leur commit (et non sur une
 # étiquette déplaçable) ; la version correspondante est indiquée en commentaire.
@@ -11,6 +12,9 @@ on:
     branches: [main]
     paths:
       - "data/**"
+      - "dashboard/**"
+      - "docs/**"
+      - ".github/workflows/dashboard.yml"
   schedule:
     # Chaque jour à 05:17 UTC (07:17 à Paris en été, 06:17 en hiver).
     - cron: "17 5 * * *"

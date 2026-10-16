@@ -74,7 +74,7 @@ Ils sont tous détaillés dans la section **Méthodologie** du dashboard. En bre
 
 Le workflow [`.github/workflows/dashboard.yml`](.github/workflows/dashboard.yml) teste, régénère et publie le site sur GitHub Pages :
 
-- **à chaque push qui modifie `data/`** (nouvel import fournisseur) ;
+- **à chaque push qui modifie `data/`** (nouvel import fournisseur), **le code (`dashboard/`), le site (`docs/`) ou le workflow** : toute correction est publiée immédiatement ;
 - **chaque jour** à 05:17 UTC, soit 07:17 à Paris en été (simulation de l'import quotidien) ;
 - **à la demande** (onglet *Actions* > *Tableau de bord* > *Run workflow*).
 

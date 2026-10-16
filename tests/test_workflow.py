@@ -7,7 +7,10 @@ WORKFLOW = Path(".github/workflows/dashboard.yml").read_text(encoding="utf-8")
 
 
 def test_triggers_push_on_data_daily_cron_and_manual():
-    assert re.search(r"on:\n  push:\n    branches: \[main\]\n    paths:\n      - \"data/\*\*\"", WORKFLOW)
+    block = re.search(r"on:\n  push:\n    branches: \[main\]\n    paths:\n((?:      - .+\n)+)", WORKFLOW)
+    assert block, "déclencheur push introuvable"
+    paths = re.findall(r'- "([^"]+)"', block.group(1))
+    assert paths == ["data/**", "dashboard/**", "docs/**", ".github/workflows/dashboard.yml"]
     assert re.search(r"schedule:\n\s+# .*\n\s+- cron: \"\d+ \d+ \* \* \*\"", WORKFLOW)
     assert "\n  workflow_dispatch:\n" in WORKFLOW
 
