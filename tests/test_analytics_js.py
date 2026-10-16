@@ -6,6 +6,7 @@ sans qu'un test échoue.
 """
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -22,11 +23,27 @@ ENGINE = Path(__file__).resolve().parent.parent / "dashboard" / "templates" / "a
 FIXTURES = Path(__file__).parent / "fixtures"
 NODE = shutil.which("node")
 
-pytestmark = pytest.mark.skipif(NODE is None, reason="Node.js est nécessaire pour tester le moteur JS")
+
+def node_policy(node_path: str | None, env: dict) -> str:
+    """« run » si Node est là ; sinon « skip » en local, mais « fail » en CI (CI=true).
+
+    En CI, sauter ces tests ferait passer le build sans vérifier le moteur JS :
+    Node y est donc obligatoire.
+    """
+    if node_path:
+        return "run"
+    return "fail" if env.get("CI", "").strip().lower() in ("true", "1") else "skip"
+
+
+POLICY = node_policy(NODE, dict(os.environ))
 
 
 def run_js(body: str, payload: dict, tmp_path: Path):
     """Exécute `body` avec A (le moteur) et P (payload) ; la valeur renvoyée est relue en JSON."""
+    if POLICY == "skip":
+        pytest.skip("Node.js absent : tests du moteur JS ignorés (autorisé en local uniquement)")
+    if POLICY == "fail":
+        pytest.fail("Node.js est obligatoire en CI (CI=true) pour tester le moteur JS, mais il est introuvable.")
     data = tmp_path / "payload.json"
     data.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     script = (
@@ -66,6 +83,25 @@ def assert_same(js, py, path="racine"):
         assert js == pytest.approx(py, abs=tol), path
     else:
         assert js == py, path
+
+
+# --- Règle d'exécution (Node obligatoire en CI) ---------------------------------
+
+
+@pytest.mark.parametrize(
+    "node, env, expected",
+    [
+        ("/usr/bin/node", {"CI": "true"}, "run"),
+        ("/usr/bin/node", {}, "run"),
+        (None, {}, "skip"),
+        (None, {"CI": "false"}, "skip"),
+        (None, {"CI": "true"}, "fail"),
+        (None, {"CI": "TRUE"}, "fail"),
+        (None, {"CI": "1"}, "fail"),
+    ],
+)
+def test_node_policy(node, env, expected):
+    assert node_policy(node, env) == expected
 
 
 # --- Cohérence Python <-> JS ---------------------------------------------------
