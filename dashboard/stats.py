@@ -6,15 +6,18 @@ Les valeurs sont renvoyées brutes (non formatées) : le formatage français est
 fait à l'affichage.
 """
 
+import json
 import math
 
+import numpy as np
 import pandas as pd
 
 from dashboard import fmt
-from dashboard.config import EXPENSIVE_THRESHOLD_EUR, REGION_CODES
+from dashboard.config import EXPENSIVE_THRESHOLD_EUR, ISO_NUMERIC_FILE, REGION_CODES, WORLD_ZONE, ZONE_MEMBERS
 
 MAX_LISTED_PRODUCTS = 5  # produits ex æquo listés pour le prix min / max
 TOP_DESTINATIONS = 10
+HISTOGRAM_BIN_EUR = 5  # largeur des classes de l'histogramme des prix
 # Écart d'indice (en points) sous lequel on considère les fournisseurs au même prix.
 HOMOGENEOUS_INDEX_SPREAD = 5
 # « Moins cher au Go » : on montre un podium, déclaré à égalité si l'écart 1er/dernier < 1 %.
@@ -77,6 +80,78 @@ def like_for_like_ratio(df: pd.DataFrame, column: str, value_a, value_b) -> floa
     return _num(ratios.mean()) if len(ratios) else None
 
 
+def power_law(df: pd.DataFrame) -> dict | None:
+    """Ajuste prix = coef × Go^exposant sur les forfaits limités (régression log-log).
+
+    Exposant < 1 : le prix augmente moins vite que le volume (dégressivité).
+    doubling_factor = 2^exposant : ce que devient le prix quand on double le volume.
+    """
+    lim = limited(df)
+    if lim["data_gb"].nunique() < 2:
+        return None
+    x, y = np.log(lim["data_gb"].to_numpy()), np.log(lim["price"].to_numpy())
+    exponent, intercept = np.polyfit(x, y, 1)
+    residuals = y - (intercept + exponent * x)
+    r2 = 1 - residuals.var() / y.var() if y.var() > 0 else 1.0
+    return {
+        "coef": _num(math.exp(intercept)),
+        "exponent": _num(exponent),
+        "doubling_factor": _num(2**exponent),
+        "r2": _num(r2),
+        "offers": len(lim),
+    }
+
+
+def price_histogram(df: pd.DataFrame, width: float = HISTOGRAM_BIN_EUR) -> dict:
+    """Classes de prix [a ; a + largeur[ ; un prix de 100 € tombe dans [100 ; 105[."""
+    if df.empty:
+        return {"bin_width": width, "bins": []}
+    upper = math.floor(df["price"].max() / width) + 1
+    idx = np.floor(df["price"] / width).astype(int)
+    counts = idx.value_counts()
+    return {
+        "bin_width": width,
+        "bins": [{"from": _num(k * width, 2), "to": _num((k + 1) * width, 2), "offers": int(counts.get(k, 0))} for k in range(upper)],
+    }
+
+
+def provider_validity_index(df: pd.DataFrame) -> dict:
+    """Indice de prix (100 = moyenne des offres comparables) par fournisseur et par durée."""
+    relative = df["price"] / df.groupby(segment(df))["price"].transform("mean")
+    grouped = relative.groupby([df["provider"], df["validity_days"]])
+    cells = [
+        {"provider": prov, "validity_days": int(v), "index": _num(r.mean() * 100, 1), "offers": len(r)}
+        for (prov, v), r in grouped
+    ]
+    return {"validities": sorted(int(v) for v in df["validity_days"].unique()), "cells": cells}
+
+
+def _iso_numeric() -> dict:
+    return json.loads(ISO_NUMERIC_FILE.read_text(encoding="utf-8"))
+
+
+def countries_price_per_gb(df: pd.DataFrame) -> list[dict]:
+    """Prix au Go (total / total, forfaits limités) par pays, pour la carte."""
+    iso = _iso_numeric()
+    out = []
+    for (code, name), d in df[~df["is_region"]].groupby(["country_code", "country_name"]):
+        out.append({
+            "code": code,
+            "name": name,
+            "iso_numeric": iso.get(code),  # None : pays absent de la table, non cartographié
+            "offers": len(d),
+            "price_per_gb": price_per_gb(d),
+        })
+    return sorted(out, key=lambda c: c["name"])
+
+
+def zones() -> list[dict]:
+    """Hypothèse de couverture des zones (voir config.ZONE_MEMBERS)."""
+    out = [{"code": code, "name": REGION_CODES[code], "countries": sorted(members)} for code, members in ZONE_MEMBERS.items()]
+    out.append({"code": WORLD_ZONE, "name": REGION_CODES[WORLD_ZONE], "countries": "*"})
+    return out
+
+
 def headline(df: pd.DataFrame) -> dict:
     n = len(df)
     lim = limited(df)
@@ -85,7 +160,15 @@ def headline(df: pd.DataFrame) -> dict:
 
     def extreme(value):
         rows = df[df["price"] == value]
-        return {"price": _num(value, 2), "count": len(rows), "products": _products(rows)}
+        per_provider = rows.groupby("provider").size().reset_index(name="count")
+        per_provider = per_provider.sort_values(["count", "provider"], ascending=[False, True])
+        return {
+            "price": _num(value, 2),
+            "count": len(rows),
+            "products": _products(rows),
+            # « eSIMX (×2) » plutôt que « eSIMX, eSIMX » quand un fournisseur a plusieurs ex æquo.
+            "by_provider": [{"provider": r.provider, "count": int(r.count)} for r in per_provider.itertuples()],
+        }
 
     return {
         "total_offers": n,
@@ -155,6 +238,8 @@ def pricing(df: pd.DataFrame) -> dict:
         for v, d in df.groupby("validity_days")
     ]
     return {
+        "power_law": power_law(df),
+        "histogram": price_histogram(df),
         "price_per_gb": price_per_gb(df),
         "price_per_gb_median_of_ratios": _num(ratios.median()) if len(ratios) else None,
         "price_per_gb_mean_of_ratios": _num(ratios.mean()) if len(ratios) else None,
@@ -212,6 +297,8 @@ def coverage(df: pd.DataFrame) -> dict:
         "top_countries": ranking(countries)[:TOP_DESTINATIONS],
         "regions": ranking(regions),
         "region_codes_note": {code: name for code, name in REGION_CODES.items()},
+        "countries_price_per_gb": countries_price_per_gb(df),
+        "zones": zones(),
     }
 
 
@@ -252,6 +339,17 @@ def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
             "values": {"from_gb": lo["data_gb"], "from": lo["price_per_gb"], "to_gb": hi["data_gb"], "to": hi["price_per_gb"]},
         })
 
+    law = p.get("power_law")
+    if law and law["exponent"] is not None and law["exponent"] < 1:
+        out.append({
+            "id": "power_law", "highlight": False,
+            "title": "Doubler le volume ne double pas le prix",
+            "text": f"Le prix suit environ {fmt.number(law['coef'], 2)} € × Go^{fmt.number(law['exponent'], 2)} : "
+                    f"quand le volume double, le prix n'est multiplié que par {fmt.number(law['doubling_factor'], 2)} "
+                    f"(+{fmt.percent(law['doubling_factor'] - 1)}).",
+            "values": law,
+        })
+
     net = {c["value"]: c for c in dist["network"]}
     l4l = dist["network_like_for_like_5g_vs_4g"]
     if "4G" in net and "5G" in net and l4l is not None:
@@ -270,8 +368,9 @@ def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
         top = ranked[:CHEAPEST_TOP_N]
         worst = ranked[-1]
         names = [pr["provider"] for pr in top]
-        listed = ", ".join(f"{pr['provider']} ({fmt.euros(pr['price_per_gb'])}/Go)" for pr in top[:-1])
-        listed += f" et {top[-1]['provider']} ({fmt.euros(top[-1]['price_per_gb'])}/Go)"
+        # 3 décimales : à 2 décimales, le podium affiche trois fois « 1,63 € » et paraît arbitraire.
+        listed = ", ".join(f"{pr['provider']} ({fmt.euros(pr['price_per_gb'], 3)}/Go)" for pr in top[:-1])
+        listed += f" et {top[-1]['provider']} ({fmt.euros(top[-1]['price_per_gb'], 3)}/Go)"
         tied = top[-1]["price_per_gb"] / top[0]["price_per_gb"] - 1 < TIE_TOLERANCE
         joined = ", ".join(names[:-1]) + f" et {names[-1]}"
         if tied:
@@ -310,6 +409,7 @@ def compute(df: pd.DataFrame) -> dict:
     return {
         "headline": h,
         "providers": providers,
+        "provider_validity_index": provider_validity_index(df),
         "pricing": p,
         "distributions": dist,
         "coverage": coverage(df),

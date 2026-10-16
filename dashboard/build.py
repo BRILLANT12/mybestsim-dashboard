@@ -7,6 +7,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from dashboard import stats
+from dashboard.dataset import encode_offers
 from dashboard.anomalies import ERROR, RULES, WARNING
 from dashboard.config import DATA_DIR, OUTPUT_DIR
 from dashboard.loader import load_providers
@@ -15,6 +16,7 @@ from dashboard.validation import validate
 TIMEZONE = ZoneInfo("Europe/Paris")
 TEMPLATE = Path(__file__).parent / "templates" / "index.html"
 PLACEHOLDER = "__STATS_JSON__"
+OFFERS_PLACEHOLDER = "__OFFERS_JSON__"
 
 
 def anomaly_report(anomalies, files, total_rows, excluded_rows) -> dict:
@@ -39,6 +41,11 @@ def anomaly_report(anomalies, files, total_rows, excluded_rows) -> dict:
 
 
 def build_stats(data_dir: Path, now: datetime | None = None) -> dict:
+    return build(data_dir, now)[0]
+
+
+def build(data_dir: Path, now: datetime | None = None) -> tuple[dict, dict]:
+    """Renvoie (statistiques globales, offres valides encodées pour les filtres)."""
     loaded = load_providers(data_dir)
     validated = validate(loaded.rows)
     result = stats.compute(validated.clean)
@@ -50,34 +57,37 @@ def build_stats(data_dir: Path, now: datetime | None = None) -> dict:
     result["anomalies"] = anomaly_report(
         loaded.anomalies + validated.anomalies, loaded.files, validated.total_rows, validated.excluded_rows
     )
-    return result
+    return result, encode_offers(validated.clean)
 
 
-def render_html(result: dict) -> str:
-    """Intègre les stats dans la page : elle s'ouvre aussi en local (file://), sans serveur.
+def _embed(data: dict) -> str:
+    # Les « < » sont échappés pour qu'aucune valeur (ex. un nom de produit contenant
+    # « </script> ») ne puisse fermer la balise et injecter du HTML.
+    return json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
 
-    Les « < » sont échappés pour qu'aucune valeur (ex. un nom de produit contenant
-    « </script> ») ne puisse fermer la balise et injecter du HTML.
-    """
+
+def render_html(result: dict, offers: dict | None = None) -> str:
+    """Intègre stats et offres dans la page : elle s'ouvre aussi en local (file://), sans serveur."""
     template = TEMPLATE.read_text(encoding="utf-8")
-    if template.count(PLACEHOLDER) != 1:
-        raise ValueError(f"Le gabarit doit contenir {PLACEHOLDER} exactement une fois.")
-    payload = json.dumps(result, ensure_ascii=False, allow_nan=False).replace("<", "\\u003c")
-    return template.replace(PLACEHOLDER, payload)
+    for marker in (PLACEHOLDER, OFFERS_PLACEHOLDER):
+        if template.count(marker) != 1:
+            raise ValueError(f"Le gabarit doit contenir {marker} exactement une fois.")
+    offers = offers or {"fields": [], "currency": "EUR", "dict": {}, "rows": []}
+    return template.replace(PLACEHOLDER, _embed(result)).replace(OFFERS_PLACEHOLDER, _embed(offers))
 
 
-def write_outputs(result: dict, out_dir: Path) -> tuple[Path, Path]:
+def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     json_path = out_dir / "stats.json"
     json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     html_path = out_dir / "index.html"
-    html_path.write_text(render_html(result), encoding="utf-8")
+    html_path.write_text(render_html(result, offers), encoding="utf-8")
     return json_path, html_path
 
 
 def main(data_dir: Path = DATA_DIR, out_dir: Path = OUTPUT_DIR) -> dict:
-    result = build_stats(data_dir)
-    json_path, html_path = write_outputs(result, out_dir)
+    result, offers = build(data_dir)
+    json_path, html_path = write_outputs(result, out_dir, offers)
     rep = result["anomalies"]
     print(
         f"{result['headline']['total_offers']} offres valides ({rep['rows_read']} lues, "

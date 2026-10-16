@@ -471,6 +471,7 @@
 </footer>
 
 <script id="stats-data" type="application/json">__STATS_JSON__</script>
+<script id="offers-data" type="application/json">__OFFERS_JSON__</script>
 <script>
 (function () {
   "use strict";
@@ -490,7 +491,7 @@
   // ---------- En-tête ----------
   var gen = new Date(S.meta.generated_at);
   var genText = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" }).format(gen);
-  $("meta-date").textContent = "Mis à jour le " + genText;
+  $("meta-date").textContent = "Mis à jour le " + genText + " (heure de Paris)";
   $("meta-scope").textContent = num(S.meta.providers_count) + " fournisseurs · " + num(H.total_offers) + " offres";
   $("footer-gen").textContent = "Dernière génération : " + genText + " (heure de Paris), à partir de " + num(S.meta.files_count) + " " + plural(S.meta.files_count, "fichier", "fichiers") + " fournisseurs.";
   var fills = { threshold: eur(H.expensive.threshold, 0), "mean-gb": gb(H.data.mean_gb), "median-gb": gb(H.data.median_gb, 0) };
@@ -506,7 +507,7 @@
       '</div><div class="kpi-num">' + value + '</div><div class="kpi-note">' + note + "</div></div>";
   }
   var minNote = r.min ? (r.min.count > 1
-    ? num(r.min.count) + " produits ex æquo : " + r.min.products.map(function (x) { return esc(x.provider); }).join(", ") + (r.min.count > r.min.products.length ? "…" : "")
+    ? num(r.min.count) + " produits ex æquo : " + r.min.by_provider.map(function (x) { return esc(x.provider) + (x.count > 1 ? " (×" + x.count + ")" : ""); }).join(", ")
     : esc(r.min.products[0].provider) + " · " + esc(r.min.products[0].product_name)) : "";
   var maxNote = r.max ? r.max.products.map(function (x) { return esc(x.provider) + " · " + esc(x.product_name); }).join(" ; ") : "";
   $("kpis").innerHTML = [
@@ -575,7 +576,7 @@
     { label: "Prix min", num: true, key: function (x) { return x.min_price; }, fmt: function (x) { return eur(x.min_price); } },
     { label: "Data moy.", num: true, key: function (x) { return x.mean_data_gb; }, fmt: function (x) { return gb(x.mean_data_gb, 1); } },
     { label: "Illimités", num: true, key: function (x) { return x.unlimited; }, fmt: function (x) { return num(x.unlimited); } },
-    { label: "€ / Go", num: true, key: function (x) { return x.price_per_gb; }, fmt: function (x) { return eur(x.price_per_gb); } },
+    { label: "€ / Go", num: true, key: function (x) { return x.price_per_gb; }, fmt: function (x) { return eur(x.price_per_gb, 3); } },
     { label: "Indice prix", num: true, key: function (x) { return x.price_index; }, fmt: function (x) { return num(x.price_index, 1); } },
     { label: "5G", num: true, key: function (x) { return x.share_5g; }, fmt: function (x) { return pct(x.share_5g); } },
     { label: "Recharge", num: true, key: function (x) { return x.share_top_up; }, fmt: function (x) { return pct(x.share_top_up); } },
@@ -765,7 +766,7 @@
     bar("chart-ppg-provider", byPpg.map(function (x) { return x.provider; }), byPpg.map(function (x) { return x.price_per_gb; }), {
       horizontal: true,
       colors: byPpg.map(function (x) { return rankOf(x.provider) >= 0 ? s1 : muted; }),
-      fmt: function (v, axis) { return axis ? eur(v, 1) : eur(v) + " / Go"; }
+      fmt: function (v, axis) { return axis ? eur(v, 1) : eur(v, 3) + " / Go"; }
     });
 
     bar("chart-ppg-tier", tiers.map(function (x) { return gb(x.data_gb, 0); }), tiers.map(function (x) { return x.price_per_gb; }), {

@@ -211,3 +211,74 @@ def test_html_embeds_the_stats_and_escapes_script_tags(df):
     assert "alert(1)" in html and "</script><script>alert" not in html
     embedded = html.split('<script id="stats-data" type="application/json">')[1].split("</script>")[0]
     assert json.loads(embedded)["headline"]["price_range"]["min"]["products"][0]["product_name"].startswith("</script>")
+
+
+# --- Lot 1 de la refonte : corrections et nouveaux calculs --------------------
+
+
+def test_price_range_groups_ties_by_provider(df):
+    tie = df.copy()
+    tie.loc[tie["sku"] == "a4", "price"] = 5.0  # Prov A a désormais 2 produits au prix min
+    rng = stats.compute(tie)["headline"]["price_range"]["min"]
+    assert rng["count"] == 3
+    assert rng["by_provider"] == [{"provider": "Prov A", "count": 2}, {"provider": "Prov B", "count": 1}]
+
+
+def test_cheapest_podium_uses_three_decimals(df):
+    close = df.copy()
+    close.loc[close["sku"] == "b2", "price"] = 20.1
+    cheapest = {i["id"]: i for i in stats.compute(close)["insights"]}["cheapest_provider"]
+    assert "Prov A (2,188 €/Go)" in cheapest["text"]  # 35 / 16 = 2,1875
+    assert "Prov B (2,194 €/Go)" in cheapest["text"]  # 35,1 / 16 = 2,19375
+
+
+def test_power_law_recovers_exact_exponent():
+    import pandas as pd
+
+    gb = [1.0, 2.0, 4.0, 8.0, 16.0]
+    exact = pd.DataFrame({"data_gb": gb, "price": [3 * g**0.5 for g in gb], "is_unlimited": [False] * 5})
+    law = stats.power_law(exact)
+    assert law["coef"] == pytest.approx(3) and law["exponent"] == pytest.approx(0.5)
+    assert law["doubling_factor"] == pytest.approx(2**0.5, abs=1e-4) and law["r2"] == pytest.approx(1)
+
+
+def test_power_law_needs_two_volumes(df):
+    one_volume = df[df["data_gb"] == 1]
+    assert stats.power_law(one_volume) is None
+
+
+def test_price_histogram_bins_are_left_closed(result):
+    hist = result["pricing"]["histogram"]
+    assert hist["bin_width"] == 5
+    filled = {b["from"]: b["offers"] for b in hist["bins"] if b["offers"]}
+    # 5, 5 | 10, 10 | 20 | 30 | 100 (100 € tombe dans [100 ; 105[) | 120
+    assert filled == {5: 2, 10: 2, 20: 1, 30: 1, 100: 1, 120: 1}
+    assert sum(b["offers"] for b in hist["bins"]) == 8
+    assert hist["bins"][-1]["to"] == 125
+
+
+def test_provider_validity_index_matrix(result):
+    cells = {(c["provider"], c["validity_days"]): c["index"] for c in result["provider_validity_index"]["cells"]}
+    # Seule la paire a2 (20 €) / b2 (30 €) sur 10 Go / 30 j s'écarte de la moyenne de son segment (25 €).
+    assert cells == {("Prov A", 7): 100.0, ("Prov A", 30): 90.0, ("Prov B", 7): 100.0, ("Prov B", 30): 120.0}
+    assert result["provider_validity_index"]["validities"] == [7, 30]
+
+
+def test_countries_price_per_gb_for_the_map(result):
+    countries = {c["code"]: c for c in result["coverage"]["countries_price_per_gb"]}
+    assert set(countries) == {"FR", "DE", "US"}  # les zones NA et WW n'y sont pas
+    assert countries["FR"]["price_per_gb"] == 2.5  # (5 + 20 + 5) / (1 + 10 + 1)
+    assert countries["DE"]["price_per_gb"] == 2.0
+    assert countries["US"]["iso_numeric"] == "840"
+
+
+def test_zone_hypothesis_is_exported(result):
+    zones = {z["code"]: z["countries"] for z in result["coverage"]["zones"]}
+    assert zones["WW"] == "*"
+    assert "FR" in zones["EU"] and "TR" not in zones["EU"]
+    assert "US" in zones["NA"]
+
+
+def test_power_law_insight(df):
+    ins = {i["id"]: i for i in stats.compute(df)["insights"]}
+    assert ins["power_law"]["values"]["exponent"] < 1

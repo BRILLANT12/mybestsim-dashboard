@@ -46,6 +46,24 @@
             "product_name": "eSIM Colombie 1 Go 7 jours",
             "price": 5.36
           }
+        ],
+        "by_provider": [
+          {
+            "provider": "eSIMX",
+            "count": 2
+          },
+          {
+            "provider": "GigSky",
+            "count": 1
+          },
+          {
+            "provider": "Yesim",
+            "count": 1
+          },
+          {
+            "provider": "aloSIM",
+            "count": 1
+          }
         ]
       },
       "max": {
@@ -57,6 +75,12 @@
             "provider": "aloSIM",
             "product_name": "eSIM Europe Illimité 30 jours",
             "price": 154.63
+          }
+        ],
+        "by_provider": [
+          {
+            "provider": "aloSIM",
+            "count": 1
           }
         ]
       }
@@ -383,7 +407,507 @@
       ]
     }
   ],
+  "provider_validity_index": {
+    "validities": [
+      7,
+      15,
+      30
+    ],
+    "cells": [
+      {
+        "provider": "4S eSIM",
+        "validity_days": 7,
+        "index": 99.5,
+        "offers": 35
+      },
+      {
+        "provider": "4S eSIM",
+        "validity_days": 15,
+        "index": 100.0,
+        "offers": 30
+      },
+      {
+        "provider": "4S eSIM",
+        "validity_days": 30,
+        "index": 100.8,
+        "offers": 27
+      },
+      {
+        "provider": "Airalo",
+        "validity_days": 7,
+        "index": 100.6,
+        "offers": 234
+      },
+      {
+        "provider": "Airalo",
+        "validity_days": 15,
+        "index": 100.5,
+        "offers": 252
+      },
+      {
+        "provider": "Airalo",
+        "validity_days": 30,
+        "index": 98.5,
+        "offers": 236
+      },
+      {
+        "provider": "Flexiroam",
+        "validity_days": 7,
+        "index": 100.6,
+        "offers": 60
+      },
+      {
+        "provider": "Flexiroam",
+        "validity_days": 15,
+        "index": 99.5,
+        "offers": 53
+      },
+      {
+        "provider": "Flexiroam",
+        "validity_days": 30,
+        "index": 100.0,
+        "offers": 59
+      },
+      {
+        "provider": "GigSky",
+        "validity_days": 7,
+        "index": 100.1,
+        "offers": 102
+      },
+      {
+        "provider": "GigSky",
+        "validity_days": 15,
+        "index": 97.6,
+        "offers": 120
+      },
+      {
+        "provider": "GigSky",
+        "validity_days": 30,
+        "index": 98.4,
+        "offers": 120
+      },
+      {
+        "provider": "Holafly",
+        "validity_days": 7,
+        "index": 99.7,
+        "offers": 68
+      },
+      {
+        "provider": "Holafly",
+        "validity_days": 15,
+        "index": 98.9,
+        "offers": 88
+      },
+      {
+        "provider": "Holafly",
+        "validity_days": 30,
+        "index": 100.5,
+        "offers": 86
+      },
+      {
+        "provider": "Instabridge",
+        "validity_days": 7,
+        "index": 102.3,
+        "offers": 97
+      },
+      {
+        "provider": "Instabridge",
+        "validity_days": 15,
+        "index": 101.4,
+        "offers": 80
+      },
+      {
+        "provider": "Instabridge",
+        "validity_days": 30,
+        "index": 102.0,
+        "offers": 105
+      },
+      {
+        "provider": "JamboSIM",
+        "validity_days": 7,
+        "index": 101.1,
+        "offers": 61
+      },
+      {
+        "provider": "JamboSIM",
+        "validity_days": 15,
+        "index": 100.6,
+        "offers": 61
+      },
+      {
+        "provider": "JamboSIM",
+        "validity_days": 30,
+        "index": 98.0,
+        "offers": 60
+      },
+      {
+        "provider": "Jetpac",
+        "validity_days": 7,
+        "index": 97.3,
+        "offers": 58
+      },
+      {
+        "provider": "Jetpac",
+        "validity_days": 15,
+        "index": 98.8,
+        "offers": 76
+      },
+      {
+        "provider": "Jetpac",
+        "validity_days": 30,
+        "index": 98.9,
+        "offers": 78
+      },
+      {
+        "provider": "Maya Mobile",
+        "validity_days": 7,
+        "index": 99.1,
+        "offers": 44
+      },
+      {
+        "provider": "Maya Mobile",
+        "validity_days": 15,
+        "index": 97.4,
+        "offers": 58
+      },
+      {
+        "provider": "Maya Mobile",
+        "validity_days": 30,
+        "index": 102.5,
+        "offers": 50
+      },
+      {
+        "provider": "Nomad",
+        "validity_days": 7,
+        "index": 99.9,
+        "offers": 111
+      },
+      {
+        "provider": "Nomad",
+        "validity_days": 15,
+        "index": 98.4,
+        "offers": 91
+      },
+      {
+        "provider": "Nomad",
+        "validity_days": 30,
+        "index": 100.8,
+        "offers": 110
+      },
+      {
+        "provider": "Roamic",
+        "validity_days": 7,
+        "index": 101.4,
+        "offers": 43
+      },
+      {
+        "provider": "Roamic",
+        "validity_days": 15,
+        "index": 101.8,
+        "offers": 29
+      },
+      {
+        "provider": "Roamic",
+        "validity_days": 30,
+        "index": 101.9,
+        "offers": 50
+      },
+      {
+        "provider": "Saily",
+        "validity_days": 7,
+        "index": 98.7,
+        "offers": 134
+      },
+      {
+        "provider": "Saily",
+        "validity_days": 15,
+        "index": 101.1,
+        "offers": 134
+      },
+      {
+        "provider": "Saily",
+        "validity_days": 30,
+        "index": 102.5,
+        "offers": 114
+      },
+      {
+        "provider": "Truphone",
+        "validity_days": 7,
+        "index": 99.4,
+        "offers": 77
+      },
+      {
+        "provider": "Truphone",
+        "validity_days": 15,
+        "index": 98.4,
+        "offers": 58
+      },
+      {
+        "provider": "Truphone",
+        "validity_days": 30,
+        "index": 100.4,
+        "offers": 67
+      },
+      {
+        "provider": "Ubigi",
+        "validity_days": 7,
+        "index": 101.5,
+        "offers": 199
+      },
+      {
+        "provider": "Ubigi",
+        "validity_days": 15,
+        "index": 99.2,
+        "offers": 193
+      },
+      {
+        "provider": "Ubigi",
+        "validity_days": 30,
+        "index": 98.5,
+        "offers": 170
+      },
+      {
+        "provider": "Yatelo",
+        "validity_days": 7,
+        "index": 99.0,
+        "offers": 51
+      },
+      {
+        "provider": "Yatelo",
+        "validity_days": 15,
+        "index": 99.1,
+        "offers": 54
+      },
+      {
+        "provider": "Yatelo",
+        "validity_days": 30,
+        "index": 101.4,
+        "offers": 57
+      },
+      {
+        "provider": "Yesim",
+        "validity_days": 7,
+        "index": 97.5,
+        "offers": 75
+      },
+      {
+        "provider": "Yesim",
+        "validity_days": 15,
+        "index": 103.3,
+        "offers": 72
+      },
+      {
+        "provider": "Yesim",
+        "validity_days": 30,
+        "index": 101.4,
+        "offers": 75
+      },
+      {
+        "provider": "aloSIM",
+        "validity_days": 7,
+        "index": 99.5,
+        "offers": 85
+      },
+      {
+        "provider": "aloSIM",
+        "validity_days": 15,
+        "index": 102.5,
+        "offers": 81
+      },
+      {
+        "provider": "aloSIM",
+        "validity_days": 30,
+        "index": 101.4,
+        "offers": 96
+      },
+      {
+        "provider": "eSIMX",
+        "validity_days": 7,
+        "index": 99.2,
+        "offers": 145
+      },
+      {
+        "provider": "eSIMX",
+        "validity_days": 15,
+        "index": 101.2,
+        "offers": 137
+      },
+      {
+        "provider": "eSIMX",
+        "validity_days": 30,
+        "index": 98.7,
+        "offers": 150
+      }
+    ]
+  },
   "pricing": {
+    "power_law": {
+      "coef": 6.3831,
+      "exponent": 0.5524,
+      "doubling_factor": 1.4666,
+      "r2": 0.935,
+      "offers": 4403
+    },
+    "histogram": {
+      "bin_width": 5,
+      "bins": [
+        {
+          "from": 0.0,
+          "to": 5.0,
+          "offers": 0
+        },
+        {
+          "from": 5.0,
+          "to": 10.0,
+          "offers": 887
+        },
+        {
+          "from": 10.0,
+          "to": 15.0,
+          "offers": 1025
+        },
+        {
+          "from": 15.0,
+          "to": 20.0,
+          "offers": 580
+        },
+        {
+          "from": 20.0,
+          "to": 25.0,
+          "offers": 311
+        },
+        {
+          "from": 25.0,
+          "to": 30.0,
+          "offers": 368
+        },
+        {
+          "from": 30.0,
+          "to": 35.0,
+          "offers": 391
+        },
+        {
+          "from": 35.0,
+          "to": 40.0,
+          "offers": 251
+        },
+        {
+          "from": 40.0,
+          "to": 45.0,
+          "offers": 44
+        },
+        {
+          "from": 45.0,
+          "to": 50.0,
+          "offers": 236
+        },
+        {
+          "from": 50.0,
+          "to": 55.0,
+          "offers": 260
+        },
+        {
+          "from": 55.0,
+          "to": 60.0,
+          "offers": 112
+        },
+        {
+          "from": 60.0,
+          "to": 65.0,
+          "offers": 108
+        },
+        {
+          "from": 65.0,
+          "to": 70.0,
+          "offers": 97
+        },
+        {
+          "from": 70.0,
+          "to": 75.0,
+          "offers": 120
+        },
+        {
+          "from": 75.0,
+          "to": 80.0,
+          "offers": 80
+        },
+        {
+          "from": 80.0,
+          "to": 85.0,
+          "offers": 66
+        },
+        {
+          "from": 85.0,
+          "to": 90.0,
+          "offers": 28
+        },
+        {
+          "from": 90.0,
+          "to": 95.0,
+          "offers": 18
+        },
+        {
+          "from": 95.0,
+          "to": 100.0,
+          "offers": 18
+        },
+        {
+          "from": 100.0,
+          "to": 105.0,
+          "offers": 12
+        },
+        {
+          "from": 105.0,
+          "to": 110.0,
+          "offers": 5
+        },
+        {
+          "from": 110.0,
+          "to": 115.0,
+          "offers": 3
+        },
+        {
+          "from": 115.0,
+          "to": 120.0,
+          "offers": 1
+        },
+        {
+          "from": 120.0,
+          "to": 125.0,
+          "offers": 2
+        },
+        {
+          "from": 125.0,
+          "to": 130.0,
+          "offers": 9
+        },
+        {
+          "from": 130.0,
+          "to": 135.0,
+          "offers": 5
+        },
+        {
+          "from": 135.0,
+          "to": 140.0,
+          "offers": 6
+        },
+        {
+          "from": 140.0,
+          "to": 145.0,
+          "offers": 8
+        },
+        {
+          "from": 145.0,
+          "to": 150.0,
+          "offers": 2
+        },
+        {
+          "from": 150.0,
+          "to": 155.0,
+          "offers": 3
+        }
+      ]
+    },
     "price_per_gb": 1.6995,
     "price_per_gb_median_of_ratios": 2.55,
     "price_per_gb_mean_of_ratios": 3.1724,
@@ -632,7 +1156,414 @@
       "AS": "Asie",
       "NA": "Amérique du Nord",
       "WW": "Monde"
-    }
+    },
+    "countries_price_per_gb": [
+      {
+        "code": "ZA",
+        "name": "Afrique du Sud",
+        "iso_numeric": "710",
+        "offers": 82,
+        "price_per_gb": 1.6841
+      },
+      {
+        "code": "DE",
+        "name": "Allemagne",
+        "iso_numeric": "276",
+        "offers": 87,
+        "price_per_gb": 1.6306
+      },
+      {
+        "code": "SA",
+        "name": "Arabie saoudite",
+        "iso_numeric": "682",
+        "offers": 102,
+        "price_per_gb": 1.6028
+      },
+      {
+        "code": "AR",
+        "name": "Argentine",
+        "iso_numeric": "032",
+        "offers": 73,
+        "price_per_gb": 1.5714
+      },
+      {
+        "code": "AU",
+        "name": "Australie",
+        "iso_numeric": "036",
+        "offers": 78,
+        "price_per_gb": 1.4455
+      },
+      {
+        "code": "AT",
+        "name": "Autriche",
+        "iso_numeric": "040",
+        "offers": 86,
+        "price_per_gb": 1.603
+      },
+      {
+        "code": "BE",
+        "name": "Belgique",
+        "iso_numeric": "056",
+        "offers": 96,
+        "price_per_gb": 1.6042
+      },
+      {
+        "code": "BR",
+        "name": "Brésil",
+        "iso_numeric": "076",
+        "offers": 63,
+        "price_per_gb": 1.5397
+      },
+      {
+        "code": "CA",
+        "name": "Canada",
+        "iso_numeric": "124",
+        "offers": 70,
+        "price_per_gb": 1.7181
+      },
+      {
+        "code": "CL",
+        "name": "Chili",
+        "iso_numeric": "152",
+        "offers": 76,
+        "price_per_gb": 1.6673
+      },
+      {
+        "code": "CN",
+        "name": "Chine",
+        "iso_numeric": "156",
+        "offers": 88,
+        "price_per_gb": 1.6389
+      },
+      {
+        "code": "CO",
+        "name": "Colombie",
+        "iso_numeric": "170",
+        "offers": 95,
+        "price_per_gb": 1.5329
+      },
+      {
+        "code": "KR",
+        "name": "Corée du Sud",
+        "iso_numeric": "410",
+        "offers": 86,
+        "price_per_gb": 1.622
+      },
+      {
+        "code": "HR",
+        "name": "Croatie",
+        "iso_numeric": "191",
+        "offers": 90,
+        "price_per_gb": 1.5115
+      },
+      {
+        "code": "ES",
+        "name": "Espagne",
+        "iso_numeric": "724",
+        "offers": 88,
+        "price_per_gb": 1.6478
+      },
+      {
+        "code": "FR",
+        "name": "France",
+        "iso_numeric": "250",
+        "offers": 85,
+        "price_per_gb": 1.6389
+      },
+      {
+        "code": "GR",
+        "name": "Grèce",
+        "iso_numeric": "300",
+        "offers": 83,
+        "price_per_gb": 1.7516
+      },
+      {
+        "code": "IN",
+        "name": "Inde",
+        "iso_numeric": "356",
+        "offers": 82,
+        "price_per_gb": 1.48
+      },
+      {
+        "code": "ID",
+        "name": "Indonésie",
+        "iso_numeric": "360",
+        "offers": 104,
+        "price_per_gb": 1.6097
+      },
+      {
+        "code": "IE",
+        "name": "Irlande",
+        "iso_numeric": "372",
+        "offers": 87,
+        "price_per_gb": 1.7265
+      },
+      {
+        "code": "IL",
+        "name": "Israël",
+        "iso_numeric": "376",
+        "offers": 76,
+        "price_per_gb": 1.5556
+      },
+      {
+        "code": "IT",
+        "name": "Italie",
+        "iso_numeric": "380",
+        "offers": 84,
+        "price_per_gb": 1.6432
+      },
+      {
+        "code": "JP",
+        "name": "Japon",
+        "iso_numeric": "392",
+        "offers": 83,
+        "price_per_gb": 1.8031
+      },
+      {
+        "code": "JO",
+        "name": "Jordanie",
+        "iso_numeric": "400",
+        "offers": 76,
+        "price_per_gb": 1.4847
+      },
+      {
+        "code": "KE",
+        "name": "Kenya",
+        "iso_numeric": "404",
+        "offers": 96,
+        "price_per_gb": 1.5932
+      },
+      {
+        "code": "MY",
+        "name": "Malaisie",
+        "iso_numeric": "458",
+        "offers": 83,
+        "price_per_gb": 1.5724
+      },
+      {
+        "code": "MA",
+        "name": "Maroc",
+        "iso_numeric": "504",
+        "offers": 80,
+        "price_per_gb": 1.5267
+      },
+      {
+        "code": "MX",
+        "name": "Mexique",
+        "iso_numeric": "484",
+        "offers": 84,
+        "price_per_gb": 1.5167
+      },
+      {
+        "code": "NG",
+        "name": "Nigeria",
+        "iso_numeric": "566",
+        "offers": 78,
+        "price_per_gb": 1.8294
+      },
+      {
+        "code": "NO",
+        "name": "Norvège",
+        "iso_numeric": "578",
+        "offers": 89,
+        "price_per_gb": 1.6073
+      },
+      {
+        "code": "NZ",
+        "name": "Nouvelle-Zélande",
+        "iso_numeric": "554",
+        "offers": 86,
+        "price_per_gb": 1.6363
+      },
+      {
+        "code": "NL",
+        "name": "Pays-Bas",
+        "iso_numeric": "528",
+        "offers": 93,
+        "price_per_gb": 1.6274
+      },
+      {
+        "code": "PH",
+        "name": "Philippines",
+        "iso_numeric": "608",
+        "offers": 92,
+        "price_per_gb": 1.5968
+      },
+      {
+        "code": "PL",
+        "name": "Pologne",
+        "iso_numeric": "616",
+        "offers": 88,
+        "price_per_gb": 1.6389
+      },
+      {
+        "code": "PT",
+        "name": "Portugal",
+        "iso_numeric": "620",
+        "offers": 89,
+        "price_per_gb": 1.6024
+      },
+      {
+        "code": "PE",
+        "name": "Pérou",
+        "iso_numeric": "604",
+        "offers": 89,
+        "price_per_gb": 1.6387
+      },
+      {
+        "code": "QA",
+        "name": "Qatar",
+        "iso_numeric": "634",
+        "offers": 89,
+        "price_per_gb": 1.6106
+      },
+      {
+        "code": "GB",
+        "name": "Royaume-Uni",
+        "iso_numeric": "826",
+        "offers": 76,
+        "price_per_gb": 1.5867
+      },
+      {
+        "code": "DO",
+        "name": "Rép. dominicaine",
+        "iso_numeric": "214",
+        "offers": 92,
+        "price_per_gb": 1.7325
+      },
+      {
+        "code": "SG",
+        "name": "Singapour",
+        "iso_numeric": "702",
+        "offers": 99,
+        "price_per_gb": 1.6467
+      },
+      {
+        "code": "CH",
+        "name": "Suisse",
+        "iso_numeric": "756",
+        "offers": 80,
+        "price_per_gb": 1.5022
+      },
+      {
+        "code": "SE",
+        "name": "Suède",
+        "iso_numeric": "752",
+        "offers": 80,
+        "price_per_gb": 1.6848
+      },
+      {
+        "code": "TZ",
+        "name": "Tanzanie",
+        "iso_numeric": "834",
+        "offers": 91,
+        "price_per_gb": 1.4544
+      },
+      {
+        "code": "CZ",
+        "name": "Tchéquie",
+        "iso_numeric": "203",
+        "offers": 66,
+        "price_per_gb": 1.501
+      },
+      {
+        "code": "TH",
+        "name": "Thaïlande",
+        "iso_numeric": "764",
+        "offers": 87,
+        "price_per_gb": 1.7587
+      },
+      {
+        "code": "TR",
+        "name": "Turquie",
+        "iso_numeric": "792",
+        "offers": 93,
+        "price_per_gb": 1.6011
+      },
+      {
+        "code": "VN",
+        "name": "Vietnam",
+        "iso_numeric": "704",
+        "offers": 86,
+        "price_per_gb": 1.6043
+      },
+      {
+        "code": "EG",
+        "name": "Égypte",
+        "iso_numeric": "818",
+        "offers": 98,
+        "price_per_gb": 1.6003
+      },
+      {
+        "code": "AE",
+        "name": "Émirats arabes unis",
+        "iso_numeric": "784",
+        "offers": 76,
+        "price_per_gb": 1.6287
+      },
+      {
+        "code": "US",
+        "name": "États-Unis",
+        "iso_numeric": "840",
+        "offers": 98,
+        "price_per_gb": 1.6258
+      }
+    ],
+    "zones": [
+      {
+        "code": "EU",
+        "name": "Europe",
+        "countries": [
+          "AT",
+          "BE",
+          "CH",
+          "CZ",
+          "DE",
+          "ES",
+          "FR",
+          "GB",
+          "GR",
+          "HR",
+          "IE",
+          "IT",
+          "NL",
+          "NO",
+          "PL",
+          "PT",
+          "SE"
+        ]
+      },
+      {
+        "code": "AS",
+        "name": "Asie",
+        "countries": [
+          "CN",
+          "ID",
+          "IN",
+          "JP",
+          "KR",
+          "MY",
+          "PH",
+          "SG",
+          "TH",
+          "VN"
+        ]
+      },
+      {
+        "code": "NA",
+        "name": "Amérique du Nord",
+        "countries": [
+          "CA",
+          "MX",
+          "US"
+        ]
+      },
+      {
+        "code": "WW",
+        "name": "Monde",
+        "countries": "*"
+      }
+    ]
   },
   "insights": [
     {
@@ -658,6 +1589,19 @@
       }
     },
     {
+      "id": "power_law",
+      "highlight": false,
+      "title": "Doubler le volume ne double pas le prix",
+      "text": "Le prix suit environ 6,38 € × Go^0,55 : quand le volume double, le prix n'est multiplié que par 1,47 (+47 %).",
+      "values": {
+        "coef": 6.3831,
+        "exponent": 0.5524,
+        "doubling_factor": 1.4666,
+        "r2": 0.935,
+        "offers": 4403
+      }
+    },
+    {
       "id": "5g_premium",
       "highlight": false,
       "title": "À offre égale, la 5G coûte presque le même prix que la 4G",
@@ -671,7 +1615,7 @@
       "id": "cheapest_provider",
       "highlight": false,
       "title": "Moins chers au Go : Ubigi, GigSky et Yatelo, quasiment à égalité",
-      "text": "Ubigi (1,63 €/Go), GigSky (1,63 €/Go) et Yatelo (1,63 €/Go) sont quasiment à égalité en tête : moins de 1 % d'écart entre eux. Le plus cher au Go est 4S eSIM (1,88 €/Go). À volume et durée égaux, tous les fournisseurs ont un indice de prix entre 98,4 et 101,9 (100 = prix moyen du marché) : l'écart au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.",
+      "text": "Ubigi (1,627 €/Go), GigSky (1,632 €/Go) et Yatelo (1,633 €/Go) sont quasiment à égalité en tête : moins de 1 % d'écart entre eux. Le plus cher au Go est 4S eSIM (1,88 €/Go). À volume et durée égaux, tous les fournisseurs ont un indice de prix entre 98,4 et 101,9 (100 = prix moyen du marché) : l'écart au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.",
       "values": {
         "top": [
           {
@@ -696,7 +1640,7 @@
     }
   ],
   "meta": {
-    "generated_at": "2026-10-16T18:51:03+02:00",
+    "generated_at": "2026-10-16T19:10:48+02:00",
     "files_count": 18,
     "providers_count": 18
   },
