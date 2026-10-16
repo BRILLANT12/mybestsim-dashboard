@@ -349,9 +349,9 @@ def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
         out.append({
             "id": "power_law", "highlight": False,
             "title": "Doubler le volume ne double pas le prix",
-            "text": f"Le prix suit environ {fmt.number(law['coef'], 2)} € × Go^{fmt.number(law['exponent'], 2)} : "
-                    f"quand le volume double, le prix n'est multiplié que par {fmt.number(law['doubling_factor'], 2)} "
-                    f"(+{fmt.percent(law['doubling_factor'] - 1)}).",
+            "text": f"Le prix suit une loi de puissance du volume, d'exposant {fmt.number(law['exponent'], 2)} "
+                    f"(ajustement R² = {fmt.number(law['r2'], 2)}) : quand le volume double, le prix n'est multiplié "
+                    f"que par {fmt.number(law['doubling_factor'], 2)} (+{fmt.percent(law['doubling_factor'] - 1)}).",
             "values": law,
         })
 

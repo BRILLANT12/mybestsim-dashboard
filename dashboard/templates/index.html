@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Observatoire eSIM · MyBestSim</title>
-<meta name="description" content="Tableau de bord interne du catalogue d'offres eSIM : volumes, prix, data, fournisseurs et qualité des données.">
+<meta name="description" content="Tableau de bord interne du catalogue d'offres eSIM : volumes, prix, data, fournisseurs, destinations et qualité des données.">
 <meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
 <script>
-  // Thème appliqué avant le rendu pour éviter un flash (auto / clair / sombre).
+  // Thème appliqué avant le premier rendu (pas de flash) : auto, clair ou sombre.
   (function () {
     try {
       var t = localStorage.getItem("theme");
@@ -15,458 +16,628 @@
     } catch (e) {}
   })();
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
         integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
         crossorigin="anonymous" defer></script>
 <style>
-  /* Palette inspirée de mybestsim.com : marine (contour du logo), bleu de marque, jaune d'accent.
-     Couleurs de séries validées (contraste, daltonisme) pour chaque mode. */
+  /* ==========================================================================
+     Design system — inspiré de mybestsim.com : marine (contour du logo), bleu de
+     marque, jaune d'accent. Couleurs des séries et contrastes du texte vérifiés
+     par script dans les deux modes (texte ≥ 4,5:1).
+     ========================================================================== */
   :root {
     color-scheme: light;
-    --bg: #f3f7fd;
-    --surface: #ffffff;
-    --surface-2: #f6faff;
-    --ink: #0f1c33;
-    --ink-2: #44526a;
-    --muted: #64748b;
-    --border: rgba(15, 28, 51, 0.10);
-    --grid: #e6ecf4;
-    --axis: #c5cfdc;
-    --brand: #007bff;
+    --page: #ffffff;
+    --alt: #f5f8fd;
+    --card: #ffffff;
+    --card-2: #f7f9fd;
+    --ink: #0b1630;
+    --ink-2: #3d4a63;
+    --muted: #5f6d85;
+    --border: #e3e9f2;
+    --border-strong: #cdd7e5;
+    --grid: #edf1f7;
+    --axis: #c9d3e0;
+    --brand: #0a6cdc;
     --brand-ink: #0a5fc4;
+    --brand-soft: #e8f1fd;
     --accent: #ffcc00;
-    --accent-soft: #fff7d6;
+    --navy: #0b1b3a;
     --series-1: #0a6cdc;
     --series-2: #d98e00;
-    --series-muted: #c9d3e0;
-    --header-bg: #0b1b3a;
-    --header-ink: #ffffff;
-    --header-ink-2: #b9c6dc;
+    --series-muted: #cdd6e3;
     --good: #0b7a3b;
-    --good-soft: #e5f6ec;
+    --good-soft: #e3f5ea;
     --warn: #9a5800;
-    --warn-soft: #fff2dc;
+    --warn-soft: #fff1d9;
     --crit: #c62828;
     --crit-soft: #fdeaea;
-    --shadow: 0 1px 2px rgba(15, 28, 51, 0.06), 0 4px 16px rgba(15, 28, 51, 0.04);
+    --shadow-sm: 0 1px 2px rgba(11, 22, 48, 0.05), 0 1px 3px rgba(11, 22, 48, 0.04);
+    --shadow-md: 0 12px 28px -12px rgba(11, 22, 48, 0.22), 0 2px 6px rgba(11, 22, 48, 0.05);
+    --radius: 16px;
+    --radius-sm: 10px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg: #0a1222;
-      --surface: #14213a;
-      --surface-2: #182742;
-      --ink: #e8eef8;
-      --ink-2: #b4c0d3;
-      --muted: #8d9ab0;
-      --border: rgba(255, 255, 255, 0.10);
-      --grid: #223150;
-      --axis: #34466a;
+      --page: #070d1a;
+      --alt: #0a1324;
+      --card: #0f1a2e;
+      --card-2: #13203a;
+      --ink: #e9eef7;
+      --ink-2: #b3bfd2;
+      --muted: #8796af;
+      --border: #1d2a44;
+      --border-strong: #2a3a5a;
+      --grid: #1a2640;
+      --axis: #2f405f;
       --brand: #3a8cf2;
       --brand-ink: #7cb4ff;
-      --accent: #ffcc00;
-      --accent-soft: #2e2a14;
+      --brand-soft: #12284a;
       --series-1: #3a8cf2;
       --series-2: #c48500;
-      --series-muted: #34466a;
-      --header-bg: #07101f;
-      --header-ink: #ffffff;
-      --header-ink-2: #9fb0cc;
+      --series-muted: #2c3b58;
       --good: #4ad08a;
-      --good-soft: #10301f;
+      --good-soft: #0f2c1e;
       --warn: #f2b84b;
-      --warn-soft: #33260c;
+      --warn-soft: #30240c;
       --crit: #ff7b7b;
-      --crit-soft: #3a1717;
-      --shadow: none;
+      --crit-soft: #361616;
+      --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.02);
+      --shadow-md: 0 16px 32px -16px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(124, 180, 255, 0.12);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #0a1222;
-    --surface: #14213a;
-    --surface-2: #182742;
-    --ink: #e8eef8;
-    --ink-2: #b4c0d3;
-    --muted: #8d9ab0;
-    --border: rgba(255, 255, 255, 0.10);
-    --grid: #223150;
-    --axis: #34466a;
+    --page: #070d1a;
+    --alt: #0a1324;
+    --card: #0f1a2e;
+    --card-2: #13203a;
+    --ink: #e9eef7;
+    --ink-2: #b3bfd2;
+    --muted: #8796af;
+    --border: #1d2a44;
+    --border-strong: #2a3a5a;
+    --grid: #1a2640;
+    --axis: #2f405f;
     --brand: #3a8cf2;
     --brand-ink: #7cb4ff;
-    --accent: #ffcc00;
-    --accent-soft: #2e2a14;
+    --brand-soft: #12284a;
     --series-1: #3a8cf2;
     --series-2: #c48500;
-    --series-muted: #34466a;
-    --header-bg: #07101f;
-    --header-ink: #ffffff;
-    --header-ink-2: #9fb0cc;
+    --series-muted: #2c3b58;
     --good: #4ad08a;
-    --good-soft: #10301f;
+    --good-soft: #0f2c1e;
     --warn: #f2b84b;
-    --warn-soft: #33260c;
+    --warn-soft: #30240c;
     --crit: #ff7b7b;
-    --crit-soft: #3a1717;
-    --shadow: none;
+    --crit-soft: #361616;
+    --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.02);
+    --shadow-md: 0 16px 32px -16px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(124, 180, 255, 0.12);
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--page);
     color: var(--ink);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    font: 15px/1.55 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  a { color: var(--brand-ink); }
-  h1, h2, h3 { line-height: 1.25; margin: 0; }
+  a { color: var(--brand-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
   .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 28px; } }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .skip { position: absolute; left: 12px; top: -48px; z-index: 100; background: var(--accent); color: var(--navy); padding: 8px 14px; border-radius: 8px; font-weight: 700; }
+  .skip:focus { top: 12px; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+  .icon { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* En-tête */
-  .top { background: var(--header-bg); color: var(--header-ink); }
-  .top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-top: 18px; padding-bottom: 18px; }
-  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
-  .brand-mark {
-    width: 36px; height: 36px; border-radius: 10px; background: var(--brand);
-    display: grid; place-items: center; font-weight: 800; font-size: 15px; letter-spacing: -0.5px; position: relative; flex: none;
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; color: #fff; isolation: isolate;
+    background:
+      radial-gradient(700px 360px at 88% -10%, rgba(14, 165, 233, 0.38), transparent 70%),
+      radial-gradient(520px 260px at 0% 110%, rgba(255, 204, 0, 0.14), transparent 70%),
+      linear-gradient(160deg, #0b1b3a 0%, #0c2756 52%, #0b3a86 100%);
   }
-  .brand-mark::after { content: ""; position: absolute; right: -3px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: 2px solid var(--header-bg); }
-  .brand-name { font-weight: 700; font-size: 17px; }
-  .brand-sub { color: var(--header-ink-2); font-size: 13px; }
-  .meta { color: var(--header-ink-2); font-size: 13px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.10); color: var(--header-ink); }
-  .theme-btn {
-    font: inherit; font-size: 13px; color: var(--header-ink); background: transparent; cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px; padding: 6px 12px;
+  .hero::before { /* grille de points en filigrane */
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1.3px);
+    background-size: 22px 22px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 55%, transparent 100%);
   }
-  .theme-btn:hover { background: rgba(255, 255, 255, 0.08); }
-  .theme-btn:focus-visible, .nav a:focus-visible, th button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hero::after { /* liseré de marque */
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent) 30%, #0ea5e9 70%, transparent);
+    opacity: 0.8;
+  }
+  :root[data-theme="dark"] .hero { filter: saturate(0.95) brightness(0.92); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero { filter: saturate(0.95) brightness(0.92); } }
+  .topbar { display: flex; align-items: center; gap: 16px; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; margin-right: auto; }
+  .brand-mark { position: relative; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 14px;
+    background: linear-gradient(140deg, #3a8cf2, #0a6cdc); box-shadow: 0 6px 16px -6px rgba(10, 108, 220, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+  .brand-mark::after { content: ""; position: absolute; right: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px #0b1b3a; }
+  .brand b { font-weight: 700; letter-spacing: -0.01em; }
+  .brand span { color: #a9bde0; font-weight: 500; }
+  .topnav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .topnav a { color: #c3d2ec; text-decoration: none; font-size: 13.5px; font-weight: 500; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+  .topnav a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+  @media (max-width: 960px) { .topnav { display: none; } }
+  .theme-switch { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); }
+  .theme-switch button { all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; height: 26px; border-radius: 7px; color: #a9bde0; }
+  .theme-switch button:hover { color: #fff; }
+  .theme-switch button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.16); color: #fff; }
+  .theme-switch button:focus-visible { outline: 2px solid var(--accent); }
+  .theme-switch .icon { width: 16px; height: 16px; }
 
-  .nav { position: sticky; top: 0; z-index: 10; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .nav .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-  .nav a { flex: none; padding: 12px 10px; color: var(--ink-2); text-decoration: none; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; }
-  .nav a:hover { color: var(--ink); border-bottom-color: var(--brand); }
+  .hero-head { padding: 28px 0 8px; max-width: 760px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand-ink); margin: 0 0 10px; }
+  .hero .eyebrow { color: #ffd84d; }
+  .hero h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, #7cc4ff, #ffd84d); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-sub { margin: 14px 0 0; color: #c3d2ec; font-size: 16px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 500; color: #dbe6f7;
+    background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); text-decoration: none; }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ad08a; box-shadow: 0 0 0 3px rgba(74, 208, 138, 0.22); }
+  .chip.warn .dot { background: #f2b84b; box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.22); }
+  .chip.crit .dot { background: #ff7b7b; box-shadow: 0 0 0 3px rgba(255, 123, 123, 0.22); }
+  a.chip:hover { background: rgba(255, 255, 255, 0.12); }
 
-  main { padding: 24px 0 48px; }
-  section { margin-bottom: 40px; }
-  .section-head { margin-bottom: 16px; }
-  .section-head h2 { font-size: 20px; }
-  .section-head p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 75ch; }
+  .hero-kpis { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 28px 0 40px; }
+  @media (max-width: 860px) { .hero-kpis { grid-template-columns: minmax(0, 1fr); } }
+  .glass { position: relative; padding: 18px 20px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); transition: transform 0.2s, background 0.2s; }
+  .glass:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.09); }
+  .glass-top { display: flex; align-items: center; gap: 8px; color: #c3d2ec; font-size: 13px; font-weight: 600; }
+  .glass-top .ico { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffd84d; }
+  .glass-value { font-size: clamp(32px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 10px; font-variant-numeric: tabular-nums; }
+  .glass-value small { font-size: 0.5em; font-weight: 600; color: #c3d2ec; letter-spacing: 0; }
+  .glass-sub { color: #a9bde0; font-size: 13px; margin-top: 2px; }
+  .glass-sub b { color: #fff; font-weight: 600; }
+  .glass .micro { margin-top: 14px; height: 36px; color: #7cc4ff; }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; min-width: 0; }
-  .card h3 { font-size: 15px; font-weight: 650; }
-  .card .sub { color: var(--muted); font-size: 13px; margin: 2px 0 12px; }
+  /* ---------- Bandeaux de section ---------- */
+  .band { padding: 56px 0; }
+  .band-white { background: var(--page); }
+  .band-alt { background: var(--alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .band-dark { position: relative; overflow: hidden; color: #fff; background: radial-gradient(600px 300px at 100% 0%, rgba(14, 165, 233, 0.22), transparent 70%), linear-gradient(180deg, #0b1b3a, #0a1630); }
+  .band-dark::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.3px); background-size: 22px 22px; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 70%); mask-image: linear-gradient(to right, transparent, #000 70%); }
+  .band-dark > .wrap { position: relative; }
+  .section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 24px; }
+  .section-head h2 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 750; line-height: 1.2; }
+  .section-head p { margin: 6px 0 0; color: var(--ink-2); max-width: 70ch; }
+  .band-dark .section-head p { color: #c3d2ec; }
+  .band-dark .eyebrow { color: #ffd84d; }
+  .scope { font-size: 12.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .band-dark .scope { color: #a9bde0; }
+
+  /* ---------- Cartes ---------- */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); min-width: 0; }
+  .card h3 { font-size: 15.5px; font-weight: 650; letter-spacing: -0.01em; }
+  .card .sub { color: var(--muted); font-size: 13px; margin: 3px 0 14px; }
   .grid { display: grid; gap: 16px; }
   .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); } }
+  .span-2 { grid-column: span 2; }
+  @media (max-width: 960px) { .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); } .span-2 { grid-column: auto; } }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 
-  /* Indicateurs clés */
+  /* KPI */
   .kpis { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 520px) { .kpis { grid-template-columns: minmax(0, 1fr); } }
-  .kpi { display: flex; flex-direction: column; gap: 4px; }
-  .kpi-label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
-  .kpi-num { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; }
-  .kpi-num small { font-size: 18px; font-weight: 600; color: var(--ink-2); }
-  .kpi-note { color: var(--muted); font-size: 13px; }
-  .kpi-note b { color: var(--ink-2); font-weight: 600; }
-  .tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+  @media (max-width: 960px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .kpis { grid-template-columns: minmax(0, 1fr); } }
+  .kpi { display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+  .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+  .kpi-top { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 13.5px; font-weight: 600; }
+  .kpi-ico { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--brand-soft); color: var(--brand-ink); }
+  .kpi-value { font-size: 30px; font-weight: 750; letter-spacing: -0.03em; line-height: 1.15; margin-top: 12px; font-variant-numeric: tabular-nums; }
+  .kpi-value small { font-size: 0.55em; font-weight: 600; color: var(--ink-2); letter-spacing: 0; }
+  .kpi-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .kpi-sub b { color: var(--ink-2); font-weight: 600; }
+  .kpi .micro { margin-top: auto; padding-top: 16px; color: var(--series-1); }
+  .tag { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-ink); background: var(--brand-soft); border-radius: 6px; padding: 2px 6px; margin-left: auto; }
+  .progress { position: relative; height: 8px; border-radius: 999px; background: var(--grid); overflow: hidden; }
+  .progress > span { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--series-1); }
+  .micro-legend { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .explain { display: flex; gap: 12px; align-items: flex-start; margin: 16px 0 0; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--alt); border: 1px solid var(--border); color: var(--ink-2); font-size: 14px; }
+  .explain .icon { color: var(--brand-ink); margin-top: 2px; }
 
-  .explain { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-2); font-size: 14px; }
-
-  /* Insights */
-  .insights { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
-  @media (max-width: 900px) { .insights { grid-template-columns: minmax(0, 1fr); } }
-  .insight h3 { font-size: 15px; margin-bottom: 6px; }
-  .insight p { margin: 0; color: var(--ink-2); font-size: 14px; }
-  .insight.hero { grid-column: 1 / -1; border-left: 5px solid var(--accent); background: linear-gradient(90deg, var(--accent-soft), var(--surface) 60%); }
-  .insight.hero h3 { font-size: 18px; }
-  .insight .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  /* Constats (bandeau sombre) */
+  .insights { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 860px) { .insights { grid-template-columns: minmax(0, 1fr); } }
+  .insight { padding: 20px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
+  .insight h3 { font-size: 16px; font-weight: 650; line-height: 1.35; }
+  .insight p { margin: 8px 0 0; color: #c3d2ec; font-size: 14px; }
+  .insight .ico { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: rgba(255, 255, 255, 0.08); color: #7cc4ff; margin-bottom: 12px; }
+  .insight.hero-insight { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; gap: 6px 20px; align-items: center; padding: 24px 26px;
+    background: linear-gradient(100deg, rgba(255, 204, 0, 0.16), rgba(255, 255, 255, 0.04) 55%); border-color: rgba(255, 204, 0, 0.35); }
+  .hero-insight .big { grid-row: span 2; font-size: clamp(44px, 6vw, 64px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: #ffd84d; font-variant-numeric: tabular-nums; }
+  .hero-insight h3 { font-size: clamp(17px, 2vw, 21px); }
+  .hero-insight p { margin: 0; }
+  @media (max-width: 560px) { .insight.hero-insight { grid-template-columns: minmax(0, 1fr); } .hero-insight .big { grid-row: auto; } }
+  .kicker { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #ffd84d; }
 
   /* Graphiques */
   .chart-box { position: relative; width: 100%; }
   .chart-fallback { display: none; color: var(--muted); font-size: 13px; }
   .no-chart .chart-box { display: none; }
   .no-chart .chart-fallback { display: block; }
-  details.data { margin-top: 10px; font-size: 13px; }
-  details.data summary { cursor: pointer; color: var(--brand-ink); font-weight: 500; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin: -4px 0 10px; }
   .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-
-  /* Barres de proportion (2 catégories : un camembert serait moins lisible) */
-  .split { display: flex; gap: 2px; height: 28px; border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
-  .split span { display: flex; align-items: center; padding: 0 8px; font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; min-width: 0; overflow: hidden; }
-  .split-legend { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--ink-2); }
+  details.data { margin-top: 12px; font-size: 13px; }
+  details.data summary { cursor: pointer; color: var(--brand-ink); font-weight: 500; width: max-content; }
+  details.data .table-wrap { margin-top: 10px; }
+  .split { display: flex; gap: 2px; height: 30px; border-radius: 8px; overflow: hidden; margin: 10px 0 8px; }
+  .split span { display: flex; align-items: center; padding: 0 10px; font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; min-width: 0; overflow: hidden; }
+  .split-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
   .split-legend b { color: var(--ink); }
-  .callout { margin-top: 12px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--border); padding-top: 10px; }
+  .callout { display: flex; gap: 10px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13.5px; color: var(--ink-2); }
+  .callout .icon { color: var(--brand-ink); margin-top: 1px; }
 
   /* Tableaux */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 10px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: var(--radius-sm); }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
   tbody tr:last-child td { border-bottom: 0; }
-  th { background: var(--surface-2); color: var(--ink-2); font-weight: 600; font-size: 12.5px; position: sticky; top: 0; }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  th button { all: unset; cursor: pointer; }
-  th button::after { content: " ↕"; color: var(--muted); font-size: 11px; }
-  th[aria-sort="ascending"] button::after { content: " ↑"; color: var(--brand-ink); }
-  th[aria-sort="descending"] button::after { content: " ↓"; color: var(--brand-ink); }
-  tr.top3 td:first-child { font-weight: 700; }
-  /* Colonne « Fournisseur » figée lors du défilement horizontal (mobile). */
-  #providers-table th:first-child, #providers-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
-  #providers-table th:first-child { background: var(--surface-2); z-index: 2; }
-  .rank { display: inline-block; min-width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--accent); color: #0b1b3a; margin-right: 6px; }
+  tbody tr:hover td { background: var(--card-2); }
+  th { background: var(--card-2); color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  th button { all: unset; cursor: pointer; border-radius: 4px; }
+  th button::after { content: " ↕"; color: var(--muted); font-size: 10px; opacity: 0.7; }
+  th[aria-sort="ascending"] button::after { content: " ↑"; color: var(--brand-ink); opacity: 1; }
+  th[aria-sort="descending"] button::after { content: " ↓"; color: var(--brand-ink); opacity: 1; }
+  th button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  #providers-table th:first-child, #providers-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); box-shadow: 1px 0 0 var(--border); }
+  #providers-table th:first-child { background: var(--card-2); }
+  #providers-table tbody tr:hover td:first-child { background: var(--card-2); }
+  .rank { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border-radius: 6px; font-size: 11px; font-weight: 800; background: var(--accent); color: var(--navy); margin-right: 8px; }
+  tr.podium td:first-child { font-weight: 650; }
+  .bar-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .bar-cell i { display: block; height: 6px; border-radius: 3px; background: var(--series-1); opacity: 0.85; }
   .wrap-cell { white-space: normal; min-width: 240px; }
+  code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--card-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; }
 
   /* Qualité des données */
-  .status { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
-  .status svg { flex: none; margin-top: 2px; }
+  .status { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-radius: var(--radius); border: 1px solid var(--border); }
+  .status .icon { width: 22px; height: 22px; margin-top: 1px; }
   .status.ok { background: var(--good-soft); color: var(--good); }
   .status.warn { background: var(--warn-soft); color: var(--warn); }
   .status.crit { background: var(--crit-soft); color: var(--crit); }
-  .status strong { display: block; font-size: 15px; }
+  .status strong { display: block; font-size: 15.5px; }
   .status span { color: var(--ink-2); font-size: 14px; }
-  .sev { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
+  .sev { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
+  .sev::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .sev.erreur { color: var(--crit); }
   .sev.avertissement { color: var(--warn); }
-  .count-0 { color: var(--muted); }
-  .count-pos { font-weight: 700; color: var(--ink); }
+  .zero { color: var(--muted); }
+  .pos { font-weight: 700; color: var(--ink); }
   .ok-mark { color: var(--good); font-weight: 700; }
 
   /* Méthodologie */
-  .method { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .method { grid-template-columns: minmax(0, 1fr); } }
-  .method h3 { font-size: 15px; margin-bottom: 6px; }
+  .method { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 860px) { .method { grid-template-columns: minmax(0, 1fr); } }
+  .method h3 { display: flex; align-items: center; gap: 10px; font-size: 15px; margin-bottom: 8px; }
+  .method h3 .icon { color: var(--brand-ink); }
   .method p, .method li { color: var(--ink-2); font-size: 14px; margin: 0; }
   .method ul { margin: 6px 0 0; padding-left: 18px; }
-  .method li + li { margin-top: 4px; }
-  code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 4px; }
+  .method li + li { margin-top: 5px; }
+  .hypothesis { border-left: 3px solid var(--accent); }
 
-  footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; padding: 20px 0 32px; }
-  footer p { margin: 4px 0; }
+  footer.foot { background: #0b1b3a; color: #a9bde0; font-size: 13px; padding: 28px 0 36px; }
+  footer.foot p { margin: 4px 0; }
+  footer.foot b { color: #fff; }
 
-  @media print {
-    .nav, .theme-btn { display: none; }
-    .card { break-inside: avoid; box-shadow: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
   }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    .hero { background: #0b1b3a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .theme-switch, .topnav { display: none; }
+    .card, .kpi { break-inside: avoid; box-shadow: none; }
+  }
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Aller au contenu</a>
 
-<header class="top">
+<!-- Icônes (tracés simples, style « Lucide ») -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sim" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><rect x="9" y="11" width="6" height="6" rx="1"/></symbol>
+  <symbol id="i-euro" viewBox="0 0 24 24"><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h9M4 14h9"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+  <symbol id="i-range" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M7 8l-4 4 4 4M17 8l4 4-4 4"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/></symbol>
+  <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M7.5 15.5C5 15.5 3 13.9 3 12s2-3.5 4.5-3.5C11 8.5 13 15.5 16.5 15.5 19 15.5 21 13.9 21 12s-2-3.5-4.5-3.5C13 8.5 11 15.5 7.5 15.5z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 20v-3M10 20v-7M15 20v-11M20 20V5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.7L16 9.5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 21h14"/><path d="M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></symbol>
+</svg>
+
+<header class="hero" id="haut">
   <div class="wrap">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true">MB</div>
-      <div>
-        <div class="brand-name">Observatoire des offres eSIM</div>
-        <div class="brand-sub">MyBestSim · outil interne · catalogue fournisseurs</div>
+    <div class="topbar">
+      <a class="brand" href="#haut" aria-label="Observatoire MyBestSim, haut de page">
+        <span class="brand-mark" aria-hidden="true">MB</span>
+        <span><b>MyBestSim</b> <span>Observatoire</span></span>
+      </a>
+      <nav class="topnav" aria-label="Sections">
+        <a href="#indicateurs">Indicateurs</a>
+        <a href="#constats">Constats</a>
+        <a href="#fournisseurs">Fournisseurs</a>
+        <a href="#prix-data">Prix et data</a>
+        <a href="#destinations">Destinations</a>
+        <a href="#qualite">Qualité</a>
+        <a href="#methodologie">Méthodologie</a>
+      </nav>
+      <div class="theme-switch" role="group" aria-label="Thème d'affichage">
+        <button type="button" data-mode="auto" title="Thème automatique" aria-label="Thème automatique"><svg class="icon"><use href="#i-auto"/></svg></button>
+        <button type="button" data-mode="light" title="Thème clair" aria-label="Thème clair"><svg class="icon"><use href="#i-sun"/></svg></button>
+        <button type="button" data-mode="dark" title="Thème sombre" aria-label="Thème sombre"><svg class="icon"><use href="#i-moon"/></svg></button>
       </div>
     </div>
-    <div class="meta">
-      <span class="pill" id="meta-scope"></span>
-      <span id="meta-date"></span>
-      <button class="theme-btn" id="theme-btn" type="button" aria-label="Changer de thème"></button>
+    <div class="hero-head">
+      <p class="eyebrow">Outil interne · catalogue fournisseurs</p>
+      <h1>Toutes les offres eSIM du catalogue, <em>en un coup d'œil</em></h1>
+      <p class="hero-sub" id="hero-sub"></p>
+      <div class="hero-meta">
+        <span class="chip"><span class="dot" aria-hidden="true"></span><span id="hero-date"></span></span>
+        <a class="chip" id="hero-quality" href="#qualite"></a>
+      </div>
     </div>
+    <div class="hero-kpis" id="hero-kpis"></div>
   </div>
 </header>
 
-<nav class="nav" aria-label="Sections">
-  <div class="wrap">
-    <a href="#synthese">Synthèse</a>
-    <a href="#fournisseurs">Fournisseurs</a>
-    <a href="#prix-data">Prix et data</a>
-    <a href="#destinations">Destinations</a>
-    <a href="#qualite">Qualité des données</a>
-    <a href="#methodologie">Méthodologie</a>
-  </div>
-</nav>
-
-<main class="wrap">
-
-  <section id="synthese" aria-labelledby="h-synthese">
-    <div class="section-head">
-      <h2 id="h-synthese">Synthèse du catalogue</h2>
-      <p id="synthese-lead"></p>
-    </div>
-    <div class="kpis" id="kpis"></div>
-    <p class="explain" id="ppg-explain"></p>
-    <div class="insights" id="insights"></div>
-  </section>
-
-  <section id="fournisseurs" aria-labelledby="h-fournisseurs">
-    <div class="section-head">
-      <h2 id="h-fournisseurs">Répartition par fournisseur</h2>
-      <p>Nombre d'offres par fournisseur, et comparaison des prix. Cliquez sur un en-tête du tableau pour trier.</p>
-    </div>
-    <div class="grid g-2">
-      <div class="card">
-        <h3>Offres par fournisseur</h3>
-        <p class="sub">Nombre d'offres valides au catalogue</p>
-        <div class="chart-box" id="box-providers"><canvas id="chart-providers" role="img" aria-label="Nombre d'offres par fournisseur"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible (Chart.js non chargé) : les valeurs figurent dans le tableau ci-dessous.</p>
+<main id="main">
+  <section class="band band-white" id="indicateurs" aria-labelledby="h-indicateurs">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Indicateurs</p>
+          <h2 id="h-indicateurs">Prix, data et options</h2>
+          <p>Les autres chiffres clés demandés, avec leurs règles de calcul.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Prix au Go par fournisseur</h3>
-        <p class="sub" id="ppg-provider-sub"></p>
-        <div class="legend" id="ppg-provider-legend"></div>
-        <div class="chart-box" id="box-ppg-provider"><canvas id="chart-ppg-provider" role="img" aria-label="Prix au Go par fournisseur"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible : voir la colonne « € / Go » du tableau.</p>
-      </div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h3>Tableau détaillé</h3>
-      <p class="sub">Prix au Go et data moyenne : forfaits à volume limité uniquement. Indice : 100 = prix moyen du marché à volume et durée égaux (moins de 100 = moins cher).</p>
-      <div class="table-wrap"><table id="providers-table"></table></div>
+      <div class="kpis" id="kpis"></div>
+      <p class="explain"><svg class="icon"><use href="#i-info"/></svg><span id="ppg-explain"></span></p>
     </div>
   </section>
 
-  <section id="prix-data" aria-labelledby="h-prix-data">
-    <div class="section-head">
-      <h2 id="h-prix-data">Prix, data et options</h2>
-      <p>Comment le prix varie avec le volume, la durée, le réseau et la recharge.</p>
+  <section class="band band-dark" id="constats" aria-labelledby="h-constats">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Constats</p>
+          <h2 id="h-constats">Ce que disent les données</h2>
+          <p>Constats calculés automatiquement à chaque génération : si les données changent, les textes changent.</p>
+        </div>
+        <span class="scope"><svg class="icon"><use href="#i-globe"/></svg>Sur l'ensemble du catalogue</span>
+      </div>
+      <div class="insights" id="insights"></div>
     </div>
-    <div class="grid g-2">
-      <div class="card">
-        <h3>Prix au Go selon le volume du forfait</h3>
-        <p class="sub">Total des prix ÷ total des Go, par palier de data</p>
-        <div class="chart-box"><canvas id="chart-ppg-tier" role="img" aria-label="Prix au Go par palier de data"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
-        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-ppg-tier"></table></div></details>
+  </section>
+
+  <section class="band band-alt" id="fournisseurs" aria-labelledby="h-fournisseurs">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Fournisseurs</p>
+          <h2 id="h-fournisseurs">Répartition par fournisseur</h2>
+          <p>Volume d'offres et compétitivité de chaque fournisseur. Cliquez sur un en-tête du tableau pour trier.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Offres par volume de data</h3>
-        <div class="sub" id="tiers-sub"></div>
-        <div class="chart-box"><canvas id="chart-tiers" role="img" aria-label="Nombre d'offres par volume de data"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
-        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-tiers"></table></div></details>
-      </div>
-      <div class="card">
-        <h3>Durées de validité</h3>
-        <p class="sub">Nombre d'offres par durée</p>
-        <div class="chart-box"><canvas id="chart-validity" role="img" aria-label="Nombre d'offres par durée de validité"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
-        <details class="data" open><summary>Voir les données</summary><div class="table-wrap"><table id="table-validity"></table></div></details>
-      </div>
-      <div class="card">
-        <h3>Réseau et recharge</h3>
-        <p class="sub">Part des offres, et surcoût réel à offre égale</p>
-        <div id="split-network"></div>
-        <div id="split-topup" style="margin-top:18px"></div>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Offres par fournisseur</h3>
+          <p class="sub">Nombre d'offres valides au catalogue</p>
+          <div class="chart-box"><canvas id="chart-providers" role="img" aria-label="Nombre d'offres par fournisseur"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible (Chart.js non chargé) : les valeurs figurent dans le tableau ci-dessous.</p>
+        </div>
+        <div class="card">
+          <h3>Prix au Go par fournisseur</h3>
+          <p class="sub" id="ppg-provider-sub"></p>
+          <div class="legend" id="ppg-provider-legend"></div>
+          <div class="chart-box"><canvas id="chart-ppg-provider" role="img" aria-label="Prix au Go par fournisseur"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir la colonne « € / Go » du tableau.</p>
+        </div>
+        <div class="card span-2">
+          <h3>Tableau détaillé</h3>
+          <p class="sub">€/Go et data moyenne : forfaits à volume limité. Indice : 100 = prix moyen des offres comparables (même volume, même durée) ; moins de 100 = moins cher.</p>
+          <div class="table-wrap"><table id="providers-table"><caption class="sr-only">Indicateurs par fournisseur</caption></table></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="destinations" aria-labelledby="h-destinations">
-    <div class="section-head">
-      <h2 id="h-destinations">Destinations couvertes</h2>
-      <p id="coverage-lead"></p>
-    </div>
-    <div class="grid g-2">
-      <div class="card">
-        <h3>Top 10 des pays</h3>
-        <p class="sub">Nombre d'offres par pays (hors zones régionales)</p>
-        <div class="chart-box"><canvas id="chart-countries" role="img" aria-label="Top 10 des pays par nombre d'offres"></canvas></div>
-        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
-        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-countries"></table></div></details>
+  <section class="band band-white" id="prix-data" aria-labelledby="h-prix-data">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Prix et data</p>
+          <h2 id="h-prix-data">Comment se forme le prix</h2>
+          <p>Volume, durée, réseau, recharge : ce qui fait vraiment varier le prix, et ce qui ne le fait pas.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Zones régionales</h3>
-        <p class="sub">Forfaits multi-pays, comptés à part des pays</p>
-        <div class="table-wrap"><table id="table-regions"></table></div>
-        <p class="callout">Les codes <code>EU</code>, <code>AS</code>, <code>NA</code> et <code>WW</code> désignent des zones dans ces fichiers. En norme ISO, <code>NA</code> serait la Namibie et <code>AS</code> les Samoa américaines : le dashboard suit la convention des fournisseurs.</p>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Prix au Go selon le volume</h3>
+          <p class="sub">Total des prix ÷ total des Go, par palier de data</p>
+          <div class="chart-box"><canvas id="chart-ppg-tier" role="img" aria-label="Prix au Go par palier de data"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+          <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-ppg-tier"></table></div></details>
+        </div>
+        <div class="card">
+          <h3>Offres par volume de data</h3>
+          <div class="legend" id="tiers-legend" style="margin-top:6px"></div>
+          <div class="chart-box"><canvas id="chart-tiers" role="img" aria-label="Nombre d'offres par volume de data"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+          <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-tiers"></table></div></details>
+        </div>
+        <div class="card">
+          <h3>Durées de validité</h3>
+          <p class="sub">Nombre d'offres et prix moyen par durée</p>
+          <div class="chart-box"><canvas id="chart-validity" role="img" aria-label="Nombre d'offres par durée de validité"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+          <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-validity"></table></div></details>
+        </div>
+        <div class="card">
+          <h3>Réseau et recharge</h3>
+          <p class="sub">Part des offres, et surcoût réel à offre égale</p>
+          <div id="split-network"></div>
+          <div id="split-topup" style="margin-top:22px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-alt" id="destinations" aria-labelledby="h-destinations">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Destinations</p>
+          <h2 id="h-destinations">Destinations couvertes</h2>
+          <p id="coverage-lead"></p>
+        </div>
+      </div>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Top 10 des pays</h3>
+          <p class="sub">Nombre d'offres par pays (hors zones régionales)</p>
+          <div class="chart-box"><canvas id="chart-countries" role="img" aria-label="Top 10 des pays par nombre d'offres"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+          <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-countries"></table></div></details>
+        </div>
+        <div class="card">
+          <h3>Zones régionales</h3>
+          <p class="sub">Forfaits multi-pays, comptés à part des pays</p>
+          <div class="table-wrap"><table id="table-regions"></table></div>
+          <p class="callout"><svg class="icon"><use href="#i-info"/></svg><span>Les codes <code>EU</code>, <code>AS</code>, <code>NA</code> et <code>WW</code> désignent des zones dans ces fichiers. En norme ISO, <code>NA</code> serait la Namibie et <code>AS</code> les Samoa américaines : le dashboard suit la convention des fournisseurs.</span></p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="qualite" aria-labelledby="h-qualite">
-    <div class="section-head">
-      <h2 id="h-qualite">Qualité des données</h2>
-      <p>Chaque ligne de chaque fichier est contrôlée. Une <b>erreur</b> exclut la ligne (ou le fichier) des calculs ; un <b>avertissement</b> la garde mais la signale.</p>
-    </div>
-    <div id="quality-status"></div>
-    <div class="grid g-2" style="margin-top:16px">
-      <div class="card">
-        <h3>Contrôles effectués</h3>
-        <p class="sub">Nombre d'anomalies détectées par règle</p>
-        <div class="table-wrap"><table id="table-checks"></table></div>
+  <section class="band band-white" id="qualite" aria-labelledby="h-qualite">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Qualité des données</p>
+          <h2 id="h-qualite">Contrôles à chaque import</h2>
+          <p>Chaque ligne de chaque fichier est vérifiée. Une <b>erreur</b> exclut la ligne (ou le fichier) des calculs ; un <b>avertissement</b> la garde mais la signale.</p>
+        </div>
+        <span class="scope"><svg class="icon"><use href="#i-shield"/></svg>Sur l'ensemble des fichiers</span>
       </div>
-      <div class="card">
-        <h3>Fichiers lus</h3>
-        <p class="sub">Tout fichier <code>.csv</code> déposé dans <code>data/</code> est pris en compte automatiquement</p>
-        <div class="table-wrap"><table id="table-files"></table></div>
+      <div id="quality-status"></div>
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card">
+          <h3>Contrôles effectués</h3>
+          <p class="sub">Nombre d'anomalies détectées par règle</p>
+          <div class="table-wrap"><table id="table-checks"></table></div>
+        </div>
+        <div class="card">
+          <h3>Fichiers lus</h3>
+          <p class="sub">Tout fichier <code>.csv</code> déposé dans <code>data/</code> est pris en compte automatiquement</p>
+          <div class="table-wrap"><table id="table-files"></table></div>
+        </div>
+        <div class="card span-2" id="details-card" hidden>
+          <h3>Détail des anomalies</h3>
+          <p class="sub" id="details-sub"></p>
+          <div class="table-wrap"><table id="table-details"></table></div>
+        </div>
       </div>
-    </div>
-    <div class="card" style="margin-top:16px" id="details-card" hidden>
-      <h3>Détail des anomalies</h3>
-      <p class="sub" id="details-sub"></p>
-      <div class="table-wrap"><table id="table-details"></table></div>
     </div>
   </section>
 
-  <section id="methodologie" aria-labelledby="h-methodologie">
-    <div class="section-head">
-      <h2 id="h-methodologie">Méthodologie</h2>
-      <p>Les choix de calcul, et pourquoi.</p>
-    </div>
-    <div class="method">
-      <div class="card">
-        <h3>Périmètre</h3>
-        <p>Une carte eSIM = une offre (une ligne, un SKU) valide. Tous les fichiers <code>data/*.csv</code> sont lus automatiquement : ajouter un fournisseur ne demande aucune modification du code. Les lignes en erreur sont exclues et listées dans « Qualité des données ».</p>
+  <section class="band band-alt" id="methodologie" aria-labelledby="h-methodologie">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Méthodologie</p>
+          <h2 id="h-methodologie">Les choix de calcul, et pourquoi</h2>
+        </div>
       </div>
-      <div class="card">
-        <h3>Produits chers</h3>
-        <p>Un produit est compté « à plus de <span data-fill="threshold"></span> » si son prix est <b>strictement supérieur</b> au seuil : un produit à exactement <span data-fill="threshold"></span> n'est pas compté.</p>
-      </div>
-      <div class="card">
-        <h3>Forfaits illimités</h3>
-        <ul>
-          <li>Exclus de la moyenne de data : on ne peut pas faire la moyenne d'une quantité infinie, et leur attribuer une valeur (50 Go, 100 Go…) serait arbitraire.</li>
-          <li>Comptés et affichés à part (nombre, part, prix moyen).</li>
-          <li>La <b>médiane</b> est affichée en plus de la moyenne : la moyenne (<span data-fill="mean-gb"></span>) est tirée vers le haut par les gros forfaits, alors que la moitié des offres ont <span data-fill="median-gb"></span> ou moins.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Prix au Go</h3>
-        <ul>
-          <li><b>Valeur principale</b> : total des prix ÷ total des Go des forfaits limités. C'est le coût réel d'un Go sur l'ensemble du catalogue.</li>
-          <li><b>En complément</b> : la médiane des prix au Go de chaque forfait. Elle est plus élevée, car les petits forfaits, chers au Go, y pèsent autant que les gros.</li>
-          <li>Le classement des fournisseurs suit la même règle.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Comparaisons à offre égale</h3>
-        <p>Une moyenne brute peut tromper : si un fournisseur (ou la 5G) propose davantage de gros forfaits, sa moyenne monte sans que ses prix soient plus élevés. Pour l'éviter, on compare les offres <b>à volume et durée égaux</b> : pour chaque segment (ex. 5 Go / 15 jours), on compare les prix, puis on fait la moyenne des écarts. L'<b>indice de prix</b> d'un fournisseur vaut 100 s'il est au prix moyen du marché sur des offres comparables.</p>
-      </div>
-      <div class="card">
-        <h3>Pays et zones</h3>
-        <p>Les codes <code>EU</code> (Europe), <code>AS</code> (Asie), <code>NA</code> (Amérique du Nord) et <code>WW</code> (Monde) sont des zones, comptées à part des pays. Les fichiers sont lus de façon à ce que le code <code>NA</code> ne soit pas confondu avec une valeur manquante, piège classique de la lecture de CSV.</p>
-      </div>
-      <div class="card">
-        <h3>Validation des données</h3>
-        <ul>
-          <li><b>Erreur, ligne exclue</b> : champ obligatoire vide, prix illisible, nul ou négatif, devise autre que EUR (aucun taux de conversion n'est fourni), durée ou volume invalide, SKU en double.</li>
-          <li><b>Avertissement, ligne conservée</b> : réseau ou recharge inconnus, incohérence data_gb / data_display, prix aberrant, offre identique sous un autre SKU.</li>
-          <li><b>SKU en double</b> : la première occurrence valide est gardée (fichiers par ordre alphabétique).</li>
-          <li><b>Prix aberrant</b> : plus de 5 fois, ou moins d'un cinquième de, la médiane des offres comparables (même volume, même durée, 5 offres au moins). Un seuil global signalerait à tort tous les forfaits illimités.</li>
-          <li>Un fichier vide, illisible ou incomplet est signalé et ignoré : il ne bloque jamais la génération.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Mise à jour</h3>
-        <p>Le dashboard est régénéré automatiquement par une GitHub Action à chaque modification du dossier <code>data/</code>, ainsi qu'une fois par jour, pour refléter l'import quotidien des fournisseurs. Tous les chiffres et tous les constats sont recalculés à chaque génération : si les données changent, les textes des constats changent aussi.</p>
+      <div class="method">
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-layers"/></svg>Périmètre</h3>
+          <p>Une carte eSIM = une offre (une ligne, un SKU) valide. Tous les fichiers <code>data/*.csv</code> sont lus automatiquement : ajouter un fournisseur ne demande aucune modification du code. Les lignes en erreur sont exclues et listées dans « Qualité des données ».</p>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-tag"/></svg>Produits chers</h3>
+          <p>Un produit est compté « à plus de <span data-fill="threshold"></span> » si son prix est <b>strictement supérieur</b> au seuil : un produit à exactement <span data-fill="threshold"></span> n'est pas compté.</p>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-infinity"/></svg>Forfaits illimités</h3>
+          <ul>
+            <li>Exclus de la moyenne de data : on ne peut pas faire la moyenne d'une quantité infinie, et leur attribuer une valeur (50 Go, 100 Go…) serait arbitraire.</li>
+            <li>Comptés et affichés à part (nombre, part, prix moyen).</li>
+            <li>La <b>médiane</b> est affichée en plus de la moyenne : la moyenne (<span data-fill="mean-gb"></span>) est tirée vers le haut par les gros forfaits, alors que la moitié des offres ont <span data-fill="median-gb"></span> ou moins.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-gauge"/></svg>Prix au Go</h3>
+          <ul>
+            <li><b>Valeur principale</b> : total des prix ÷ total des Go des forfaits limités. C'est le coût réel d'un Go sur l'ensemble du catalogue.</li>
+            <li><b>En complément</b> : la médiane des prix au Go de chaque forfait. Elle est plus élevée, car les petits forfaits, chers au Go, y pèsent autant que les gros.</li>
+            <li>Le classement des fournisseurs suit la même règle.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-scale"/></svg>Comparaisons à offre égale</h3>
+          <p>Une moyenne brute peut tromper : si un fournisseur (ou la 5G) propose davantage de gros forfaits, sa moyenne monte sans que ses prix soient plus élevés. On compare donc les offres <b>à volume et durée égaux</b> : pour chaque segment (ex. 5 Go / 15 jours), on compare les prix, puis on fait la moyenne des écarts. L'<b>indice de prix</b> d'un fournisseur vaut 100 s'il est au prix moyen du marché sur des offres comparables.</p>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-globe"/></svg>Pays et zones</h3>
+          <p>Les codes <code>EU</code> (Europe), <code>AS</code> (Asie), <code>NA</code> (Amérique du Nord) et <code>WW</code> (Monde) sont des zones, comptées à part des pays. Les fichiers sont lus de façon à ce que le code <code>NA</code> ne soit pas confondu avec une valeur manquante, piège classique de la lecture de CSV.</p>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-shield"/></svg>Validation des données</h3>
+          <ul>
+            <li><b>Erreur, ligne exclue</b> : champ obligatoire vide, prix illisible, nul ou négatif, devise autre que EUR (aucun taux de conversion n'est fourni), durée ou volume invalide, SKU en double.</li>
+            <li><b>Avertissement, ligne conservée</b> : réseau ou recharge inconnus, incohérence data_gb / data_display, prix aberrant, offre identique sous un autre SKU.</li>
+            <li><b>SKU en double</b> : la première occurrence valide est gardée (fichiers par ordre alphabétique).</li>
+            <li><b>Prix aberrant</b> : plus de 5 fois, ou moins d'un cinquième de, la médiane des offres comparables (même volume, même durée, 5 offres au moins). Un seuil global signalerait à tort tous les forfaits illimités.</li>
+            <li>Un fichier vide, illisible ou incomplet est signalé et ignoré : il ne bloque jamais la génération.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-refresh"/></svg>Mise à jour</h3>
+          <p>Le dashboard est régénéré automatiquement par une GitHub Action à chaque modification du dossier <code>data/</code>, ainsi qu'une fois par jour, pour refléter l'import quotidien des fournisseurs. Tous les chiffres et tous les constats sont recalculés à chaque génération.</p>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
+<footer class="foot">
   <div class="wrap">
     <p id="footer-gen"></p>
-    <p>Projet réalisé dans le cadre d'un test de recrutement MyBestSim. Outil non officiel, inspiré de l'identité visuelle de mybestsim.com.</p>
+    <p>Projet réalisé dans le cadre d'un test de recrutement <b>MyBestSim</b>. Outil non officiel, inspiré de l'identité visuelle de mybestsim.com.</p>
   </div>
 </footer>
 
@@ -476,312 +647,433 @@
 <script>
 (function () {
   "use strict";
+  var A = window.Analytics;
   var S = JSON.parse(document.getElementById("stats-data").textContent);
-  var H = S.headline;
+  var OFFERS = JSON.parse(document.getElementById("offers-data").textContent);
+  var REGION_CODES = Object.keys(S.coverage.region_codes_note);
+  var ISO = {};
+  S.coverage.countries_price_per_gb.forEach(function (c) { ISO[c.code] = c.iso_numeric; });
+  var ALL = A.decodeOffers(OFFERS, REGION_CODES);
+  var REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   // ---------- Format français ----------
-  var nf = function (d) { return new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
-  var num = function (v, d) { return v == null ? "—" : nf(d).format(v); };
-  var eur = function (v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " €"; };
-  var pct = function (v, d) { return v == null ? "—" : nf(d || 0).format(v * 100) + " %"; };
-  var gb = function (v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " Go"; };
-  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var $ = function (id) { return document.getElementById(id); };
-  var plural = function (n, one, many) { return n > 1 ? many : one; };
+  var nfCache = {};
+  function nf(d) { return nfCache[d] || (nfCache[d] = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d })); }
+  function num(v, d) { return v == null ? "—" : nf(d || 0).format(v); }
+  function eur(v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " €"; }
+  function pct(v, d) { return v == null ? "—" : nf(d || 0).format(v * 100) + " %"; }
+  function gb(v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " Go"; }
+  function signedPct(v, d) { return v == null ? "—" : (v >= 0 ? "+" : "−") + pct(Math.abs(v), d); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function $(id) { return document.getElementById(id); }
+  function plural(n, one, many) { return n > 1 ? many : one; }
+  function icon(name) { return '<svg class="icon" aria-hidden="true"><use href="#i-' + name + '"/></svg>'; }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
-  // ---------- En-tête ----------
-  var gen = new Date(S.meta.generated_at);
-  var genText = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" }).format(gen);
-  $("meta-date").textContent = "Mis à jour le " + genText + " (heure de Paris)";
-  $("meta-scope").textContent = num(S.meta.providers_count) + " fournisseurs · " + num(H.total_offers) + " offres";
-  $("footer-gen").textContent = "Dernière génération : " + genText + " (heure de Paris), à partir de " + num(S.meta.files_count) + " " + plural(S.meta.files_count, "fichier", "fichiers") + " fournisseurs.";
-  var fills = { threshold: eur(H.expensive.threshold, 0), "mean-gb": gb(H.data.mean_gb), "median-gb": gb(H.data.median_gb, 0) };
-  document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
-
-  // ---------- Synthèse ----------
-  var d = H.data, p = H.price, e = H.expensive, r = H.price_range, P = S.pricing;
-  $("synthese-lead").textContent = num(H.total_offers) + " offres eSIM valides de " + num(S.meta.providers_count) + " fournisseurs, couvrant " +
-    num(S.coverage.countries_count) + " pays et " + num(S.coverage.regions_count) + " zones régionales.";
-
-  function kpi(label, value, note, tag) {
-    return '<div class="card kpi"><div class="kpi-label">' + label + (tag ? ' <span class="tag">' + tag + "</span>" : "") +
-      '</div><div class="kpi-num">' + value + '</div><div class="kpi-note">' + note + "</div></div>";
+  // ---------- Compteurs animés (désactivés si l'utilisateur limite les animations) ----------
+  var FORMATS = {
+    int: function (v) { return num(Math.round(v)); },
+    eur: function (v) { return eur(v); },
+    gb: function (v) { return gb(v); },
+    pct: function (v) { return pct(v); }
+  };
+  function counter(value, fmt) {
+    return '<span data-count="' + (value == null ? "" : value) + '" data-fmt="' + fmt + '">' + FORMATS[fmt](value) + "</span>";
   }
-  var minNote = r.min ? (r.min.count > 1
-    ? num(r.min.count) + " produits ex æquo : " + r.min.by_provider.map(function (x) { return esc(x.provider) + (x.count > 1 ? " (×" + x.count + ")" : ""); }).join(", ")
-    : esc(r.min.products[0].provider) + " · " + esc(r.min.products[0].product_name)) : "";
-  var maxNote = r.max ? r.max.products.map(function (x) { return esc(x.provider) + " · " + esc(x.product_name); }).join(" ; ") : "";
-  $("kpis").innerHTML = [
-    kpi("Cartes eSIM au catalogue", num(H.total_offers), "offres valides · <b>" + num(S.meta.providers_count) + "</b> fournisseurs"),
-    kpi("Produits à plus de " + eur(e.threshold, 0), num(e.count),
-      "prix <b>strictement supérieur</b> à " + eur(e.threshold, 0) + " · dont <b>" + num(e.unlimited_count) + "</b> illimités"),
-    kpi("Fourchette de prix", eur(r.min && r.min.price) + ' <small>→</small> ' + eur(r.max && r.max.price),
-      "<b>Min</b> : " + minNote + "<br><b>Max</b> : " + maxNote),
-    kpi("Data moyenne par carte", gb(d.mean_gb), "médiane <b>" + gb(d.median_gb, 0) + "</b> · hors <b>" + num(d.unlimited_count) + "</b> forfaits illimités (" + pct(d.unlimited_share) + ")", "hors illimités"),
-    kpi("Prix moyen", eur(p.mean), "médiane <b>" + eur(p.median) + "</b> · limités <b>" + eur(p.mean_limited) + "</b> · illimités <b>" + eur(p.mean_unlimited) + "</b>"),
-    kpi("Prix moyen au Go", eur(P.price_per_gb) + " <small>/ Go</small>", "médiane des forfaits : <b>" + eur(P.price_per_gb_median_of_ratios) + " / Go</b>", "bonus")
-  ].join("");
-  $("ppg-explain").innerHTML = "<b>Pourquoi deux prix au Go ?</b> " + eur(P.price_per_gb) + "/Go divise le total des prix par le total des Go : c'est ce que coûte réellement un Go sur le catalogue. " +
-    "La médiane des forfaits (" + eur(P.price_per_gb_median_of_ratios) + "/Go) est plus élevée, car les petits forfaits, chers au Go, y comptent autant que les gros.";
+  function countUp(el, to, format) {
+    if (REDUCED || !isFinite(to)) { el.textContent = format(isFinite(to) ? to : null); return; }
+    var start = performance.now(), dur = 900, done = false;
+    function frame(t) {
+      if (done) return;
+      var k = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = format(k < 1 ? to * e : to);
+      if (k < 1) requestAnimationFrame(frame); else done = true;
+    }
+    requestAnimationFrame(frame);
+    // Filet de sécurité : si le navigateur suspend les animations (onglet en arrière-plan,
+    // impression, capture), la valeur finale exacte est tout de même affichée.
+    setTimeout(function () { done = true; el.textContent = format(to); }, dur + 100);
+  }
+  function animateCounters(root) {
+    root.querySelectorAll("[data-count]").forEach(function (el) {
+      if (el.dataset.count === "") return;
+      countUp(el, parseFloat(el.dataset.count), FORMATS[el.dataset.fmt]);
+    });
+  }
 
-  $("insights").innerHTML = S.insights.map(function (i) {
-    return '<article class="card insight' + (i.highlight ? " hero" : "") + '">' +
-      (i.highlight ? '<div class="kicker">Constat clé</div>' : "") +
-      "<h3>" + esc(i.title) + "</h3><p>" + esc(i.text) + "</p></article>";
-  }).join("");
+  // ---------- Micro-visualisations (SVG) ----------
+  function sparkBars(values) {
+    if (!values.length) return "";
+    var w = 240, h = 36, n = values.length, max = Math.max.apply(null, values) || 1, gap = 2, bw = (w - gap * (n - 1)) / n;
+    return '<svg viewBox="0 0 ' + w + " " + h + '" width="100%" height="' + h + '" preserveAspectRatio="none" aria-hidden="true">' + values.map(function (v, i) {
+      var bh = Math.max(2, (v / max) * h);
+      return '<rect x="' + (i * (bw + gap)).toFixed(1) + '" y="' + (h - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="' + Math.min(2, bw / 2).toFixed(1) + '" fill="currentColor" opacity="0.9"/>';
+    }).join("") + "</svg>";
+  }
+  function sparkLine(values) {
+    var w = 240, h = 36, pad = 4, n = values.length, max = Math.max.apply(null, values), min = Math.min.apply(null, values);
+    var pts = values.map(function (v, i) { return [pad + (i * (w - 2 * pad)) / Math.max(1, n - 1), pad + (1 - (v - min) / ((max - min) || 1)) * (h - 2 * pad)]; });
+    var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+    var area = d + " L" + pts[n - 1][0].toFixed(1) + " " + h + " L" + pts[0][0].toFixed(1) + " " + h + " Z";
+    return '<svg viewBox="0 0 ' + w + " " + h + '" width="100%" height="' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<path d="' + area + '" fill="currentColor" opacity="0.12"/><path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>';
+  }
+  function progress(share, color) {
+    var w = Math.max(0, Math.min(100, (share || 0) * 100)).toFixed(1);
+    return '<div class="progress" aria-hidden="true"><span style="width:' + w + "%" + (color ? ";background:" + color : "") + '"></span></div>';
+  }
+  function rangeStrip(min, median, mean, max) {
+    // Échelle logarithmique : les prix vont de quelques euros à plus de 150 €.
+    var w = 240, lo = Math.log(min), hi = Math.log(max);
+    var x = function (v) { return (6 + ((Math.log(v) - lo) / ((hi - lo) || 1)) * (w - 12)).toFixed(1); };
+    return '<svg viewBox="0 0 ' + w + ' 26" width="100%" height="26" aria-hidden="true">' +
+      '<line x1="6" x2="' + (w - 6) + '" y1="13" y2="13" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.18"/>' +
+      '<circle cx="' + x(min) + '" cy="13" r="5" fill="currentColor"/><circle cx="' + x(max) + '" cy="13" r="5" fill="currentColor"/>' +
+      '<line x1="' + x(median) + '" x2="' + x(median) + '" y1="3" y2="23" stroke="currentColor" stroke-width="2.5"/>' +
+      '<line x1="' + x(mean) + '" x2="' + x(mean) + '" y1="3" y2="23" stroke="var(--series-2)" stroke-width="2.5"/></svg>';
+  }
 
   // ---------- Tableaux ----------
   function table(el, cols, rows, opts) {
     opts = opts || {};
+    var caption = el.querySelector("caption");
     var head = "<thead><tr>" + cols.map(function (c, k) {
-      var cls = c.num ? ' class="num"' : "";
-      return opts.sortable ? "<th" + cls + ' aria-sort="none" data-k="' + k + '"><button type="button">' + c.label + "</button></th>" : "<th" + cls + ">" + c.label + "</th>";
+      var cls = c.n ? ' class="n"' : "";
+      return opts.sortable
+        ? "<th" + cls + ' scope="col" aria-sort="none" data-k="' + k + '"><button type="button">' + c.label + "</button></th>"
+        : "<th" + cls + ' scope="col">' + c.label + "</th>";
     }).join("") + "</tr></thead>";
     function body(list) {
       return "<tbody>" + list.map(function (row) {
         return "<tr" + (opts.rowClass ? ' class="' + opts.rowClass(row) + '"' : "") + ">" + cols.map(function (c) {
-          return "<td" + (c.num ? ' class="num"' : c.wrap ? ' class="wrap-cell"' : "") + ">" + c.fmt(row) + "</td>";
+          return "<td" + (c.n ? ' class="n"' : c.wrap ? ' class="wrap-cell"' : "") + ">" + c.fmt(row) + "</td>";
         }).join("") + "</tr>";
       }).join("") + "</tbody>";
     }
-    el.innerHTML = head + body(rows);
+    el.innerHTML = (caption ? caption.outerHTML : "") + head + body(rows);
     if (!opts.sortable) return;
     el.querySelectorAll("th").forEach(function (th) {
       th.querySelector("button").addEventListener("click", function () {
-        var k = +th.dataset.k, c = cols[k];
+        var c = cols[+th.dataset.k];
         var dir = th.getAttribute("aria-sort") === "descending" ? "ascending" : "descending";
         el.querySelectorAll("th").forEach(function (o) { o.setAttribute("aria-sort", "none"); });
         th.setAttribute("aria-sort", dir);
         var sorted = rows.slice().sort(function (a, b) {
           var x = c.key(a), y = c.key(b);
-          if (x == null) return 1; if (y == null) return -1;
-          var res = typeof x === "string" ? x.localeCompare(y, "fr") : x - y;
-          return dir === "ascending" ? res : -res;
+          if (x == null) return 1;
+          if (y == null) return -1;
+          var r = typeof x === "string" ? x.localeCompare(y, "fr") : x - y;
+          return dir === "ascending" ? r : -r;
         });
         el.querySelector("tbody").outerHTML = body(sorted);
       });
     });
   }
 
-  var providers = S.providers;
-  var byPpg = providers.filter(function (x) { return x.price_per_gb != null; }).slice().sort(function (a, b) { return a.price_per_gb - b.price_per_gb; });
-  var cheapest = (S.insights.filter(function (i) { return i.id === "cheapest_provider"; })[0] || {}).values;
-  var topNames = cheapest ? cheapest.top.map(function (t) { return t.provider; }) : byPpg.slice(0, 3).map(function (x) { return x.provider; });
-  var rankOf = function (name) { return topNames.indexOf(name); };
+  // ---------- Vue : indicateurs recalculés par le moteur (identique à Python, vérifié par les tests) ----------
+  var state = { rows: ALL };
+  var current = null, byPpg = [], podium = [];
 
-  table($("providers-table"), [
-    { label: "Fournisseur", key: function (x) { return x.provider; }, fmt: function (x) { var k = rankOf(x.provider); return (k >= 0 ? '<span class="rank" title="Top ' + topNames.length + ' prix au Go">' + (k + 1) + "</span>" : "") + esc(x.provider); } },
-    { label: "Offres", num: true, key: function (x) { return x.offers; }, fmt: function (x) { return num(x.offers); } },
-    { label: "Part", num: true, key: function (x) { return x.share; }, fmt: function (x) { return pct(x.share, 1); } },
-    { label: "Prix moyen", num: true, key: function (x) { return x.mean_price; }, fmt: function (x) { return eur(x.mean_price); } },
-    { label: "Prix min", num: true, key: function (x) { return x.min_price; }, fmt: function (x) { return eur(x.min_price); } },
-    { label: "Data moy.", num: true, key: function (x) { return x.mean_data_gb; }, fmt: function (x) { return gb(x.mean_data_gb, 1); } },
-    { label: "Illimités", num: true, key: function (x) { return x.unlimited; }, fmt: function (x) { return num(x.unlimited); } },
-    { label: "€ / Go", num: true, key: function (x) { return x.price_per_gb; }, fmt: function (x) { return eur(x.price_per_gb, 3); } },
-    { label: "Indice prix", num: true, key: function (x) { return x.price_index; }, fmt: function (x) { return num(x.price_index, 1); } },
-    { label: "5G", num: true, key: function (x) { return x.share_5g; }, fmt: function (x) { return pct(x.share_5g); } },
-    { label: "Recharge", num: true, key: function (x) { return x.share_top_up; }, fmt: function (x) { return pct(x.share_top_up); } },
-    { label: "Destinations", num: true, key: function (x) { return x.destinations; }, fmt: function (x) { return num(x.destinations); } }
-  ], providers, { sortable: true, rowClass: function (x) { return rankOf(x.provider) >= 0 ? "top3" : ""; } });
+  var genText = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" }).format(new Date(S.meta.generated_at));
 
-  $("ppg-provider-sub").textContent = cheapest && cheapest.tied
-    ? "Les " + topNames.length + " premiers (" + topNames.join(", ") + ") sont quasiment à égalité."
-    : "Classement du moins cher au plus cher.";
+  function renderStatic() {
+    var Q = S.anomalies, level = Q.errors ? "crit" : Q.warnings ? "warn" : "ok";
+    $("hero-date").textContent = "Mis à jour le " + genText + " (heure de Paris)";
+    var q = $("hero-quality");
+    q.className = "chip" + (level === "ok" ? "" : " " + level);
+    q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (level === "ok"
+      ? "Données vérifiées · aucune anomalie"
+      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements"));
+    $("footer-gen").innerHTML = "Dernière génération : <b>" + esc(genText) + "</b> (heure de Paris), à partir de " + num(S.meta.files_count) + " " +
+      plural(S.meta.files_count, "fichier", "fichiers") + " fournisseurs.";
+    var fills = { threshold: eur(S.headline.expensive.threshold, 0), "mean-gb": gb(S.headline.data.mean_gb), "median-gb": gb(S.headline.data.median_gb, 0) };
+    document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
+    renderInsights();
+    renderQuality();
+  }
 
-  var tiers = P.by_data_tier;
-  table($("table-ppg-tier"), [
-    { label: "Volume", fmt: function (x) { return gb(x.data_gb, 0); } },
-    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
-    { label: "Prix moyen", num: true, fmt: function (x) { return eur(x.mean_price); } },
-    { label: "€ / Go", num: true, fmt: function (x) { return eur(x.price_per_gb); } }
-  ], tiers);
+  function glass(ic, label, value, sub, micro) {
+    return '<div class="glass"><div class="glass-top"><span class="ico">' + icon(ic) + "</span>" + label + '</div><div class="glass-value">' + value +
+      '</div><div class="glass-sub">' + sub + '</div><div class="micro">' + micro + "</div></div>";
+  }
+  function renderHero(V) {
+    var H = V.headline, C = V.coverage, np = V.providers.length;
+    $("hero-sub").textContent = num(H.total_offers) + " offres de " + num(np) + " " + plural(np, "fournisseur", "fournisseurs") + ", couvrant " +
+      num(C.countries_count) + " pays et " + num(C.regions_count) + " " + plural(C.regions_count, "zone régionale", "zones régionales") + ".";
+    var hist = V.pricing.histogram.bins.map(function (b) { return b.offers; });
+    var tiers = V.distributions.data_tiers.filter(function (t) { return t.label !== "Illimité"; }).map(function (t) { return t.offers; });
+    $("hero-kpis").innerHTML = [
+      glass("sim", "Cartes eSIM au catalogue", counter(H.total_offers, "int"), "offres valides · <b>" + num(np) + "</b> fournisseurs",
+        sparkBars(V.providers.map(function (p) { return p.offers; }))),
+      glass("euro", "Prix moyen", counter(H.price.mean, "eur"), "médiane <b>" + eur(H.price.median) + "</b> · répartition des prix", sparkBars(hist)),
+      glass("data", "Data moyenne par carte", counter(H.data.mean_gb, "gb"), "médiane <b>" + gb(H.data.median_gb, 0) + "</b> · hors <b>" +
+        num(H.data.unlimited_count) + "</b> illimités", sparkBars(tiers))
+    ].join("");
+  }
 
-  var D = S.distributions;
-  $("tiers-sub").innerHTML = '<span class="legend" style="margin:0"><span><span class="swatch" style="background:var(--series-1)"></span>Volume limité</span>' +
-    '<span><span class="swatch" style="background:var(--series-2)"></span>Illimité : ' + num(d.unlimited_count) + " offres, " + pct(d.unlimited_share) + " du catalogue</span></span>";
-  table($("table-tiers"), [
-    { label: "Volume", fmt: function (x) { return esc(x.label); } },
-    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } }
-  ], D.data_tiers);
+  function kpi(ic, label, value, sub, micro, tag) {
+    return '<article class="card kpi"><div class="kpi-top"><span class="kpi-ico">' + icon(ic) + "</span>" + label + (tag ? '<span class="tag">' + tag + "</span>" : "") +
+      '</div><div class="kpi-value">' + value + '</div><div class="kpi-sub">' + sub + '</div><div class="micro">' + (micro || "") + "</div></article>";
+  }
+  function ties(ext) {
+    if (!ext) return "—";
+    if (ext.count === 1) return esc(ext.products[0].provider) + " · " + esc(ext.products[0].product_name);
+    return num(ext.count) + " ex æquo : " + ext.by_provider.map(function (x) { return esc(x.provider) + (x.count > 1 ? " (×" + x.count + ")" : ""); }).join(", ");
+  }
+  function renderKpis(V) {
+    var H = V.headline, P = V.pricing, D = V.distributions, e = H.expensive, r = H.price_range;
+    var net = {}, top = {};
+    D.network.forEach(function (x) { net[x.value] = x; });
+    D.top_up.forEach(function (x) { top[x.value] = x; });
+    var s5 = net["5G"] ? net["5G"].share : 0, s4 = net["4G"] ? net["4G"].share : 0, sTop = top.oui ? top.oui.share : 0;
+    var tierPpg = P.by_data_tier.map(function (t) { return t.price_per_gb; });
+    var l4l = D.network_like_for_like_5g_vs_4g, l4lTop = D.top_up_like_for_like_yes_vs_no;
+    var expShare = e.count ? e.unlimited_count / e.count : 0;
+    $("kpis").innerHTML = [
+      kpi("tag", "Produits à plus de " + eur(e.threshold, 0), counter(e.count, "int"),
+        "prix <b>strictement supérieur</b> à " + eur(e.threshold, 0) + " · dont <b>" + num(e.unlimited_count) + "</b> illimités",
+        e.count ? progress(expShare, "var(--series-2)") + '<div class="micro-legend"><span>Part d\'illimités</span><span>' + pct(expShare) + "</span></div>" : ""),
+      kpi("range", "Fourchette de prix", eur(r.min && r.min.price) + " <small>→</small> " + eur(r.max && r.max.price),
+        "<b>Min</b> : " + ties(r.min) + "<br><b>Max</b> : " + ties(r.max),
+        r.min ? rangeStrip(r.min.price, H.price.median, H.price.mean, r.max.price) +
+          '<div class="micro-legend"><span><span class="swatch" style="background:var(--series-1)"></span>médiane ' + eur(H.price.median) +
+          '</span><span><span class="swatch" style="background:var(--series-2)"></span>moyenne ' + eur(H.price.mean) + "</span></div>" : ""),
+      kpi("gauge", "Prix moyen au Go", counter(P.price_per_gb, "eur") + " <small>/ Go</small>",
+        "médiane des forfaits : <b>" + eur(P.price_per_gb_median_of_ratios) + " / Go</b>",
+        tierPpg.length > 1 ? sparkLine(tierPpg) + '<div class="micro-legend"><span>' + gb(P.by_data_tier[0].data_gb, 0) + " : " + eur(tierPpg[0]) + "/Go</span><span>" +
+          gb(P.by_data_tier[tierPpg.length - 1].data_gb, 0) + " : " + eur(tierPpg[tierPpg.length - 1]) + "/Go</span></div>" : "", "Bonus"),
+      kpi("infinity", "Forfaits illimités", counter(H.data.unlimited_count, "int"),
+        pct(H.data.unlimited_share) + " du catalogue · <b>" + eur(H.price.mean_unlimited) + "</b> en moyenne",
+        progress(H.data.unlimited_share, "var(--series-2)") + '<div class="micro-legend"><span>Part du catalogue</span><span>' + pct(H.data.unlimited_share, 1) + "</span></div>", "Bonus"),
+      kpi("signal", "Offres 5G", counter(s5, "pct"),
+        num(net["5G"] ? net["5G"].offers : 0) + " offres · <b>" + (l4l == null ? "—" : signedPct(l4l - 1, 1)) + "</b> à offre égale vs 4G",
+        progress(s5) + '<div class="micro-legend"><span>4G ' + pct(s4) + "</span><span>5G " + pct(s5) + "</span></div>", "Bonus"),
+      kpi("refresh", "Recharge possible", counter(sTop, "pct"),
+        num(top.oui ? top.oui.offers : 0) + " offres · <b>" + (l4lTop == null ? "—" : signedPct(l4lTop - 1, 1)) + "</b> à offre égale",
+        progress(sTop) + '<div class="micro-legend"><span>Rechargeables</span><span>' + pct(sTop, 1) + "</span></div>", "Bonus")
+    ].join("");
+    $("ppg-explain").innerHTML = "<b>Pourquoi deux prix au Go ?</b> " + eur(P.price_per_gb) + "/Go divise le total des prix par le total des Go : c'est ce que coûte réellement un Go sur le catalogue. " +
+      "La médiane des forfaits (" + eur(P.price_per_gb_median_of_ratios) + "/Go) est plus élevée, car les petits forfaits, chers au Go, y comptent autant que les gros.";
+  }
 
-  var validityPrice = {};
-  P.by_validity.forEach(function (v) { validityPrice[v.validity_days] = v.mean_price; });
-  table($("table-validity"), [
-    { label: "Durée", fmt: function (x) { return num(x.validity_days) + " jours"; } },
-    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
-    { label: "Part", num: true, fmt: function (x) { return pct(x.share, 1); } },
-    { label: "Prix moyen", num: true, fmt: function (x) { return eur(validityPrice[x.validity_days]); } }
-  ], D.validity);
-
-  // Barres de proportion 4G/5G et recharge
-  function split(el, title, items, labels, l4l, l4lText) {
-    var colors = ["var(--series-1)", "var(--series-2)"];
-    var known = items.filter(function (x) { return labels[x.value]; });
-    var segs = known.map(function (x, k) {
-      return '<span style="flex:' + x.offers + ";background:" + colors[k % 2] + '" title="' + esc(labels[x.value]) + " : " + pct(x.share, 1) + '">' + pct(x.share) + "</span>";
+  var INSIGHT_ICONS = { volume_discount: "trend", power_law: "data", "5g_premium": "signal", cheapest_provider: "trophy", expensive_mix: "tag" };
+  function renderInsights() {
+    var hero = S.insights.filter(function (i) { return i.highlight; })[0];
+    var html = "";
+    if (hero) {
+      var big = hero.values && hero.values.count != null ? num(hero.values.count) : "";
+      html += '<article class="insight hero-insight"><div class="big" aria-hidden="true">' + big + '</div><div><div class="kicker">Constat clé</div><h3>' +
+        esc(hero.title) + "</h3></div><p>" + esc(hero.text) + "</p></article>";
+    }
+    html += S.insights.filter(function (i) { return !i.highlight; }).map(function (i) {
+      return '<article class="insight"><div class="ico">' + icon(INSIGHT_ICONS[i.id] || "info") + "</div><h3>" + esc(i.title) + "</h3><p>" + esc(i.text) + "</p></article>";
     }).join("");
-    var legend = known.map(function (x, k) {
-      return '<div><span class="swatch" style="background:' + colors[k % 2] + '"></span>' + esc(labels[x.value]) + " : <b>" + num(x.offers) + "</b> offres · prix moyen " + eur(x.mean_price) + "</div>";
-    }).join("");
+    $("insights").innerHTML = html;
+  }
+
+  function renderProviders(V) {
+    byPpg = V.providers.filter(function (p) { return p.price_per_gb != null; }).sort(function (a, b) { return a.price_per_gb - b.price_per_gb; });
+    podium = byPpg.slice(0, 3).map(function (p) { return p.provider; });
+    var tied = byPpg.length >= 3 && byPpg[2].price_per_gb / byPpg[0].price_per_gb - 1 < 0.01;
+    $("ppg-provider-sub").textContent = !podium.length ? "Aucun forfait à volume limité dans la sélection."
+      : tied ? "Podium : " + podium.join(", ") + ", quasiment à égalité (moins de 1 % d'écart)." : "Du moins cher au plus cher au Go.";
+    var rank = function (name) { return podium.indexOf(name); };
+    var maxOffers = Math.max.apply(null, V.providers.map(function (p) { return p.offers; }).concat([1]));
+    table($("providers-table"), [
+      { label: "Fournisseur", key: function (x) { return x.provider; }, fmt: function (x) { var k = rank(x.provider); return (k >= 0 ? '<span class="rank" title="Podium du prix au Go">' + (k + 1) + "</span>" : "") + esc(x.provider); } },
+      { label: "Offres", n: true, key: function (x) { return x.offers; }, fmt: function (x) { return '<span class="bar-cell"><i style="width:' + Math.round((x.offers / maxOffers) * 56) + 'px" aria-hidden="true"></i>' + num(x.offers) + "</span>"; } },
+      { label: "Part", n: true, key: function (x) { return x.share; }, fmt: function (x) { return pct(x.share, 1); } },
+      { label: "Prix moyen", n: true, key: function (x) { return x.mean_price; }, fmt: function (x) { return eur(x.mean_price); } },
+      { label: "Prix min", n: true, key: function (x) { return x.min_price; }, fmt: function (x) { return eur(x.min_price); } },
+      { label: "Data moy.", n: true, key: function (x) { return x.mean_data_gb; }, fmt: function (x) { return gb(x.mean_data_gb, 1); } },
+      { label: "Illimités", n: true, key: function (x) { return x.unlimited; }, fmt: function (x) { return num(x.unlimited); } },
+      { label: "€ / Go", n: true, key: function (x) { return x.price_per_gb; }, fmt: function (x) { return eur(x.price_per_gb, 3); } },
+      { label: "Indice prix", n: true, key: function (x) { return x.price_index; }, fmt: function (x) { return num(x.price_index, 1); } },
+      { label: "5G", n: true, key: function (x) { return x.share_5g; }, fmt: function (x) { return pct(x.share_5g); } },
+      { label: "Recharge", n: true, key: function (x) { return x.share_top_up; }, fmt: function (x) { return pct(x.share_top_up); } },
+      { label: "Destinations", n: true, key: function (x) { return x.destinations; }, fmt: function (x) { return num(x.destinations); } }
+    ], V.providers, { sortable: true, rowClass: function (x) { return rank(x.provider) >= 0 ? "podium" : ""; } });
+  }
+
+  function split(el, title, items, labels, note) {
+    var colors = ["var(--series-1)", "var(--series-2)"], order = Object.keys(labels);
+    var known = items.filter(function (x) { return labels[x.value]; }).sort(function (a, b) { return order.indexOf(a.value) - order.indexOf(b.value); });
     var other = items.filter(function (x) { return !labels[x.value]; });
-    el.innerHTML = "<h3 style='font-size:14px'>" + title + "</h3>" +
-      '<div class="split" role="img" aria-label="' + esc(title) + '">' + segs + "</div>" +
-      '<div class="split-legend">' + legend + "</div>" +
-      (other.length ? '<p class="kpi-note">Autres valeurs : ' + other.map(function (x) { return esc(x.value) + " (" + num(x.offers) + ")"; }).join(", ") + "</p>" : "") +
-      (l4l != null ? '<p class="callout">' + l4lText + "</p>" : "");
+    el.innerHTML = '<h3 style="font-size:14px">' + title + "</h3>" +
+      (known.length ? '<div class="split" role="img" aria-label="' + esc(title + " : " + known.map(function (x) { return labels[x.value] + " " + pct(x.share); }).join(", ")) + '">' +
+        known.map(function (x, k) { return '<span style="flex:' + x.offers + ";background:" + colors[k % 2] + '">' + pct(x.share) + "</span>"; }).join("") + "</div>" : '<p class="sub">Aucune offre.</p>') +
+      '<div class="split-legend">' + known.map(function (x, k) {
+        return '<div><span class="swatch" style="background:' + colors[k % 2] + '"></span>' + esc(labels[x.value]) + " : <b>" + num(x.offers) + "</b> offres · " + eur(x.mean_price) + " en moyenne</div>";
+      }).join("") + "</div>" +
+      (other.length ? '<p class="sub">Autres valeurs : ' + other.map(function (x) { return esc(x.value) + " (" + num(x.offers) + ")"; }).join(", ") + "</p>" : "") +
+      (note ? '<p class="callout">' + icon("scale") + "<span>" + note + "</span></p>" : "");
   }
-  var net = {}; D.network.forEach(function (x) { net[x.value] = x; });
-  var rawNet = net["5G"] && net["4G"] ? net["5G"].mean_price / net["4G"].mean_price - 1 : null;
-  split($("split-network"), "Réseau 4G / 5G", D.network, { "4G": "4G", "5G": "5G" }, D.network_like_for_like_5g_vs_4g,
-    "<b>5G vs 4G :</b> " + (rawNet != null ? (rawNet >= 0 ? "+" : "") + pct(rawNet) + " en moyenne brute, mais " : "") +
-    "<b>" + (D.network_like_for_like_5g_vs_4g >= 1 ? "+" : "") + pct(D.network_like_for_like_5g_vs_4g - 1, 1) + "</b> à volume et durée égaux. L'écart brut vient de la composition du catalogue (davantage de gros forfaits en 5G).");
-  split($("split-topup"), "Recharge possible", D.top_up, { "oui": "Rechargeable", "non": "Non rechargeable" }, D.top_up_like_for_like_yes_vs_no,
-    "<b>Surcoût de la recharge à offre égale :</b> " + (D.top_up_like_for_like_yes_vs_no >= 1 ? "+" : "") + pct(D.top_up_like_for_like_yes_vs_no - 1, 1) + ". L'option ne se paie pratiquement pas.");
+  function renderPricing(V) {
+    var P = V.pricing, D = V.distributions, H = V.headline;
+    table($("table-ppg-tier"), [
+      { label: "Volume", fmt: function (x) { return gb(x.data_gb, 0); } },
+      { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } },
+      { label: "Prix moyen", n: true, fmt: function (x) { return eur(x.mean_price); } },
+      { label: "€ / Go", n: true, fmt: function (x) { return eur(x.price_per_gb); } }
+    ], P.by_data_tier);
+    $("tiers-legend").innerHTML = '<span><span class="swatch" style="background:var(--series-1)"></span>Volume limité</span>' +
+      '<span><span class="swatch" style="background:var(--series-2)"></span>Illimité : ' + num(H.data.unlimited_count) + " offres (" + pct(H.data.unlimited_share) + ")</span>";
+    table($("table-tiers"), [
+      { label: "Volume", fmt: function (x) { return esc(x.label); } },
+      { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } }
+    ], D.data_tiers);
+    var vp = {};
+    P.by_validity.forEach(function (v) { vp[v.validity_days] = v.mean_price; });
+    table($("table-validity"), [
+      { label: "Durée", fmt: function (x) { return num(x.validity_days) + " jours"; } },
+      { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } },
+      { label: "Part", n: true, fmt: function (x) { return pct(x.share, 1); } },
+      { label: "Prix moyen", n: true, fmt: function (x) { return eur(vp[x.validity_days]); } }
+    ], D.validity);
+    var net = {};
+    D.network.forEach(function (x) { net[x.value] = x; });
+    var raw = net["5G"] && net["4G"] ? net["5G"].mean_price / net["4G"].mean_price - 1 : null;
+    var l4l = D.network_like_for_like_5g_vs_4g, l4lTop = D.top_up_like_for_like_yes_vs_no;
+    split($("split-network"), "Réseau 4G / 5G", D.network, { "4G": "4G", "5G": "5G" }, l4l == null ? "" :
+      "<b>5G vs 4G :</b> " + (raw == null ? "" : signedPct(raw) + " en moyenne brute, mais ") + "<b>" + signedPct(l4l - 1, 1) +
+      "</b> à volume et durée égaux. L'écart brut vient de la composition du catalogue (davantage de gros forfaits en 5G).");
+    split($("split-topup"), "Recharge possible", D.top_up, { oui: "Rechargeable", non: "Non rechargeable" }, l4lTop == null ? "" :
+      "<b>Surcoût de la recharge à offre égale :</b> " + signedPct(l4lTop - 1, 1) + ". L'option ne se paie pratiquement pas.");
+  }
 
-  // Destinations
-  var C = S.coverage;
-  $("coverage-lead").innerHTML = "<b>" + num(C.countries_count) + "</b> pays et <b>" + num(C.regions_count) + "</b> zones régionales (Europe, Asie, Amérique du Nord, Monde…), comptés séparément.";
-  var placeCols = [
-    { label: "Destination", fmt: function (x) { return esc(x.name) + ' <span class="kpi-note">' + esc(x.code) + "</span>"; } },
-    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
-    { label: "Fournisseurs", num: true, fmt: function (x) { return num(x.providers); } },
-    { label: "Dès", num: true, fmt: function (x) { return eur(x.min_price); } }
-  ];
-  table($("table-countries"), placeCols, C.top_countries);
-  table($("table-regions"), placeCols, C.regions);
+  function renderDestinations(V) {
+    var C = V.coverage;
+    $("coverage-lead").innerHTML = "<b>" + num(C.countries_count) + "</b> pays et <b>" + num(C.regions_count) + "</b> " +
+      plural(C.regions_count, "zone régionale", "zones régionales") + " (Europe, Asie, Amérique du Nord, Monde), comptés séparément.";
+    var cols = [
+      { label: "Destination", fmt: function (x) { return esc(x.name) + ' <span class="zero">' + esc(x.code) + "</span>"; } },
+      { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } },
+      { label: "Fournisseurs", n: true, fmt: function (x) { return num(x.providers); } },
+      { label: "Dès", n: true, fmt: function (x) { return eur(x.min_price); } }
+    ];
+    table($("table-countries"), cols, C.top_countries);
+    table($("table-regions"), cols, C.regions);
+  }
 
-  // ---------- Qualité des données ----------
-  var A = S.anomalies;
-  var icon = {
-    ok: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6 10.5l2.6 2.5L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    warn: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2l9 16H1z" fill="currentColor"/><path d="M10 8v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="15" r="1.2" fill="#fff"/></svg>',
-    crit: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'
-  };
-  var level = A.errors ? "crit" : A.warnings ? "warn" : "ok";
-  var statusTitle = level === "ok"
-    ? "Aucune anomalie détectée"
-    : num(A.errors) + " " + plural(A.errors, "erreur", "erreurs") + " · " + num(A.warnings) + " " + plural(A.warnings, "avertissement", "avertissements");
-  $("quality-status").innerHTML = '<div class="status ' + level + '">' + icon[level] + "<div><strong>" + statusTitle + "</strong><span>" +
-    num(A.rows_read) + " lignes lues, " + (A.rows_excluded ? num(A.rows_excluded) + " " + plural(A.rows_excluded, "exclue", "exclues") : "aucune exclue") + " des calculs, " +
-    num(A.checks.length) + " contrôles appliqués à chaque génération.</span></div></div>";
-
-  var sevLabel = function (s) { return '<span class="sev ' + s + '">' + (s === "erreur" ? "Erreur · exclue" : "Avertissement") + "</span>"; };
-  table($("table-checks"), [
-    { label: "Contrôle", fmt: function (x) { return esc(x.label); } },
-    { label: "Niveau", fmt: function (x) { return sevLabel(x.severity); } },
-    { label: "Détectées", num: true, fmt: function (x) { return x.count ? '<span class="count-pos">' + num(x.count) + "</span>" : '<span class="ok-mark" aria-label="aucune">✓</span> <span class="count-0">0</span>'; } }
-  ], A.checks.slice().sort(function (a, b) { return b.count - a.count; }));
-
-  table($("table-files"), [
-    { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },
-    { label: "Lignes", num: true, fmt: function (x) { return num(x.rows); } },
-    { label: "Statut", fmt: function (x) { return x.status === "ok" ? '<span class="ok-mark">✓</span> lu' : '<span class="sev erreur">✕ ' + esc(x.status) + "</span>"; } }
-  ], A.files);
-
-  if (A.details.length) {
-    var MAX = 300;
-    $("details-card").hidden = false;
-    $("details-sub").textContent = A.details.length > MAX ? "Les " + num(MAX) + " premières sur " + num(A.details.length) + " (liste complète dans stats.json)." : num(A.details.length) + " " + plural(A.details.length, "anomalie", "anomalies") + ".";
-    table($("table-details"), [
-      { label: "Niveau", fmt: function (x) { return sevLabel(x.severity); } },
+  function renderQuality() {
+    var Q = S.anomalies, level = Q.errors ? "crit" : Q.warnings ? "warn" : "ok";
+    var title = level === "ok" ? "Aucune anomalie détectée"
+      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements");
+    $("quality-status").innerHTML = '<div class="status ' + level + '" role="status">' + icon(level === "ok" ? "check" : level === "warn" ? "alert" : "x") +
+      "<div><strong>" + title + "</strong><span>" + num(Q.rows_read) + " lignes lues, " +
+      (Q.rows_excluded ? num(Q.rows_excluded) + " " + plural(Q.rows_excluded, "exclue", "exclues") : "aucune exclue") + " des calculs, " +
+      num(Q.checks.length) + " contrôles appliqués à chaque génération.</span></div></div>";
+    var sev = function (s) { return '<span class="sev ' + s + '">' + (s === "erreur" ? "Erreur · exclue" : "Avertissement") + "</span>"; };
+    table($("table-checks"), [
+      { label: "Contrôle", fmt: function (x) { return esc(x.label); } },
+      { label: "Niveau", fmt: function (x) { return sev(x.severity); } },
+      { label: "Détectées", n: true, fmt: function (x) { return x.count ? '<span class="pos">' + num(x.count) + "</span>" : '<span class="ok-mark" aria-hidden="true">✓</span> <span class="zero">0</span>'; } }
+    ], Q.checks.slice().sort(function (a, b) { return b.count - a.count; }));
+    table($("table-files"), [
       { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },
-      { label: "Ligne", num: true, fmt: function (x) { return x.line == null ? "—" : num(x.line); } },
-      { label: "SKU", fmt: function (x) { return esc(x.sku || "—"); } },
-      { label: "Détail", wrap: true, fmt: function (x) { return esc(x.message); } }
-    ], A.details.slice(0, MAX));
+      { label: "Lignes", n: true, fmt: function (x) { return num(x.rows); } },
+      { label: "Statut", fmt: function (x) { return x.status === "ok" ? '<span class="ok-mark" aria-hidden="true">✓</span> lu' : '<span class="sev erreur">' + esc(x.status) + "</span>"; } }
+    ], Q.files);
+    if (Q.details.length) {
+      var MAX = 300;
+      $("details-card").hidden = false;
+      $("details-sub").textContent = Q.details.length > MAX ? "Les " + num(MAX) + " premières sur " + num(Q.details.length) + " (liste complète dans stats.json)."
+        : num(Q.details.length) + " " + plural(Q.details.length, "anomalie", "anomalies") + ", triées par fichier puis par ligne.";
+      table($("table-details"), [
+        { label: "Niveau", fmt: function (x) { return sev(x.severity); } },
+        { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },
+        { label: "Ligne", n: true, fmt: function (x) { return x.line == null ? "—" : num(x.line); } },
+        { label: "SKU", fmt: function (x) { return esc(x.sku || "—"); } },
+        { label: "Détail", wrap: true, fmt: function (x) { return esc(x.message); } }
+      ], Q.details.slice(0, MAX));
+    }
   }
 
-  // ---------- Thème ----------
-  var btn = $("theme-btn");
-  var modes = ["auto", "light", "dark"], names = { auto: "Thème : auto", light: "Thème : clair", dark: "Thème : sombre" };
-  function currentMode() { return document.documentElement.getAttribute("data-theme") || "auto"; }
-  function setMode(m) {
-    if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m);
-    try { if (m === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", m); } catch (err) {}
-    btn.textContent = names[m];
-    drawCharts();
+  // ---------- Graphiques Chart.js ----------
+  var charts = {};
+  function chart(id, config) {
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart($(id), config);
   }
-  btn.textContent = names[currentMode()];
-  btn.addEventListener("click", function () { setMode(modes[(modes.indexOf(currentMode()) + 1) % modes.length]); });
-  if (window.matchMedia) {
-    var mq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (mq.addEventListener) mq.addEventListener("change", function () { if (currentMode() === "auto") drawCharts(); });
+  function tooltipStyle() {
+    return { backgroundColor: "#0b1b3a", titleColor: "#ffffff", bodyColor: "#dbe6f7", borderColor: "rgba(255,255,255,.14)", borderWidth: 1,
+      padding: 10, cornerRadius: 10, displayColors: false, titleFont: { weight: "600" } };
   }
-
-  // ---------- Graphiques (Chart.js) ----------
-  var charts = [];
-  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
   function bar(id, labels, values, o) {
     o = o || {};
     var horizontal = !!o.horizontal;
-    var canvas = $(id);
-    var box = canvas.parentNode;
-    box.style.height = (horizontal ? Math.max(180, labels.length * 26 + 40) : 240) + "px";
-    var valueAxis = {
-      beginAtZero: true,
-      grid: { color: css("--grid"), drawTicks: false },
-      border: { display: false },
-      ticks: { color: css("--muted"), padding: 6, callback: function (v) { return o.fmt ? o.fmt(v, true) : num(v); } }
-    };
-    var catAxis = { grid: { display: false }, border: { color: css("--axis") }, ticks: { color: css("--ink-2"), autoSkip: false } };
-    charts.push(new Chart(canvas, {
+    $(id).parentNode.style.height = (horizontal ? Math.max(160, labels.length * 26 + 44) : 240) + "px";
+    var valueAxis = { beginAtZero: true, grid: { color: css("--grid"), drawTicks: false }, border: { display: false },
+      ticks: { color: css("--muted"), padding: 8, callback: function (v) { return o.fmt ? o.fmt(v, true) : num(v); } } };
+    var catAxis = { grid: { display: false }, border: { color: css("--axis") }, ticks: { color: css("--ink-2"), autoSkip: false, font: { weight: "500" } } };
+    chart(id, {
       type: "bar",
-      data: { labels: labels, datasets: [{
-        data: values,
-        backgroundColor: o.colors || css("--series-1"),
-        borderRadius: 4,
-        borderSkipped: "start",
-        maxBarThickness: horizontal ? 18 : 48,
-        categoryPercentage: 0.8,
-        barPercentage: 0.9
-      }] },
+      data: { labels: labels, datasets: [{ data: values, backgroundColor: o.colors || css("--series-1"), borderRadius: 4, borderSkipped: "start",
+        maxBarThickness: horizontal ? 16 : 44, categoryPercentage: 0.82, barPercentage: 0.9 }] },
       options: {
-        indexAxis: horizontal ? "y" : "x",
-        maintainAspectRatio: false,
-        animation: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: css("--header-bg"), titleColor: "#fff", bodyColor: "#fff", padding: 10, cornerRadius: 8, displayColors: false,
-            callbacks: { label: function (c) { return o.fmt ? o.fmt(c.raw) : num(c.raw) + " offres"; } }
-          }
-        },
+        indexAxis: horizontal ? "y" : "x", maintainAspectRatio: false, animation: REDUCED ? false : { duration: 450 },
+        plugins: { legend: { display: false }, tooltip: Object.assign(tooltipStyle(), { callbacks: { label: function (c) { return o.fmt ? o.fmt(c.raw) : num(c.raw) + " offres"; } } }) },
         scales: horizontal ? { x: valueAxis, y: catAxis } : { x: catAxis, y: valueAxis }
       }
-    }));
+    });
   }
-
-  function drawCharts() {
+  function drawCharts(V) {
     if (typeof Chart === "undefined") { document.body.classList.add("no-chart"); return; }
-    charts.forEach(function (c) { c.destroy(); });
-    charts = [];
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
-
-    bar("chart-providers", providers.map(function (x) { return x.provider; }), providers.map(function (x) { return x.offers; }), { horizontal: true });
-
-    var s1 = css("--series-1"), muted = css("--series-muted");
-    $("ppg-provider-legend").innerHTML = '<span><span class="swatch" style="background:var(--series-1)"></span>Top ' + topNames.length + " (moins chers au Go)</span>" +
-      '<span><span class="swatch" style="background:var(--series-muted)"></span>Autres fournisseurs</span>';
-    bar("chart-ppg-provider", byPpg.map(function (x) { return x.provider; }), byPpg.map(function (x) { return x.price_per_gb; }), {
-      horizontal: true,
-      colors: byPpg.map(function (x) { return rankOf(x.provider) >= 0 ? s1 : muted; }),
-      fmt: function (v, axis) { return axis ? eur(v, 1) : eur(v, 3) + " / Go"; }
-    });
-
-    bar("chart-ppg-tier", tiers.map(function (x) { return gb(x.data_gb, 0); }), tiers.map(function (x) { return x.price_per_gb; }), {
-      fmt: function (v, axis) { return axis ? eur(v, 0) : eur(v) + " / Go"; }
-    });
-    bar("chart-tiers", D.data_tiers.map(function (x) { return x.label; }), D.data_tiers.map(function (x) { return x.offers; }), {
-      colors: D.data_tiers.map(function (x) { return x.label === "Illimité" ? css("--series-2") : s1; })
-    });
-    bar("chart-validity", D.validity.map(function (x) { return num(x.validity_days) + " jours"; }), D.validity.map(function (x) { return x.offers; }));
-    bar("chart-countries", C.top_countries.map(function (x) { return x.name; }), C.top_countries.map(function (x) { return x.offers; }), { horizontal: true });
+    var s1 = css("--series-1"), s2 = css("--series-2"), muted = css("--series-muted");
+    bar("chart-providers", V.providers.map(function (p) { return p.provider; }), V.providers.map(function (p) { return p.offers; }), { horizontal: true });
+    $("ppg-provider-legend").innerHTML = podium.length ? '<span><span class="swatch" style="background:var(--series-1)"></span>Podium (moins chers au Go)</span>' +
+      '<span><span class="swatch" style="background:var(--series-muted)"></span>Autres fournisseurs</span>' : "";
+    bar("chart-ppg-provider", byPpg.map(function (p) { return p.provider; }), byPpg.map(function (p) { return p.price_per_gb; }), {
+      horizontal: true, colors: byPpg.map(function (p) { return podium.indexOf(p.provider) >= 0 ? s1 : muted; }),
+      fmt: function (v, axis) { return axis ? eur(v, 1) : eur(v, 3) + " / Go"; } });
+    var T = V.pricing.by_data_tier, D = V.distributions;
+    bar("chart-ppg-tier", T.map(function (t) { return gb(t.data_gb, 0); }), T.map(function (t) { return t.price_per_gb; }), {
+      fmt: function (v, axis) { return axis ? eur(v, 0) : eur(v) + " / Go"; } });
+    bar("chart-tiers", D.data_tiers.map(function (t) { return t.label; }), D.data_tiers.map(function (t) { return t.offers; }), {
+      colors: D.data_tiers.map(function (t) { return t.label === "Illimité" ? s2 : s1; }) });
+    bar("chart-validity", D.validity.map(function (v) { return num(v.validity_days) + " jours"; }), D.validity.map(function (v) { return v.offers; }));
+    bar("chart-countries", V.coverage.top_countries.map(function (c) { return c.name; }), V.coverage.top_countries.map(function (c) { return c.offers; }), { horizontal: true });
   }
 
-  if (document.readyState === "complete") drawCharts();
-  else window.addEventListener("load", drawCharts);
+  // ---------- Orchestration ----------
+  function render(animate) {
+    current = A.compute(state.rows, { isoNumeric: ISO });
+    renderHero(current);
+    renderKpis(current);
+    renderProviders(current);
+    renderPricing(current);
+    renderDestinations(current);
+    if (animate) { animateCounters($("hero-kpis")); animateCounters($("kpis")); }
+    if (window.Chart) drawCharts(current);
+  }
+
+  // ---------- Thème ----------
+  var buttons = document.querySelectorAll(".theme-switch button");
+  function mode() { return document.documentElement.getAttribute("data-theme") || "auto"; }
+  function syncButtons() { buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.mode === mode())); }); }
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var m = b.dataset.mode;
+      if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m);
+      try { if (m === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", m); } catch (e) {}
+      syncButtons();
+      if (window.Chart) drawCharts(current);
+    });
+  });
+  syncButtons();
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function () { if (mode() === "auto" && window.Chart) drawCharts(current); });
+  }
+
+  renderStatic();
+  render(true);
+  window.addEventListener("load", function () {
+    if (window.Chart) drawCharts(current); else document.body.classList.add("no-chart");
+    document.documentElement.dataset.ready = "1"; // repère utilisé par le test de rendu
+  });
 })();
 </script>
 </body>

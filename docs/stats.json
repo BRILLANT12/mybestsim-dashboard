@@ -1592,7 +1592,7 @@
       "id": "power_law",
       "highlight": false,
       "title": "Doubler le volume ne double pas le prix",
-      "text": "Le prix suit environ 6,38 € × Go^0,55 : quand le volume double, le prix n'est multiplié que par 1,47 (+47 %).",
+      "text": "Le prix suit une loi de puissance du volume, d'exposant 0,55 (ajustement R² = 0,94) : quand le volume double, le prix n'est multiplié que par 1,47 (+47 %).",
       "values": {
         "coef": 6.3831,
         "exponent": 0.5524,
@@ -1640,7 +1640,7 @@
     }
   ],
   "meta": {
-    "generated_at": "2026-10-16T19:16:04+02:00",
+    "generated_at": "2026-10-16T19:31:24+02:00",
     "files_count": 18,
     "providers_count": 18
   },
