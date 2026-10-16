@@ -70,6 +70,20 @@ Ils sont tous détaillés dans la section **Méthodologie** du dashboard. En bre
 - **Validation** : une erreur exclut la ligne, un avertissement la garde mais la signale.
 - **Python reste la source de vérité** : le moteur JS des filtres est testé contre Python (mêmes chiffres, mêmes tris).
 
+## Automatisation (GitHub Actions)
+
+Le workflow [`.github/workflows/dashboard.yml`](.github/workflows/dashboard.yml) teste, régénère et publie le site sur GitHub Pages :
+
+- **à chaque push qui modifie `data/`** (nouvel import fournisseur) ;
+- **chaque jour** à 05:17 UTC, soit 07:17 à Paris en été (simulation de l'import quotidien) ;
+- **à la demande** (onglet *Actions* > *Tableau de bord* > *Run workflow*).
+
+Étapes : Python 3.12, Node 22 et Chrome vérifiés, puis **tests** (obligatoires : en CI, un test Node ou Chrome qui ne peut pas s'exécuter échoue au lieu d'être ignoré), **génération**, puis **publication**. Une étape en échec bloque la publication. Les actions sont figées sur l'empreinte de leur commit, et seule l'étape de publication reçoit des droits d'écriture (Pages).
+
+Mise en place, une seule fois : dans *Settings* > *Pages*, choisir **Source : GitHub Actions**. Le site est publié à l'adresse `https://<compte>.github.io/<dépôt>/`.
+
+Le dossier `docs/` versionné est un instantané, pratique pour relire le résultat sans rien lancer. La version en ligne est toujours celle que le workflow vient de régénérer.
+
 ## Vie privée et sécurité
 
 Aucun cookie, aucun traceur, aucun tiers. La police, les librairies et le fond de carte sont hébergés dans `docs/assets/`, et leurs empreintes sont vérifiées. Toutes les pages ont une **CSP stricte** (aucun script en ligne, aucune ressource externe). Seule la préférence de thème est stockée dans le navigateur (clé `localStorage` `theme`), et seulement si le visiteur la choisit. Un test ouvre chaque page avec le réseau externe coupé et vérifie qu'aucun cookie n'est posé et qu'aucun domaine externe n'est contacté.
