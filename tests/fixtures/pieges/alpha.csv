@@ -1,0 +1,7 @@
+﻿sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up
+alpha-1,Alpha,eSIM Amérique du Nord 5 Go 7 jours,NA,Amérique du Nord,5,5 Go,7,10.00,EUR,4G,oui
+alpha-2,Alpha,eSIM Europe Illimité 30 jours,EU,Europe,,Illimité,30,120.50,EUR,5G,non
+alpha-3,Alpha,eSIM France 10 Go 15 jours,FR,France,10,10 Go,15,"12,50",EUR,4G,oui
+alpha-4,Alpha,eSIM Japon 1 Go 7 jours, JP ,Japon,1,1 Go,7,5.00,EUR,5G,non
+alpha-5,Alpha,eSIM Italie 5 Go 30 jours,IT,Italie,3,5 Go,30,9.00,EUR,4G,non
+alpha-6,Alpha,eSIM Maroc 3 Go 15 jours,MA,Maroc,3,3 Go,15,8.00,EUR,3G,yes

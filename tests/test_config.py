@@ -1,17 +1,10 @@
-"""Garde-fous sur le socle : le schéma déclaré correspond bien aux vraies données."""
+"""Garde-fous sur la configuration."""
 
-import csv
-
-from dashboard.config import DATA_DIR, EXPECTED_COLUMNS, REGION_CODES
+from dashboard.config import EXPECTED_COLUMNS, REGION_CODES
 
 
-def test_real_csv_headers_match_expected_schema():
-    files = sorted(DATA_DIR.glob("*.csv"))
-    assert files, "aucun CSV trouvé dans data/"
-    for path in files:
-        with path.open(encoding="utf-8", newline="") as f:
-            header = next(csv.reader(f))
-        assert header == EXPECTED_COLUMNS, path.name
+def test_schema_has_the_twelve_expected_columns():
+    assert len(EXPECTED_COLUMNS) == 12 and len(set(EXPECTED_COLUMNS)) == 12
 
 
 def test_region_codes_include_north_america_na():

@@ -1,0 +1,12 @@
+sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up
+beta-1,Beta,eSIM Espagne 1 Go 7 jours,ES,Espagne,1,1 Go,7,0,EUR,4G,oui
+beta-2,Beta,eSIM Espagne 3 Go 7 jours,ES,Espagne,3,3 Go,7,-3.00,EUR,4G,oui
+beta-3,Beta,eSIM Espagne 5 Go 7 jours,ES,Espagne,5,5 Go,7,,EUR,4G,oui
+beta-4,Beta,eSIM États-Unis 5 Go 7 jours,US,États-Unis,5,5 Go,7,9.99,USD,5G,oui
+alpha-1,Beta,eSIM Canada 5 Go 7 jours,CA,Canada,5,5 Go,7,11.00,EUR,4G,oui
+beta-5,Beta,eSIM Grèce 5 Go 7 jours,GR,,5,5 Go,7,10.00,EUR,4G,non
+beta-6,Beta,eSIM Grèce 10 Go 7 jours,GR,Grèce,,10 Go,7,15.00,EUR,4G,non
+beta-7,Beta,eSIM Grèce 20 Go 7 jours,GR,Grèce,20,20 Go,7,abc,EUR,4G,non
+beta-8,Beta,eSIM Grèce 50 Go 7 jours,GR,Grèce,50,50 Go,7.5,40.00,EUR,4G,non
+beta-9,Beta,eSIM Pérou 5 Go 15 jours,PE,Pérou,5,5 Go,15,14.00,EUR,5G,oui
+beta-10,Beta,eSIM Pérou 5 Go 15 jours,PE,Pérou,5,5 Go,15,14.00,EUR,5G,oui
