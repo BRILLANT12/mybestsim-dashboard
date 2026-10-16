@@ -44,6 +44,11 @@ def _products(rows: pd.DataFrame) -> list[dict]:
     ]
 
 
+def tier_label(gb: float) -> str:
+    """Libellé d'un palier de data : « 5 Go », « 0,5 Go » (même règle côté JS)."""
+    return f"{gb:g}".replace(".", ",") + " Go"
+
+
 def segment(df: pd.DataFrame) -> pd.Series:
     """Segment « produits comparables » : même volume (ou illimité) et même durée."""
     tier = df["data_gb"].astype(object).where(~df["is_unlimited"], "illimité")
@@ -257,8 +262,8 @@ def _category_counts(df: pd.DataFrame, column: str) -> list[dict]:
 
 
 def distributions(df: pd.DataFrame) -> dict:
-    data_tier = df["data_gb"].map(lambda g: f"{g:g} Go").where(~df["is_unlimited"], "Illimité")
-    order = {f"{g:g} Go": g for g in sorted(limited(df)["data_gb"].unique())}
+    data_tier = df["data_gb"].map(tier_label).where(~df["is_unlimited"], "Illimité")
+    order = {tier_label(g): g for g in sorted(limited(df)["data_gb"].unique())}
     tier_counts = data_tier.value_counts()
     return {
         "network": _category_counts(df, "network"),

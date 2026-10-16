@@ -17,6 +17,8 @@ TIMEZONE = ZoneInfo("Europe/Paris")
 TEMPLATE = Path(__file__).parent / "templates" / "index.html"
 PLACEHOLDER = "__STATS_JSON__"
 OFFERS_PLACEHOLDER = "__OFFERS_JSON__"
+ENGINE = Path(__file__).parent / "templates" / "analytics.js"
+ENGINE_PLACEHOLDER = "/*__ANALYTICS_JS__*/"
 
 
 def anomaly_report(anomalies, files, total_rows, excluded_rows) -> dict:
@@ -69,11 +71,20 @@ def _embed(data: dict) -> str:
 def render_html(result: dict, offers: dict | None = None) -> str:
     """Intègre stats et offres dans la page : elle s'ouvre aussi en local (file://), sans serveur."""
     template = TEMPLATE.read_text(encoding="utf-8")
-    for marker in (PLACEHOLDER, OFFERS_PLACEHOLDER):
+    for marker in (PLACEHOLDER, OFFERS_PLACEHOLDER, ENGINE_PLACEHOLDER):
         if template.count(marker) != 1:
             raise ValueError(f"Le gabarit doit contenir {marker} exactement une fois.")
     offers = offers or {"fields": [], "currency": "EUR", "dict": {}, "rows": []}
-    return template.replace(PLACEHOLDER, _embed(result)).replace(OFFERS_PLACEHOLDER, _embed(offers))
+    engine = ENGINE.read_text(encoding="utf-8")
+    if "</script" in engine.lower():
+        raise ValueError("analytics.js ne doit pas contenir « </script » (il est intégré dans la page).")
+    # Moteur intégré dans la page (une seule page, pas de requête supplémentaire) ;
+    # le même fichier est exécuté par Node dans les tests.
+    return (
+        template.replace(ENGINE_PLACEHOLDER, engine)
+        .replace(PLACEHOLDER, _embed(result))
+        .replace(OFFERS_PLACEHOLDER, _embed(offers))
+    )
 
 
 def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tuple[Path, Path]:
