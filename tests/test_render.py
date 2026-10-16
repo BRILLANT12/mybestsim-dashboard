@@ -208,3 +208,19 @@ def test_comparator_shows_top_ten_then_all(tmp_path):
     probe = render(DATA_DIR_REAL, tmp_path, action=action)
     shown, expanded, aria = probe["extra"].split("|")
     assert shown == "10" and int(expanded) > 10 and aria == "true"
+
+
+# --- Menu des sections (ajustements finaux) ---------------------------------------
+
+
+@pytest.mark.parametrize("width", [1280, 1024, 500])
+def test_section_menu_is_never_cut(width, tmp_path):
+    # Chaque lien est entièrement visible, ou la rangée défile horizontalement pour l'atteindre.
+    action = ("var ul=document.querySelector('.secnav ul'),r=ul.getBoundingClientRect(),cut=0;"
+              "ul.querySelectorAll('a').forEach(function(a){var b=a.getBoundingClientRect();if(b.right>r.right+1&&getComputedStyle(ul).overflowX!=='auto')cut++;});"
+              "window.__extra=[ul.querySelectorAll('a').length,cut,ul.scrollWidth>ul.clientWidth].join('|');")
+    probe = render(FIXTURES / "calculs", tmp_path, width=width, action=action)
+    links, cut, scrolls = probe["extra"].split("|")
+    assert links == "9" and cut == "0" and probe["overflow"] is False
+    if width == 1280:
+        assert scrolls == "false"  # tout tient sur un écran de portable

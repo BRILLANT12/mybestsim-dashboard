@@ -175,10 +175,19 @@
   .brand-mark::after { content: ""; position: absolute; right: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px #0b1b3a; }
   .brand b { font-weight: 700; letter-spacing: -0.01em; }
   .brand span { color: #b4c6e6; font-weight: 500; }
-  .topnav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
-  .topnav a { color: #c3d2ec; text-decoration: none; font-size: 13.5px; font-weight: 500; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
-  .topnav a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
-  @media (max-width: 960px) { .topnav { display: none; } }
+  /* Navigation des sections : une rangée qui défile horizontalement si elle ne tient pas,
+     avec un fondu sur les bords pour signaler la suite (aucun lien n'est jamais coupé net). */
+  .secnav { position: relative; margin: 0 -16px; }
+  .secnav ul { display: flex; gap: 4px; margin: 0; padding: 2px 16px 8px; list-style: none; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%); }
+  .secnav ul::-webkit-scrollbar { display: none; }
+  .secnav li { scroll-snap-align: start; flex: none; }
+  .secnav a { display: block; color: #c3d2ec; text-decoration: none; font-size: 13.5px; font-weight: 500; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.10); background: rgba(255, 255, 255, 0.04); white-space: nowrap; }
+  .secnav a:hover { color: #fff; background: rgba(255, 255, 255, 0.10); }
+  .secnav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  @media (min-width: 720px) { .secnav { margin: 0 -28px; } .secnav ul { padding: 2px 28px 8px; } }
   .theme-switch { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); }
   .theme-switch button { all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; height: 26px; border-radius: 7px; color: #b4c6e6; }
   .theme-switch button:hover { color: #fff; }
@@ -186,7 +195,7 @@
   .theme-switch button:focus-visible { outline: 2px solid var(--accent); }
   .theme-switch .icon { width: 16px; height: 16px; }
 
-  .hero-head { padding: 28px 0 8px; max-width: 760px; }
+  .hero-head { padding: 20px 0 8px; max-width: 760px; }
   .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand-ink); margin: 0 0 10px; }
   .hero .eyebrow { color: #ffd84d; }
   .hero h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
@@ -462,7 +471,7 @@
   }
   @media print {
     .hero { background: #0b1b3a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .theme-switch, .topnav { display: none; }
+    .theme-switch, .secnav, .filterbar { display: none; }
     .card, .kpi { break-inside: avoid; box-shadow: none; }
   }
 </style>
@@ -505,23 +514,25 @@
         <span class="brand-mark" aria-hidden="true">MB</span>
         <span><b>MyBestSim</b> <span>Observatoire</span></span>
       </a>
-      <nav class="topnav" aria-label="Sections">
-        <a href="#indicateurs">Indicateurs</a>
-        <a href="#constats">Constats</a>
-        <a href="#fournisseurs">Fournisseurs</a>
-        <a href="#prix-data">Prix et data</a>
-        <a href="#analyses">Analyses</a>
-        <a href="#destinations">Destinations</a>
-        <a href="#comparateur">Comparateur</a>
-        <a href="#qualite">Qualité</a>
-        <a href="#methodologie">Méthodologie</a>
-      </nav>
       <div class="theme-switch" role="group" aria-label="Thème d'affichage">
         <button type="button" data-mode="auto" title="Thème automatique" aria-label="Thème automatique"><svg class="icon"><use href="#i-auto"/></svg></button>
         <button type="button" data-mode="light" title="Thème clair" aria-label="Thème clair"><svg class="icon"><use href="#i-sun"/></svg></button>
         <button type="button" data-mode="dark" title="Thème sombre" aria-label="Thème sombre"><svg class="icon"><use href="#i-moon"/></svg></button>
       </div>
     </div>
+    <nav class="secnav" aria-label="Sections de la page">
+      <ul>
+        <li><a href="#indicateurs">Indicateurs</a></li>
+        <li><a href="#constats">Constats</a></li>
+        <li><a href="#fournisseurs">Fournisseurs</a></li>
+        <li><a href="#prix-data">Prix et data</a></li>
+        <li><a href="#analyses">Analyses</a></li>
+        <li><a href="#destinations">Destinations</a></li>
+        <li><a href="#comparateur">Comparateur</a></li>
+        <li><a href="#qualite">Qualité</a></li>
+        <li><a href="#methodologie">Méthodologie</a></li>
+      </ul>
+    </nav>
     <div class="hero-head">
       <p class="eyebrow">Outil interne · catalogue fournisseurs</p>
       <h1>Toutes les offres eSIM du catalogue, <em>en un coup d'œil</em></h1>
