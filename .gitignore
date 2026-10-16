@@ -6,3 +6,6 @@ __pycache__/
 
 # Système
 .DS_Store
+
+# Captures de vérification (relecture locale)
+captures/

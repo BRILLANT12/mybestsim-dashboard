@@ -47,6 +47,7 @@
     --brand: #0a6cdc;
     --brand-ink: #0a5fc4;
     --brand-soft: #e8f1fd;
+    --brand-fill: #0a6cdc;
     --accent: #ffcc00;
     --navy: #0b1b3a;
     --series-1: #0a6cdc;
@@ -80,6 +81,7 @@
       --brand: #3a8cf2;
       --brand-ink: #7cb4ff;
       --brand-soft: #12284a;
+      --brand-fill: #1f6fd6;
       --series-1: #3a8cf2;
       --series-2: #c48500;
       --series-muted: #2c3b58;
@@ -109,6 +111,7 @@
     --brand: #3a8cf2;
     --brand-ink: #7cb4ff;
     --brand-soft: #12284a;
+    --brand-fill: #1f6fd6;
     --series-1: #3a8cf2;
     --series-2: #c48500;
     --series-muted: #2c3b58;
@@ -171,13 +174,13 @@
     background: linear-gradient(140deg, #3a8cf2, #0a6cdc); box-shadow: 0 6px 16px -6px rgba(10, 108, 220, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
   .brand-mark::after { content: ""; position: absolute; right: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px #0b1b3a; }
   .brand b { font-weight: 700; letter-spacing: -0.01em; }
-  .brand span { color: #a9bde0; font-weight: 500; }
+  .brand span { color: #b4c6e6; font-weight: 500; }
   .topnav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
   .topnav a { color: #c3d2ec; text-decoration: none; font-size: 13.5px; font-weight: 500; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
   .topnav a:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
   @media (max-width: 960px) { .topnav { display: none; } }
   .theme-switch { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); }
-  .theme-switch button { all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; height: 26px; border-radius: 7px; color: #a9bde0; }
+  .theme-switch button { all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; height: 26px; border-radius: 7px; color: #b4c6e6; }
   .theme-switch button:hover { color: #fff; }
   .theme-switch button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.16); color: #fff; }
   .theme-switch button:focus-visible { outline: 2px solid var(--accent); }
@@ -206,7 +209,7 @@
   .glass-top .ico { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffd84d; }
   .glass-value { font-size: clamp(32px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 10px; font-variant-numeric: tabular-nums; }
   .glass-value small { font-size: 0.5em; font-weight: 600; color: #c3d2ec; letter-spacing: 0; }
-  .glass-sub { color: #a9bde0; font-size: 13px; margin-top: 2px; }
+  .glass-sub { color: #b4c6e6; font-size: 13px; margin-top: 2px; }
   .glass-sub b { color: #fff; font-weight: 600; }
   .glass .micro { margin-top: 14px; height: 36px; color: #7cc4ff; }
 
@@ -224,7 +227,7 @@
   .band-dark .section-head p { color: #c3d2ec; }
   .band-dark .eyebrow { color: #ffd84d; }
   .scope { font-size: 12.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
-  .band-dark .scope { color: #a9bde0; }
+  .band-dark .scope { color: #b4c6e6; }
 
   /* ---------- Cartes ---------- */
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); min-width: 0; }
@@ -310,6 +313,7 @@
   .bar-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
   .bar-cell i { display: block; height: 6px; border-radius: 3px; background: var(--series-1); opacity: 0.85; }
   .wrap-cell { white-space: normal; min-width: 240px; }
+  .wrap-sm { white-space: normal; min-width: 150px; }
   code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--card-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; }
 
   /* Qualité des données */
@@ -368,6 +372,31 @@
   .zones li .v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
   .zones h4 { margin: 14px 0 6px; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 
+  /* Comparateur */
+  .cmp-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 12px 16px; align-items: end; }
+  @media (max-width: 860px) { .cmp-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  .field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+  .field select { height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--card); color: var(--ink); font: inherit; font-size: 14px; font-weight: 500; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-2); height: 40px; }
+  .check input { width: 18px; height: 18px; accent-color: var(--brand); margin: 0; }
+  .cmp-summary { margin: 18px 0 12px; font-size: 14px; color: var(--ink-2); }
+  .cmp-summary b { color: var(--ink); }
+  .best { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 18px; align-items: center; padding: 16px 18px; margin-bottom: 14px; border-radius: var(--radius);
+    background: linear-gradient(100deg, var(--brand-soft), var(--card) 70%); border: 1px solid var(--brand); }
+  .best .medal { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: var(--navy); grid-row: span 2; }
+  .best .medal .icon { width: 22px; height: 22px; }
+  .best .k { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand-ink); }
+  .best .t { font-weight: 650; }
+  .best .t small { color: var(--muted); font-weight: 500; }
+  .best .p { grid-row: span 2; text-align: right; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .best .p small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+  @media (max-width: 560px) { .best { grid-template-columns: auto minmax(0, 1fr); } .best .p { grid-row: auto; grid-column: 1 / -1; text-align: left; } }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 650; white-space: nowrap; }
+  .badge.region { background: var(--warn-soft); color: var(--warn); }
+  .badge.country { background: var(--brand-soft); color: var(--brand-ink); }
+  .delta { color: var(--muted); font-size: 12.5px; }
+  tr.is-best td { background: var(--brand-soft); }
+
   /* Barre de filtres collante */
   .filterbar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--page) 88%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
@@ -383,8 +412,8 @@
     background: var(--card); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
   .btn:hover { border-color: var(--brand); }
   .btn[aria-expanded="true"] { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
-  .btn .count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; }
-  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn .count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--brand-fill); color: #fff; font-size: 11px; }
+  .btn.primary { background: var(--brand-fill); border-color: var(--brand-fill); color: #fff; }
   .btn.primary:hover { filter: brightness(1.08); }
   .btn.ghost { background: transparent; border-color: transparent; color: var(--brand-ink); }
   .btn.ghost:hover { background: var(--brand-soft); }
@@ -423,7 +452,7 @@
     .dd-panel { position: fixed; left: 12px; right: 12px; top: auto; width: auto; margin-top: 6px; }
   }
 
-  footer.foot { background: #0b1b3a; color: #a9bde0; font-size: 13px; padding: 28px 0 36px; }
+  footer.foot { background: #0b1b3a; color: #b4c6e6; font-size: 13px; padding: 28px 0 36px; }
   footer.foot p { margin: 4px 0; }
   footer.foot b { color: #fff; }
 
@@ -483,6 +512,7 @@
         <a href="#prix-data">Prix et data</a>
         <a href="#analyses">Analyses</a>
         <a href="#destinations">Destinations</a>
+        <a href="#comparateur">Comparateur</a>
         <a href="#qualite">Qualité</a>
         <a href="#methodologie">Méthodologie</a>
       </nav>
@@ -739,6 +769,32 @@
     </div>
   </section>
 
+  <section class="band band-alt" id="comparateur" aria-labelledby="h-comparateur">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Comparateur</p>
+          <h2 id="h-comparateur">Quelle est l'offre la moins chère ?</h2>
+          <p>Choisissez une destination et un volume : les offres sont classées de la moins chère à la plus chère, comme pour un voyageur.</p>
+        </div>
+        <span class="scope"><svg class="icon"><use href="#i-globe"/></svg>Sur tout le catalogue (indépendant des filtres)</span>
+      </div>
+      <div class="card">
+        <form class="cmp-form" id="cmp-form" onsubmit="return false">
+          <label class="field">Destination<select id="cmp-place"></select></label>
+          <label class="field">Volume de data<select id="cmp-volume"></select></label>
+          <label class="field">Durée<select id="cmp-validity"></select></label>
+          <label class="check"><input type="checkbox" id="cmp-regional" checked>Inclure les forfaits régionaux qui couvrent la destination</label>
+        </form>
+        <p class="cmp-summary" id="cmp-summary" role="status" aria-live="polite"></p>
+        <div id="cmp-best"></div>
+        <div class="table-wrap"><table id="cmp-table"><caption class="sr-only">Offres classées par prix</caption></table></div>
+        <p style="margin:12px 0 0"><button class="btn" type="button" id="cmp-more" hidden aria-controls="cmp-table"></button></p>
+        <p class="note" id="cmp-note"></p>
+      </div>
+    </div>
+  </section>
+
   <section class="band band-white" id="qualite" aria-labelledby="h-qualite">
     <div class="wrap">
       <div class="section-head">
@@ -819,6 +875,43 @@
             <li><b>SKU en double</b> : la première occurrence valide est gardée (fichiers par ordre alphabétique).</li>
             <li><b>Prix aberrant</b> : plus de 5 fois, ou moins d'un cinquième de, la médiane des offres comparables (même volume, même durée, 5 offres au moins). Un seuil global signalerait à tort tous les forfaits illimités.</li>
             <li>Un fichier vide, illisible ou incomplet est signalé et ignoré : il ne bloque jamais la génération.</li>
+          </ul>
+        </div>
+        <div class="card hypothesis">
+          <h3><svg class="icon"><use href="#i-globe"/></svg>Hypothèse : pays couverts par chaque zone</h3>
+          <p>Les fichiers indiquent qu'une offre couvre « Europe » ou « Asie », mais <b>pas la liste des pays concernés</b>. Le comparateur s'appuie donc sur une <b>hypothèse</b>, choisie de façon prudente : un pays n'est rattaché à une zone que s'il y est couvert sans ambiguïté chez la plupart des fournisseurs.</p>
+          <ul id="zone-hypothesis"></ul>
+          <ul>
+            <li><b>Turquie</b> : exclue de l'Europe (incluse chez certains fournisseurs seulement).</li>
+            <li><b>Moyen-Orient</b> (Émirats, Israël, Jordanie, Qatar, Arabie saoudite) : exclu de l'Asie, zone souvent vendue à part.</li>
+            <li><b>Mexique</b> inclus dans l'Amérique du Nord ; <b>République dominicaine</b> (Caraïbes) exclue.</li>
+          </ul>
+          <p style="margin-top:6px">Cette correspondance se modifie à un seul endroit (<code>dashboard/config.py</code>). Elle n'influence que le comparateur, jamais les autres chiffres.</p>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-trophy"/></svg>Comparateur</h3>
+          <ul>
+            <li>Offres de la destination et du volume choisis, triées par <b>prix croissant</b> ; à prix égal, la plus courte puis l'ordre alphabétique.</li>
+            <li>Option cochée par défaut : on ajoute les <b>forfaits régionaux</b> qui couvrent la destination (selon l'hypothèse ci-contre), signalés par un badge.</li>
+            <li>Indépendant des filtres : il interroge toujours tout le catalogue valide.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-filter"/></svg>Filtres</h3>
+          <ul>
+            <li>Les KPI, graphiques, tableaux, la carte et la heatmap sont <b>recalculés dans le navigateur</b> sur les offres filtrées, avec les mêmes règles que le calcul Python (un test automatique vérifie que les deux donnent exactement les mêmes chiffres).</li>
+            <li>Restent calculés sur l'ensemble du catalogue : les <b>constats</b>, la <b>qualité des données</b> et le <b>comparateur</b>.</li>
+            <li>Les filtres sont inscrits dans l'adresse de la page : une vue filtrée peut être partagée par lien.</li>
+            <li>L'export CSV reprend exactement le format des fichiers sources : il peut être redéposé dans <code>data/</code>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><svg class="icon"><use href="#i-trend"/></svg>Analyses</h3>
+          <ul>
+            <li><b>Échelles logarithmiques</b> pour le nuage de points : les prix et les volumes s'étalent de 1 à 50. Les points d'un même palier sont légèrement écartés horizontalement, toujours de la même façon, pour rester lisibles.</li>
+            <li><b>Tendance</b> : loi de puissance prix = a × volume<sup>b</sup>, ajustée sur les forfaits limités (régression sur les logarithmes). Si b &lt; 1, le prix augmente moins vite que le volume.</li>
+            <li><b>Heatmap</b> : échelle centrée sur 100 et symétrique (au moins ±5) pour ne pas grossir des écarts minimes ; moins de 5 offres = cellule en italique.</li>
+            <li><b>Podium</b> du prix au Go : réservé aux fournisseurs ayant au moins 10 forfaits limités dans la sélection.</li>
           </ul>
         </div>
         <div class="card">
@@ -929,6 +1022,14 @@
       '<line x1="' + x(mean) + '" x2="' + x(mean) + '" y1="3" y2="23" stroke="var(--series-2)" stroke-width="2.5"/></svg>';
   }
 
+  function luminance(hex) {
+    var n = parseInt(hex.slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function inkOn(hex) { // blanc ou marine : celui qui contraste le plus avec le fond (WCAG)
+    var l = luminance(hex), onWhite = 1.05 / (l + 0.05), onNavy = (l + 0.05) / (luminance("#0b1630") + 0.05);
+    return onWhite >= onNavy ? "#ffffff" : "#0b1630";
+  }
   // ---------- Tableaux ----------
   function table(el, cols, rows, opts) {
     opts = opts || {};
@@ -942,7 +1043,7 @@
     function body(list) {
       return "<tbody>" + list.map(function (row) {
         return "<tr" + (opts.rowClass ? ' class="' + opts.rowClass(row) + '"' : "") + ">" + cols.map(function (c) {
-          return "<td" + (c.n ? ' class="n"' : c.wrap ? ' class="wrap-cell"' : "") + ">" + c.fmt(row) + "</td>";
+          return "<td" + (c.n ? ' class="n"' : c.wrap ? ' class="wrap-cell"' : c.wrapSm ? ' class="wrap-sm"' : "") + ">" + c.fmt(row) + "</td>";
         }).join("") + "</tr>";
       }).join("") + "</tbody>";
     }
@@ -986,6 +1087,12 @@
     document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
     renderInsights();
     renderQuality();
+    var names = {};
+    ALL.forEach(function (r) { names[r.country_code] = r.country_name; });
+    $("zone-hypothesis").innerHTML = S.coverage.zones.map(function (z) {
+      return "<li><b>" + esc(z.name) + "</b> (" + esc(z.code) + ") : " + (z.countries === "*" ? "tous les pays" :
+        z.countries.map(function (c) { return esc(names[c] || c); }).join(", ")) + ".</li>";
+    }).join("");
   }
 
   function glass(ic, label, value, sub, micro) {
@@ -1098,12 +1205,12 @@
   }
 
   function split(el, title, items, labels, note) {
-    var colors = ["var(--series-1)", "var(--series-2)"], order = Object.keys(labels);
+    var colors = ["var(--series-1)", "var(--series-2)"], inks = [inkOn(css("--series-1")), inkOn(css("--series-2"))], order = Object.keys(labels);
     var known = items.filter(function (x) { return labels[x.value]; }).sort(function (a, b) { return order.indexOf(a.value) - order.indexOf(b.value); });
     var other = items.filter(function (x) { return !labels[x.value]; });
     el.innerHTML = '<h3 style="font-size:14px">' + title + "</h3>" +
       (known.length ? '<div class="split" role="img" aria-label="' + esc(title + " : " + known.map(function (x) { return labels[x.value] + " " + pct(x.share); }).join(", ")) + '">' +
-        known.map(function (x, k) { return '<span style="flex:' + x.offers + ";background:" + colors[k % 2] + '">' + pct(x.share) + "</span>"; }).join("") + "</div>" : '<p class="sub">Aucune offre.</p>') +
+        known.map(function (x, k) { return '<span style="flex:' + x.offers + ";background:" + colors[k % 2] + ";color:" + inks[k % 2] + '">' + pct(x.share) + "</span>"; }).join("") + "</div>" : '<p class="sub">Aucune offre.</p>') +
       '<div class="split-legend">' + known.map(function (x, k) {
         return '<div><span class="swatch" style="background:' + colors[k % 2] + '"></span>' + esc(labels[x.value]) + " : <b>" + num(x.offers) + "</b> offres · " + eur(x.mean_price) + " en moyenne</div>";
       }).join("") + "</div>" +
@@ -1176,7 +1283,7 @@
       num(Q.checks.length) + " contrôles appliqués à chaque génération.</span></div></div>";
     var sev = function (s) { return '<span class="sev ' + s + '">' + (s === "erreur" ? "Erreur · exclue" : "Avertissement") + "</span>"; };
     table($("table-checks"), [
-      { label: "Contrôle", fmt: function (x) { return esc(x.label); } },
+      { label: "Contrôle", wrapSm: true, fmt: function (x) { return esc(x.label); } },
       { label: "Niveau", fmt: function (x) { return sev(x.severity); } },
       { label: "Détectées", n: true, fmt: function (x) { return x.count ? '<span class="pos">' + num(x.count) + "</span>" : '<span class="ok-mark" aria-hidden="true">✓</span> <span class="zero">0</span>'; } }
     ], Q.checks.slice().sort(function (a, b) { return b.count - a.count; }));
@@ -1405,10 +1512,6 @@
     return "#" + (out >>> 0).toString(16).padStart(6, "0");
   }
   function isDark() { return css("--page").toLowerCase() !== "#ffffff"; }
-  function inkOn(hex) { // texte lisible sur une couleur de fond
-    var n = parseInt(hex.slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
-    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 0.3 ? "#0b1630" : "#ffffff";
-  }
   function logTicks(axis, values, fmt) {
     axis.afterBuildTicks = function (scale) { scale.ticks = values.filter(function (v) { return v >= scale.min && v <= scale.max; }).map(function (v) { return { value: v }; }); };
     axis.ticks = Object.assign({}, axis.ticks, { callback: function (v) { return fmt(v); } });
@@ -1620,6 +1723,76 @@
     }).join("") + "</ul>" : "";
   }
 
+  // ---------- Comparateur (lot 6) ----------
+  var ZONES = S.coverage.zones; // hypothèse de couverture (config.ZONE_MEMBERS), documentée dans la Méthodologie
+  var ZONE_NAMES = S.coverage.region_codes_note;
+  function initComparator() {
+    var names = {}, offersBy = {};
+    ALL.forEach(function (r) { names[r.country_code] = r.country_name; offersBy[r.country_code] = (offersBy[r.country_code] || 0) + 1; });
+    var countries = Object.keys(names).filter(function (c) { return REGION_CODES.indexOf(c) === -1; }).sort(function (a, b) { return names[a].localeCompare(names[b], "fr"); });
+    var regions = REGION_CODES.filter(function (c) { return names[c]; });
+    $("cmp-place").innerHTML = '<optgroup label="Pays">' + countries.map(function (c) { return '<option value="' + esc(c) + '">' + esc(names[c]) + "</option>"; }).join("") + "</optgroup>" +
+      '<optgroup label="Zones régionales">' + regions.map(function (c) { return '<option value="' + esc(c) + '">' + esc(names[c]) + "</option>"; }).join("") + "</optgroup>";
+    var gbs = {};
+    ALL.forEach(function (r) { if (!r.is_unlimited) gbs[r.data_gb] = true; });
+    $("cmp-volume").innerHTML = Object.keys(gbs).map(Number).sort(function (a, b) { return a - b; }).map(function (g) { return '<option value="' + g + '">' + gb(g, g % 1 ? 1 : 0) + "</option>"; }).join("") +
+      (ALL.some(function (r) { return r.is_unlimited; }) ? '<option value="unlimited">Illimité</option>' : "");
+    var vs = {};
+    ALL.forEach(function (r) { vs[r.validity_days] = true; });
+    $("cmp-validity").innerHTML = '<option value="">Toutes les durées</option>' + Object.keys(vs).map(Number).sort(function (a, b) { return a - b; }).map(function (v) { return '<option value="' + v + '">' + v + " jours</option>"; }).join("");
+    // Valeurs par défaut : la France si elle existe (sinon la destination la plus fournie), 5 Go si disponible.
+    var def = names.FR ? "FR" : countries.slice().sort(function (a, b) { return offersBy[b] - offersBy[a]; })[0];
+    if (def) $("cmp-place").value = def;
+    if (gbs[5]) $("cmp-volume").value = "5";
+    ["cmp-place", "cmp-volume", "cmp-validity", "cmp-regional"].forEach(function (id) { $(id).addEventListener("change", function () { cmpExpanded = false; renderComparator(); }); });
+    $("cmp-more").addEventListener("click", function () { cmpExpanded = !cmpExpanded; renderComparator(); });
+    renderComparator();
+  }
+  function coverageLabel(code) { return ZONE_NAMES[code] || code; }
+  var cmpExpanded = false;
+  function renderComparator() {
+    var place = $("cmp-place").value, volume = $("cmp-volume").value, validity = $("cmp-validity").value, regional = $("cmp-regional").checked;
+    if (!place) return;
+    var res = A.compare(ALL, { place: place, volume: volume, validity_days: validity || null, includeRegional: regional }, ZONES);
+    var placeName = $("cmp-place").selectedOptions[0].textContent, volName = $("cmp-volume").selectedOptions[0].textContent;
+    if (!res.length) {
+      $("cmp-summary").innerHTML = "Aucune offre pour <b>" + esc(placeName) + "</b> en <b>" + esc(volName) + "</b>" + (validity ? " sur " + validity + " jours" : "") + ".";
+      $("cmp-best").innerHTML = ""; $("cmp-table").innerHTML = $("cmp-table").querySelector("caption").outerHTML; $("cmp-note").innerHTML = ""; return;
+    }
+    var best = res[0], worst = res[res.length - 1], nReg = res.filter(function (x) { return x.regional; }).length;
+    $("cmp-summary").innerHTML = "<b>" + num(res.length) + "</b> " + plural(res.length, "offre", "offres") + " pour <b>" + esc(placeName) + "</b> en <b>" + esc(volName) + "</b>" +
+      (validity ? " sur " + validity + " jours" : "") + " · de <b>" + eur(best.offer.price) + "</b> à <b>" + eur(worst.offer.price) + "</b>" +
+      (res.length > 1 ? " (écart de " + pct(worst.offer.price / best.offer.price - 1) + ")" : "") + (nReg ? " · dont " + num(nReg) + " " + plural(nReg, "forfait régional", "forfaits régionaux") : "") + ".";
+    var bo = best.offer;
+    $("cmp-best").innerHTML = '<div class="best"><span class="medal">' + icon("trophy") + '</span><span class="k">Meilleur prix</span><span class="p">' + eur(bo.price) +
+      (best.price_per_gb != null ? "<small>" + eur(best.price_per_gb) + " / Go</small>" : "<small>illimité</small>") + '</span><span class="t">' + esc(bo.provider) +
+      " · " + esc(bo.product_name) + " <small>· " + bo.validity_days + " j · " + esc(bo.network) + " · recharge " + esc(bo.top_up) + "</small>" +
+      (best.regional ? ' <span class="badge region">Forfait régional : ' + esc(coverageLabel(bo.country_code)) + "</span>" : "") + "</span></div>";
+    var SHORT = 10, MAX = 200, expanded = cmpExpanded && res.length > SHORT;
+    var shown = expanded ? res.slice(0, MAX) : res.slice(0, SHORT);
+    var more = $("cmp-more");
+    more.hidden = res.length <= SHORT;
+    more.setAttribute("aria-expanded", String(expanded));
+    more.textContent = expanded ? "Afficher seulement les " + SHORT + " moins chères" : "Afficher " + (res.length > MAX ? "les " + MAX + " premières" : "les " + num(res.length) + " offres");
+    table($("cmp-table"), [
+      { label: "#", n: true, fmt: function (x) { return num(res.indexOf(x) + 1); } },
+      { label: "Fournisseur", fmt: function (x) { return esc(x.offer.provider); } },
+      { label: "Couverture", fmt: function (x) { return x.regional ? '<span class="badge region">' + esc(coverageLabel(x.offer.country_code)) + "</span>" : '<span class="badge country">' + esc(x.offer.country_name) + "</span>"; } },
+      { label: "Durée", n: true, fmt: function (x) { return x.offer.validity_days + " j"; } },
+      { label: "Réseau", fmt: function (x) { return esc(x.offer.network); } },
+      { label: "Recharge", fmt: function (x) { return esc(x.offer.top_up); } },
+      { label: "Prix", n: true, fmt: function (x) { return "<b>" + eur(x.offer.price) + "</b>"; } },
+      { label: "€ / Go", n: true, fmt: function (x) { return x.price_per_gb == null ? "—" : eur(x.price_per_gb); } },
+      { label: "vs meilleur", n: true, fmt: function (x) { var d = x.offer.price / bo.price - 1; return d === 0 ? '<span class="delta">—</span>' : '<span class="delta">+' + pct(d, d < 0.1 ? 1 : 0) + "</span>"; } },
+      { label: "SKU", fmt: function (x) { return '<span class="zero">' + esc(x.offer.sku) + "</span>"; } }
+    ], shown, { rowClass: function (x) { return x === best ? "is-best" : ""; } });
+    var zoneTxt = regional && REGION_CODES.indexOf(place) === -1
+      ? "Les forfaits régionaux proposés sont ceux des zones supposées couvrir " + esc(placeName) + " (hypothèse détaillée dans la Méthodologie)."
+      : regional ? "Les forfaits des zones qui englobent cette zone (ex. Monde) sont aussi proposés." : "Forfaits régionaux exclus.";
+    $("cmp-note").innerHTML = icon("info") + "<span>" + (shown.length < res.length ? "Les " + num(shown.length) + " moins chères sur " + num(res.length) + ". " : "") + zoneTxt +
+      " À prix égal, l'offre la plus courte puis l'ordre alphabétique départagent.</span>";
+  }
+
   // ---------- Orchestration ----------
   function render(animate) {
     current = A.compute(state.rows, { isoNumeric: ISO });
@@ -1644,6 +1817,7 @@
       if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m);
       try { if (m === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", m); } catch (e) {}
       syncButtons();
+      renderPricing(current);
       drawHeatmap(current);
       if (window.Chart) drawCharts(current);
     });
@@ -1651,11 +1825,12 @@
   syncButtons();
   if (window.matchMedia) {
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (mq.addEventListener) mq.addEventListener("change", function () { if (mode() === "auto") { drawHeatmap(current); if (window.Chart) drawCharts(current); } });
+    if (mq.addEventListener) mq.addEventListener("change", function () { if (mode() === "auto") { renderPricing(current); drawHeatmap(current); if (window.Chart) drawCharts(current); } });
   }
 
   renderStatic();
   initFilters();
+  initComparator();
   render(true);
   window.addEventListener("load", function () {
     if (window.Chart && window.ChartGeo) Chart.register(ChartGeo.ChoroplethController, ChartGeo.GeoFeature, ChartGeo.ColorScale, ChartGeo.ProjectionScale);
