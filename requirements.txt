@@ -1,0 +1,4 @@
+# Versions figées (vérifiées compatibles Python 3.12 Linux pour la CI et 3.14 en local)
+pandas==3.0.6
+numpy==2.5.4
+pytest==9.1.1
