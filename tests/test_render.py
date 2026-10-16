@@ -5,57 +5,29 @@ machines GitHub Actions).
 """
 
 import json
-import re
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
+
+from tests.browser import CHROME, instrument, run_page
 
 from dashboard.build import build, write_outputs
 from dashboard.config import DATA_DIR as DATA_DIR_REAL
 
 FIXTURES = Path(__file__).parent / "fixtures"
-MAC_CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-CHROME = next(
-    (c for c in (shutil.which("google-chrome"), shutil.which("chromium"), shutil.which("chromium-browser"),
-                 MAC_CHROME if Path(MAC_CHROME).exists() else None) if c),
-    None,
-)
 pytestmark = pytest.mark.skipif(CHROME is None, reason="Chrome/Chromium introuvable : test de rendu ignoré")
-
-# Collecte des erreurs JS dès le début, puis rapport après le chargement.
-CATCH = "<script>window.__errs=[];addEventListener('error',function(e){__errs.push(String(e.message||e))});</script>"
-PROBE = (
-    "<script>addEventListener('load',function(){setTimeout(function(){__ACTION__},300);setTimeout(function(){var d=document.documentElement;"
-    "var p=document.createElement('pre');p.id='PROBE';p.textContent=JSON.stringify({ready:d.dataset.ready||null,"
-    "errors:__errs,overflow:d.scrollWidth>d.clientWidth,kpis:document.querySelectorAll('#kpis .kpi').length,"
-    "hero:document.getElementById('hero-kpis').textContent,result:document.getElementById('fb-result').textContent,"
-    "empty:document.body.classList.contains('is-empty'),search:location.search,extra:window.__extra||null});"
-    "document.body.appendChild(p)},1500)})</script>"
-)
 
 
 def render(data_dir: Path, tmp_path: Path, width: int = 1280, query: str = "", action: str = "") -> dict:
     result, offers = build(data_dir)
     _, html_path = write_outputs(result, tmp_path, offers)
-    html = html_path.read_text(encoding="utf-8").replace("<head>", "<head>" + CATCH, 1).replace("</body>", PROBE.replace("__ACTION__", action) + "</body>", 1)
-    page = tmp_path / "probe.html"
-    page.write_text(html, encoding="utf-8")
-    done = subprocess.run(
-        [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox", f"--user-data-dir={tmp_path / 'profile'}",
-         f"--window-size={width},900", "--virtual-time-budget=8000", "--dump-dom", page.as_uri() + query],
-        capture_output=True, text=True, timeout=120,
-    )
-    m = re.search(r'<pre id="PROBE">(.*?)</pre>', done.stdout, re.S)
-    assert m, "la page n'a pas terminé son chargement :\n" + done.stderr[-2000:]
-    return json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
+    return run_page(instrument(html_path, action), tmp_path, width=width, query=query)
 
 
 @pytest.mark.parametrize("data_dir", [FIXTURES / "calculs", FIXTURES / "pieges"], ids=["calculs", "pieges"])
 def test_page_renders_without_js_errors(data_dir, tmp_path):
     probe = render(data_dir, tmp_path)
-    assert probe["errors"] == []
+    assert probe["errors"] == [] and probe["csp"] == []
     assert probe["ready"] == "1"
     assert probe["kpis"] == 6
     # Valeur finale (et non une valeur d'animation) : 8 offres valides dans « calculs », 9 dans « pieges ».

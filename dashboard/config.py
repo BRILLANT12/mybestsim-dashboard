@@ -59,3 +59,24 @@ WORLD_ZONE = "WW"
 # Source : github.com/lukes/ISO-3166-Countries-with-Regional-Codes, recoupée à la main
 # pour les 50 pays du catalogue.
 ISO_NUMERIC_FILE = ROOT_DIR / "dashboard" / "reference" / "iso3166_numeric.json"
+
+# Fichiers tiers hébergés localement (voir dashboard/vendor/README.md) et leur
+# empreinte SHA-384 : vérifiée par les tests, toute modification est détectée.
+VENDOR_DIR = ROOT_DIR / "dashboard" / "vendor"
+VENDOR_FILES = {
+    "chart.umd.min.js": "sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4",
+    "chartjs-chart-geo.umd.min.js": "sha384-EW6qTcZh7bPyECHRcIzVvefbUO37nGjPkmDFEdcdAe7ex44EjBA0GWnoleczHbC/",
+    "countries-110m.json": "sha384-yOCJ+8ShBm8UDqtAVtAvxTDDf4gXo5edxl/YG0FmVC5OTmqVLl7utuVGBDEeZWHf",
+    "fonts/inter-latin-wght-normal.woff2": "sha384-l0ql7Q1zqvX5klAVRwYjcMVCkCxg5dMTdghsIlC3pYkX6wwEHerh2bP/4yAao3Im",
+    "fonts/inter-latin-ext-wght-normal.woff2": "sha384-r0EoKgCx3XyQjhJdTJ6FDE+8mEZrV95dM7cWvqLDUVdqzM44cq76qdOaYiA3sebS",
+    "fonts/OFL.txt": "sha384-kj3ws+qnzjazxsLTzPAVaXquIFuyNRYVaSXX024NG79Z2vDskAWFDhnsJYazAo0C",
+}
+
+# Politique de sécurité du contenu, identique sur toutes les pages : aucun script en
+# ligne, aucune ressource externe, aucune connexion réseau. Seule exception assumée :
+# les attributs style="" générés (largeurs de barres, couleurs), qui ne peuvent pas
+# exécuter de code.
+CONTENT_SECURITY_POLICY = (
+    "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; "
+    "img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+)
