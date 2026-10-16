@@ -236,3 +236,11 @@ def test_csv_quotes_special_characters(tmp_path):
         tmp_path,
     )
     assert '"eSIM ""Europe"", 1 Go"' in out
+
+
+def test_quantiles_match_pandas(tmp_path):
+    clean = validate(load_providers(DATA_DIR).rows).clean
+    qs = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]
+    js = run_js(DECODE + f" const p = rows.map(r => r.price); return {qs}.map(q => A.quantile(p, q));", engine_input(DATA_DIR), tmp_path)
+    assert js == pytest.approx([clean["price"].quantile(q) for q in qs], abs=1e-9)
+    assert run_js(" return A.quantile([], 0.5);", {}, tmp_path) is None

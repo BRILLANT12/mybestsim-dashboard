@@ -109,3 +109,15 @@ def test_podium_requires_a_minimum_sample(tmp_path):
     probe = render(FIXTURES / "calculs", tmp_path, action=action)
     sub, ranks = probe["extra"].split("|")
     assert sub.startswith("Échantillon trop petit pour un classement") and ranks == "0"
+
+
+# --- Analyses (lot 5) ----------------------------------------------------------
+
+
+def test_heatmap_and_zones_follow_the_data(tmp_path):
+    action = ("window.__extra=[document.querySelectorAll('#heatmap tbody tr').length,"
+              "document.querySelectorAll('#zones-list li').length,"
+              "document.querySelectorAll('#table-quantiles tbody tr').length].join('|');")
+    probe = render(FIXTURES / "calculs", tmp_path, action=action)
+    assert probe["errors"] == []
+    assert probe["extra"] == "2|2|2"  # 2 fournisseurs, 2 zones (NA, WW), 2 lignes de quantiles

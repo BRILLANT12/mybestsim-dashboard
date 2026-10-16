@@ -36,6 +36,13 @@
     return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
   }
   function share(part, total) { return total ? part / total : null; }
+  // Quantile par interpolation linéaire (même méthode que pandas.Series.quantile par défaut).
+  function quantile(values, q) {
+    if (!values.length) return null;
+    var s = values.slice().sort(function (a, b) { return a - b; });
+    var pos = (s.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+    return s[lo] + (s[hi] - s[lo]) * (pos - lo);
+  }
   function groupBy(rows, keyFn) {
     var map = new Map();
     rows.forEach(function (r) {
@@ -330,6 +337,6 @@
   return {
     EXPENSIVE_THRESHOLD_EUR: EXPENSIVE_THRESHOLD_EUR,
     decodeOffers: decodeOffers, applyFilters: applyFilters, compute: compute,
-    compare: compare, toCSV: toCSV, tierLabel: tierLabel, median: median
+    compare: compare, toCSV: toCSV, tierLabel: tierLabel, median: median, quantile: quantile
   };
 });

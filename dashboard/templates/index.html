@@ -22,6 +22,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
         integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
         crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4.3.6/build/index.umd.min.js"
+        integrity="sha384-EW6qTcZh7bPyECHRcIzVvefbUO37nGjPkmDFEdcdAe7ex44EjBA0GWnoleczHbC/"
+        crossorigin="anonymous" defer></script>
 <style>
   /* ==========================================================================
      Design system — inspiré de mybestsim.com : marine (contour du logo), bleu de
@@ -335,6 +338,36 @@
   .method li + li { margin-top: 5px; }
   .hypothesis { border-left: 3px solid var(--accent); }
 
+  /* Analyses */
+  .g-wide { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  @media (max-width: 960px) { .g-wide { grid-template-columns: minmax(0, 1fr); } }
+  .note { display: flex; gap: 10px; margin: 12px 0 0; font-size: 13px; color: var(--ink-2); }
+  .note .icon { color: var(--brand-ink); margin-top: 1px; }
+  .heat { border-collapse: separate; border-spacing: 3px; font-size: 12.5px; width: 100%; }
+  .heat th, .heat td { border: 0; padding: 0; background: none; }
+  .heat thead th { color: var(--muted); font-weight: 600; font-size: 11.5px; text-align: center; padding: 0 0 4px; }
+  .heat tbody th { text-align: left; font-weight: 500; color: var(--ink-2); padding-right: 8px; white-space: nowrap; }
+  .heat td { height: 30px; min-width: 56px; text-align: center; border-radius: 6px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .heat td.thin { opacity: 0.45; font-style: italic; }
+  .heat td.global { box-shadow: inset 0 0 0 1.5px var(--border-strong); }
+  .heat-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .heat-legend i { flex: 1; height: 8px; border-radius: 4px; max-width: 220px; }
+  .map-layout { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 960px) { .map-layout { grid-template-columns: minmax(0, 1fr); } }
+  .map-box { height: 420px; }
+  @media (max-width: 640px) {
+    .map-box { height: 220px; }
+    .heat td { min-width: 40px; height: 28px; font-size: 12px; }
+    .heat tbody th { font-size: 12px; padding-right: 4px; }
+  }
+  .map-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .zones { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .zones li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--card-2); border: 1px solid var(--border); font-size: 13.5px; }
+  .zones li b { display: block; }
+  .zones li small { color: var(--muted); }
+  .zones li .v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .zones h4 { margin: 14px 0 6px; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
   /* Barre de filtres collante */
   .filterbar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--page) 88%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
@@ -448,6 +481,7 @@
         <a href="#constats">Constats</a>
         <a href="#fournisseurs">Fournisseurs</a>
         <a href="#prix-data">Prix et data</a>
+        <a href="#analyses">Analyses</a>
         <a href="#destinations">Destinations</a>
         <a href="#qualite">Qualité</a>
         <a href="#methodologie">Méthodologie</a>
@@ -607,7 +641,55 @@
     </div>
   </section>
 
-  <section class="band band-alt" id="destinations" aria-labelledby="h-destinations">
+  <section class="band band-alt" id="analyses" aria-labelledby="h-analyses">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Analyses</p>
+          <h2 id="h-analyses">Le prix à la loupe</h2>
+          <span class="filter-scope" data-scope></span>
+          <p>Chaque point est une offre. Les illimités sont montrés à part : ils n'ont pas de volume à placer sur l'axe.</p>
+        </div>
+      </div>
+      <div class="grid g-wide">
+        <div class="card">
+          <h3>Prix selon le volume de data</h3>
+          <p class="sub">Échelles logarithmiques · forfaits à volume limité · points légèrement écartés horizontalement pour rester lisibles</p>
+          <div class="legend" id="scatter-legend"></div>
+          <div class="chart-box" style="height:380px"><canvas id="chart-scatter" role="img" aria-label="Nuage de points du prix en fonction du volume de data, avec la courbe de tendance"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible : voir « Prix au Go selon le volume » dans la section précédente.</p>
+          <p class="note" id="scatter-note"></p>
+        </div>
+        <div class="card">
+          <h3>Forfaits illimités, à part</h3>
+          <p class="sub">Prix selon la durée de validité</p>
+          <div class="chart-box" style="height:380px"><canvas id="chart-unlimited" role="img" aria-label="Prix des forfaits illimités selon la durée"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible.</p>
+          <p class="note" id="unlimited-note"></p>
+        </div>
+        <div class="card">
+          <h3>Distribution des prix</h3>
+          <p class="sub" id="hist-sub"></p>
+          <div class="legend" id="hist-legend"></div>
+          <div class="chart-box" style="height:300px"><canvas id="chart-hist" role="img" aria-label="Histogramme des prix avec la moyenne et la médiane"></canvas></div>
+          <p class="chart-fallback">Graphique indisponible.</p>
+          <h3 style="margin-top:22px;font-size:14px">Repères de prix</h3>
+          <p class="sub">Quantiles : 25 % des offres coûtent moins que le 1er quartile, 90 % moins que le 9e décile</p>
+          <div class="table-wrap"><table id="table-quantiles"><caption class="sr-only">Quantiles des prix</caption></table></div>
+          <p class="note" id="quantiles-note"></p>
+        </div>
+        <div class="card">
+          <h3>Compétitivité par fournisseur et durée</h3>
+          <p class="sub">Indice de prix : 100 = prix moyen des offres comparables (même volume, même durée)</p>
+          <div class="table-wrap" style="border:0"><table class="heat" id="heatmap"><caption class="sr-only">Indice de prix par fournisseur et par durée de validité</caption></table></div>
+          <div class="heat-legend" id="heat-legend"></div>
+          <p class="note" id="heat-note"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-white" id="destinations" aria-labelledby="h-destinations">
     <div class="wrap">
       <div class="section-head">
         <div>
@@ -615,6 +697,25 @@
           <h2 id="h-destinations">Destinations couvertes</h2>
           <span class="filter-scope" data-scope></span>
           <p id="coverage-lead"></p>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="map-layout">
+          <div>
+            <h3>Prix moyen au Go par pays</h3>
+            <p class="sub">Total des prix ÷ total des Go des forfaits limités · plus la couleur est marquée, plus le Go est cher</p>
+            <div class="chart-box map-box"><canvas id="chart-map" role="img" aria-label="Carte du monde du prix moyen au Go par pays"></canvas></div>
+            <div class="map-legend" id="map-legend"></div>
+            <p class="chart-fallback" id="map-fallback">Carte indisponible : voir les données ci-dessous.</p>
+            <details class="data"><summary>Voir les données de la carte</summary><div class="table-wrap"><table id="table-map"></table></div></details>
+          </div>
+          <div>
+            <h3>Zones régionales</h3>
+            <p class="sub">Forfaits multi-pays, hors carte</p>
+            <ul class="zones" id="zones-list"></ul>
+            <div id="unmapped"></div>
+            <p class="callout"><svg class="icon"><use href="#i-info"/></svg><span>Les codes <code>EU</code>, <code>AS</code>, <code>NA</code> et <code>WW</code> désignent des zones dans ces fichiers. En norme ISO, <code>NA</code> serait la Namibie et <code>AS</code> les Samoa américaines : le dashboard suit la convention des fournisseurs.</span></p>
+          </div>
         </div>
       </div>
       <div class="grid g-2">
@@ -626,10 +727,13 @@
           <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-countries"></table></div></details>
         </div>
         <div class="card">
-          <h3>Zones régionales</h3>
-          <p class="sub">Forfaits multi-pays, comptés à part des pays</p>
-          <div class="table-wrap"><table id="table-regions"></table></div>
-          <p class="callout"><svg class="icon"><use href="#i-info"/></svg><span>Les codes <code>EU</code>, <code>AS</code>, <code>NA</code> et <code>WW</code> désignent des zones dans ces fichiers. En norme ISO, <code>NA</code> serait la Namibie et <code>AS</code> les Samoa américaines : le dashboard suit la convention des fournisseurs.</span></p>
+          <h3>Où le Go coûte le moins, et le plus</h3>
+          <p class="sub">Prix moyen au Go par pays (forfaits limités, au moins 10 offres)</p>
+          <div class="grid g-2" style="gap:12px">
+            <div><div class="table-wrap"><table id="table-cheapest"><caption class="sr-only">Pays les moins chers au Go</caption></table></div></div>
+            <div><div class="table-wrap"><table id="table-dearest"><caption class="sr-only">Pays les plus chers au Go</caption></table></div></div>
+          </div>
+          <p class="note" id="extremes-note"></p>
         </div>
       </div>
     </div>
@@ -1050,7 +1154,16 @@
       { label: "Dès", n: true, fmt: function (x) { return eur(x.min_price); } }
     ];
     table($("table-countries"), cols, C.top_countries);
-    table($("table-regions"), cols, C.regions);
+    var ranked = C.countries_price_per_gb.filter(function (c) { return c.price_per_gb != null && c.offers >= 10; })
+      .sort(function (a, b) { return a.price_per_gb - b.price_per_gb; });
+    var ppgCols = [
+      { label: "Pays", fmt: function (x) { return esc(x.name); } },
+      { label: "€ / Go", n: true, fmt: function (x) { return eur(x.price_per_gb); } }
+    ];
+    table($("table-cheapest"), [{ label: "Moins chers", fmt: ppgCols[0].fmt }, ppgCols[1]], ranked.slice(0, 5));
+    table($("table-dearest"), [{ label: "Plus chers", fmt: ppgCols[0].fmt }, ppgCols[1]], ranked.slice(-5).reverse());
+    $("extremes-note").innerHTML = ranked.length > 1 ? icon("scale") + "<span>Écart de <b>" + pct(ranked[ranked.length - 1].price_per_gb / ranked[0].price_per_gb - 1) +
+      "</b> entre " + esc(ranked[0].name) + " (" + eur(ranked[0].price_per_gb) + "/Go) et " + esc(ranked[ranked.length - 1].name) + " (" + eur(ranked[ranked.length - 1].price_per_gb) + "/Go).</span>" : "";
   }
 
   function renderQuality() {
@@ -1135,6 +1248,9 @@
       colors: D.data_tiers.map(function (t) { return t.label === "Illimité" ? s2 : s1; }) });
     bar("chart-validity", D.validity.map(function (v) { return num(v.validity_days) + " jours"; }), D.validity.map(function (v) { return v.offers; }));
     bar("chart-countries", V.coverage.top_countries.map(function (c) { return c.name; }), V.coverage.top_countries.map(function (c) { return c.offers; }), { horizontal: true });
+    drawScatter(V);
+    drawHistogram(V);
+    drawMap(V);
   }
 
   // ---------- Filtres ----------
@@ -1273,6 +1389,237 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
 
+  // ---------- Analyses (lot 5) ----------
+  function hash01(s) { // pseudo-aléatoire stable par SKU : l'écartement des points ne bouge pas d'un rendu à l'autre
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return ((h >>> 0) % 10000) / 10000;
+  }
+  function withAlpha(hex, a) {
+    var h = hex.replace("#", ""), n = parseInt(h.length === 3 ? h.replace(/./g, "$&$&") : h, 16);
+    return "rgba(" + (n >> 16 & 255) + "," + (n >> 8 & 255) + "," + (n & 255) + "," + a + ")";
+  }
+  function mix(a, b, t) {
+    var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), out = 0;
+    [16, 8, 0].forEach(function (sh) { out |= Math.round((pa >> sh & 255) + ((pb >> sh & 255) - (pa >> sh & 255)) * t) << sh; });
+    return "#" + (out >>> 0).toString(16).padStart(6, "0");
+  }
+  function isDark() { return css("--page").toLowerCase() !== "#ffffff"; }
+  function inkOn(hex) { // texte lisible sur une couleur de fond
+    var n = parseInt(hex.slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 0.3 ? "#0b1630" : "#ffffff";
+  }
+  function logTicks(axis, values, fmt) {
+    axis.afterBuildTicks = function (scale) { scale.ticks = values.filter(function (v) { return v >= scale.min && v <= scale.max; }).map(function (v) { return { value: v }; }); };
+    axis.ticks = Object.assign({}, axis.ticks, { callback: function (v) { return fmt(v); } });
+    return axis;
+  }
+
+  function drawScatter(V) {
+    var rows = state.rows, s1 = css("--series-1"), s2 = css("--series-2"), law = V.pricing.power_law;
+    var narrow = $("chart-scatter").parentNode.clientWidth < 480; // moins de graduations sur mobile
+    function points(net, unlimited) {
+      return rows.filter(function (r) { return r.network === net && r.is_unlimited === unlimited; }).map(function (r) {
+        var j = hash01(r.sku);
+        return unlimited ? { x: r.validity_days * (1 + (j - 0.5) * 0.36), y: r.price, r: r }
+                         : { x: r.data_gb * Math.exp((j - 0.5) * 0.32), y: r.price, r: r };
+      });
+    }
+    var tip = Object.assign(tooltipStyle(), { callbacks: {
+      title: function (items) { var r = items[0].raw.r; return r ? r.provider + " · " + r.country_name : ""; },
+      label: function (c) {
+        var r = c.raw.r;
+        return r ? [r.data_display + " · " + r.validity_days + " jours · " + r.network, eur(r.price) + (r.is_unlimited ? "" : " · " + eur(r.price / r.data_gb) + " / Go")]
+                 : "Tendance : " + eur(c.raw.y) + " pour " + gb(c.raw.x, 0);
+      } } });
+    var pointStyle = { pointRadius: 2.6, pointHoverRadius: 6, borderWidth: 0 };
+    var datasets = [
+      Object.assign({ label: "4G", data: points("4G", false), backgroundColor: withAlpha(s1, 0.38), hoverBackgroundColor: s1 }, pointStyle),
+      Object.assign({ label: "5G", data: points("5G", false), backgroundColor: withAlpha(s2, 0.42), hoverBackgroundColor: s2 }, pointStyle)
+    ];
+    if (law) {
+      var trend = [];
+      for (var x = 0.8; x <= 62; x *= 1.15) trend.push({ x: x, y: law.coef * Math.pow(x, law.exponent) });
+      datasets.push({ type: "line", label: "Tendance", data: trend, borderColor: css("--ink"), borderWidth: 2, borderDash: [6, 4], pointRadius: 0, pointHitRadius: 0, tension: 0 });
+    }
+    var grid = { color: css("--grid"), drawTicks: false }, ticks = { color: css("--muted"), padding: 6 };
+    chart("chart-scatter", {
+      type: "scatter", data: { datasets: datasets },
+      options: { maintainAspectRatio: false, animation: false, parsing: true,
+        plugins: { legend: { display: false }, tooltip: tip },
+        scales: {
+          x: logTicks({ type: "logarithmic", min: 0.8, max: 62, grid: grid, border: { color: css("--axis") }, ticks: ticks, title: { display: true, text: "Volume de data (Go)", color: css("--muted") } },
+            narrow ? [1, 5, 20, 50] : [1, 3, 5, 10, 20, 50], function (v) { return num(v) + " Go"; }),
+          y: logTicks({ type: "logarithmic", grid: grid, border: { display: false }, ticks: ticks, title: { display: true, text: "Prix", color: css("--muted") } },
+            [5, 10, 20, 50, 100], function (v) { return eur(v, 0); })
+        } }
+    });
+    $("scatter-legend").innerHTML = '<span><span class="swatch" style="background:var(--series-1)"></span>4G</span><span><span class="swatch" style="background:var(--series-2)"></span>5G</span>' +
+      (law ? '<span><span class="swatch" style="background:var(--ink);height:2px;vertical-align:3px"></span>Tendance (loi de puissance)</span>' : "");
+    $("scatter-note").innerHTML = law ? icon("trend") + "<span>Tendance ajustée sur " + num(law.offers) + " forfaits : quand le volume double, le prix n'est multiplié que par <b>" +
+      num(law.doubling_factor, 2) + "</b> (exposant " + num(law.exponent, 2) + ", R² = " + num(law.r2, 2) + "). Le Go devient donc nettement moins cher dans les gros forfaits.</span>" : "";
+
+    var unl = [points("4G", true), points("5G", true)];
+    var nUnl = unl[0].length + unl[1].length;
+    var validities = V.distributions.validity.map(function (v) { return v.validity_days; });
+    chart("chart-unlimited", {
+      type: "scatter",
+      data: { datasets: [
+        Object.assign({ label: "4G", data: unl[0], backgroundColor: withAlpha(s1, 0.5), hoverBackgroundColor: s1 }, pointStyle, { pointRadius: 3 }),
+        Object.assign({ label: "5G", data: unl[1], backgroundColor: withAlpha(s2, 0.55), hoverBackgroundColor: s2 }, pointStyle, { pointRadius: 3 })
+      ] },
+      options: { maintainAspectRatio: false, animation: false,
+        plugins: { legend: { display: false }, tooltip: tip },
+        scales: {
+          x: logTicks({ type: "logarithmic", min: 5.5, max: 40, grid: { display: false }, border: { color: css("--axis") }, ticks: ticks, title: { display: true, text: "Durée", color: css("--muted") } },
+            validities, function (v) { return num(v) + " j"; }),
+          y: { beginAtZero: true, grid: grid, border: { display: false }, ticks: Object.assign({}, ticks, { callback: function (v) { return eur(v, 0); } }) }
+        } }
+    });
+    var byV = {};
+    state.rows.forEach(function (r) { if (r.is_unlimited) (byV[r.validity_days] = byV[r.validity_days] || []).push(r.price); });
+    $("unlimited-note").innerHTML = nUnl ? icon("infinity") + "<span>" + num(nUnl) + " forfaits illimités. Prix médian : " + Object.keys(byV).sort(function (a, b) { return a - b; }).map(function (v) {
+      return "<b>" + eur(A.median(byV[v])) + "</b> sur " + v + " j";
+    }).join(", ") + ".</span>" : "";
+  }
+
+  function drawHistogram(V) {
+    var Hh = V.pricing.histogram, H = V.headline, bins = Hh.bins, w = Hh.bin_width;
+    if (!bins.length) { chart("chart-hist", { type: "bar", data: { labels: [], datasets: [] }, options: { maintainAspectRatio: false } }); $("hist-sub").textContent = "Aucune offre."; $("hist-legend").innerHTML = ""; return; }
+    var markers = [
+      { v: H.price.median, color: css("--series-1"), label: "Médiane " + eur(H.price.median) },
+      { v: H.price.mean, color: css("--series-2"), label: "Moyenne " + eur(H.price.mean) },
+      { v: H.expensive.threshold, color: css("--muted"), label: "Seuil " + eur(H.expensive.threshold, 0) }
+    ];
+    var markerPlugin = { id: "markers", afterDatasetsDraw: function (c) {
+      var x = c.scales.x, top = c.chartArea.top, bottom = c.chartArea.bottom, ctx = c.ctx;
+      var step = x.getPixelForValue(1) - x.getPixelForValue(0);
+      markers.forEach(function (m, k) {
+        if (m.v == null) return;
+        var px = x.getPixelForValue(0) + (m.v / w - 0.5) * step;
+        if (px < c.chartArea.left || px > c.chartArea.right) return;
+        ctx.save(); ctx.strokeStyle = m.color; ctx.lineWidth = 2; if (k === 2) ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(px, top + 4); ctx.lineTo(px, bottom); ctx.stroke(); ctx.restore();
+      });
+    } };
+    chart("chart-hist", {
+      type: "bar", plugins: [markerPlugin],
+      data: { labels: bins.map(function (b) { return num(b.from) + "–" + num(b.to) + " €"; }), datasets: [{ data: bins.map(function (b) { return b.offers; }),
+        backgroundColor: bins.map(function (b) { return b.from >= H.expensive.threshold ? css("--series-2") : css("--series-1"); }), borderRadius: 3, borderSkipped: "start", categoryPercentage: 0.92, barPercentage: 0.95 }] },
+      options: { maintainAspectRatio: false, animation: REDUCED || instant ? false : { duration: 450 },
+        plugins: { legend: { display: false }, tooltip: Object.assign(tooltipStyle(), { callbacks: { title: function (i) { return "De " + num(bins[i[0].dataIndex].from) + " à " + num(bins[i[0].dataIndex].to) + " € (exclu)"; }, label: function (c) { return num(c.raw) + " offres"; } } }) },
+        scales: { x: { grid: { display: false }, border: { color: css("--axis") }, ticks: { color: css("--muted"), maxRotation: 0, autoSkip: true, autoSkipPadding: 14, callback: function (v) { return num(bins[v].from) + " €"; } } },
+                  y: { beginAtZero: true, grid: { color: css("--grid"), drawTicks: false }, border: { display: false }, ticks: { color: css("--muted"), padding: 6 } } } }
+    });
+    renderQuantiles(H);
+    $("hist-sub").textContent = "Nombre d'offres par tranche de " + num(w) + " € · la moitié des offres coûte moins de " + eur(H.price.median) + ".";
+    $("hist-legend").innerHTML = markers.map(function (m, k) { return '<span><span class="swatch" style="background:' + m.color + ';height:3px;vertical-align:3px"></span>' + m.label + "</span>"; }).join("") +
+      '<span><span class="swatch" style="background:var(--series-2)"></span>Tranches à partir de ' + eur(H.expensive.threshold, 0) + "</span>";
+  }
+
+  var quantile = A.quantile; // moteur testé contre pandas
+  function renderQuantiles(H) {
+    var prices = state.rows.map(function (r) { return r.price; }).sort(function (a, b) { return a - b; });
+    var all = prices, lim = state.rows.filter(function (r) { return !r.is_unlimited; }).map(function (r) { return r.price; }).sort(function (a, b) { return a - b; });
+    var qs = [["Min", 0], ["1er quartile", 0.25], ["Médiane", 0.5], ["3e quartile", 0.75], ["9e décile", 0.9], ["Max", 1]];
+    var rows = [{ label: "Toutes les offres", v: all }, { label: "Hors illimités", v: lim }];
+    table($("table-quantiles"), [{ label: "", fmt: function (x) { return x.label; } }].concat(qs.map(function (q) {
+      return { label: q[0], n: true, fmt: function (x) { return eur(quantile(x.v, q[1])); } };
+    })), rows);
+    var q3 = quantile(all, 0.75), q1 = quantile(all, 0.25);
+    $("quantiles-note").innerHTML = all.length ? icon("info") + "<span>La moitié centrale des offres coûte entre <b>" + eur(q1) + "</b> et <b>" + eur(q3) +
+      "</b>. La moyenne (" + eur(H.price.mean) + ") dépasse la médiane (" + eur(H.price.median) + ") : quelques offres chères, surtout illimitées, tirent la moyenne vers le haut.</span>" : "";
+  }
+
+  function drawHeatmap(V) {
+    var M = V.provider_validity_index, el = $("heatmap");
+    var cheap = isDark() ? "#3a8cf2" : "#0a6cdc", dear = isDark() ? "#e0702a" : "#c2410c", mid = isDark() ? "#1f2b44" : "#eef2f7";
+    var cells = {}, maxDev = 0;
+    M.cells.forEach(function (c) { cells[c.provider + "|" + c.validity_days] = c; maxDev = Math.max(maxDev, Math.abs(c.index - 100)); });
+    var span = Math.max(5, Math.ceil(maxDev)); // échelle symétrique autour de 100, au moins ±5
+    function color(idx) { var t = Math.max(-1, Math.min(1, (idx - 100) / span)); return t < 0 ? mix(mid, cheap, -t) : mix(mid, dear, t); }
+    function cell(idx, n, extra) {
+      if (idx == null) return '<td style="background:var(--card-2)">—</td>';
+      var bg = color(idx), thin = n < 5;
+      return '<td class="' + (thin ? "thin " : "") + (extra || "") + '" style="background:' + bg + ";color:" + inkOn(bg) + '" title="Indice ' + num(idx, 1) + " · " + num(n) + " " + plural(n, "offre", "offres") + (thin ? " (échantillon faible)" : "") + '">' + num(idx, 0) + "</td>";
+    }
+    var providers = V.providers.slice().sort(function (a, b) { return a.price_index - b.price_index; });
+    el.innerHTML = el.querySelector("caption").outerHTML + "<thead><tr><th></th>" + M.validities.map(function (v) { return '<th scope="col">' + v + " j</th>"; }).join("") + '<th scope="col">Global</th></tr></thead><tbody>' +
+      providers.map(function (p) {
+        return '<tr><th scope="row">' + esc(p.provider) + "</th>" + M.validities.map(function (v) { var c = cells[p.provider + "|" + v]; return c ? cell(c.index, c.offers) : cell(null); }).join("") + cell(p.price_index, p.offers, "global") + "</tr>";
+      }).join("") + "</tbody>";
+    $("heat-legend").innerHTML = "<span>Moins cher</span><i style=\"background:linear-gradient(90deg," + cheap + "," + mid + "," + dear + ')"></i><span>Plus cher</span><span>· échelle ' + num(100 - span) + " à " + num(100 + span) + "</span>";
+    var lo = providers[0], hi = providers[providers.length - 1];
+    $("heat-note").innerHTML = providers.length ? icon("scale") + "<span>" + (maxDev < 5
+      ? "Tous les écarts restent sous 5 points : à volume et durée égaux, <b>aucun fournisseur ne se démarque nettement</b>, quelle que soit la durée."
+      : "Écarts marqués : de <b>" + num(lo.price_index, 1) + "</b> (" + esc(lo.provider) + ") à <b>" + num(hi.price_index, 1) + "</b> (" + esc(hi.provider) + ").") +
+      " Cellules en italique : moins de 5 offres.</span>" : "";
+  }
+
+  var WORLD = null, worldState = "idle";
+  function loadWorld() {
+    if (worldState !== "idle") return;
+    worldState = "loading";
+    fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json", {
+      integrity: "sha384-yOCJ+8ShBm8UDqtAVtAvxTDDf4gXo5edxl/YG0FmVC5OTmqVLl7utuVGBDEeZWHf", mode: "cors"
+    }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (topo) {
+        WORLD = ChartGeo.topojson.feature(topo, topo.objects.countries).features.filter(function (f) { return f.id !== "010"; }); // sans l'Antarctique
+        worldState = "ready";
+        drawMap(current);
+      })
+      .catch(function () { worldState = "failed"; $("chart-map").parentNode.style.display = "none"; $("map-fallback").style.display = "block"; });
+  }
+  function rampColors() { return isDark() ? ["#2a63ad", "#3a80dc", "#6da7ec", "#9ec5f4", "#cde2fb"] : ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab", "#0d366b"]; }
+  function renderMapSide(V) {
+    var C = V.coverage, ppg = C.countries_price_per_gb.filter(function (c) { return c.price_per_gb != null; });
+    table($("table-map"), [
+      { label: "Pays", fmt: function (x) { return esc(x.name); } },
+      { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } },
+      { label: "€ / Go", n: true, fmt: function (x) { return eur(x.price_per_gb); } }
+    ], ppg.slice().sort(function (a, b) { return a.price_per_gb - b.price_per_gb; }));
+    var zones = {};
+    state.rows.forEach(function (r) { if (r.is_region) (zones[r.country_code] = zones[r.country_code] || []).push(r); });
+    $("zones-list").innerHTML = REGION_CODES.filter(function (z) { return zones[z]; }).map(function (z) {
+      var rs = zones[z], lim = rs.filter(function (r) { return !r.is_unlimited; });
+      var p = lim.length ? lim.reduce(function (s, r) { return s + r.price; }, 0) / lim.reduce(function (s, r) { return s + r.data_gb; }, 0) : null;
+      return "<li><span><b>" + esc(rs[0].country_name) + ' <span class="zero">' + z + "</span></b><small>" + num(rs.length) + " offres · dès " +
+        eur(Math.min.apply(null, rs.map(function (r) { return r.price; }))) + '</small></span><span class="v">' + (p == null ? "—" : eur(p) + "<small> / Go</small>") + "</span></li>";
+    }).join("") || '<li><span class="zero">Aucune zone dans la sélection.</span></li>';
+  }
+  function drawMap(V) {
+    renderMapSide(V);
+    if (typeof ChartGeo === "undefined") { $("chart-map").parentNode.style.display = "none"; $("map-fallback").style.display = "block"; return; }
+    if (!WORLD) { loadWorld(); return; }
+    var C = V.coverage, byIso = {}, mappedIds = {};
+    WORLD.forEach(function (f) { mappedIds[f.id] = true; });
+    C.countries_price_per_gb.forEach(function (c) { if (c.iso_numeric && c.price_per_gb != null) byIso[c.iso_numeric] = c; });
+    var values = Object.keys(byIso).map(function (k) { return byIso[k].price_per_gb; });
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values), ramp = rampColors();
+    function classOf(v) { return max > min ? Math.min(4, Math.floor(((v - min) / (max - min)) * 5)) : 2; }
+    chart("chart-map", {
+      type: "choropleth",
+      data: { labels: WORLD.map(function (f) { return f.properties.name; }), datasets: [{
+        outline: WORLD, showOutline: true,
+        data: WORLD.map(function (f) { var c = byIso[f.id]; return { feature: f, value: c ? c.price_per_gb : null }; }),
+        backgroundColor: function (ctx) { var d = ctx.raw; return d && d.value != null ? ramp[classOf(d.value)] : css("--grid"); },
+        borderColor: css("--page"), borderWidth: 0.5, hoverBorderColor: css("--ink"), hoverBorderWidth: 1.2
+      }] },
+      options: { maintainAspectRatio: false, animation: false, showOutline: true, showGraticule: false,
+        plugins: { legend: { display: false }, tooltip: Object.assign(tooltipStyle(), { filter: function (i) { return i.raw && i.raw.value != null; },
+          callbacks: { title: function (i) { var c = byIso[i[0].raw.feature.id]; return c ? c.name : ""; }, label: function (i) { var c = byIso[i.raw.feature.id]; return c ? [eur(c.price_per_gb) + " / Go", num(c.offers) + " offres"] : ""; } } }) },
+        scales: { projection: { axis: "x", projection: "equalEarth" }, color: { axis: "x", display: false } } }
+    });
+    var stepW = (max - min) / 5;
+    $("map-legend").innerHTML = values.length ? ramp.map(function (col, k) {
+      return '<span><span class="swatch" style="background:' + col + '"></span>' + eur(min + k * stepW) + (k < 4 ? "–" + eur(min + (k + 1) * stepW) : " et plus") + "</span>";
+    }).join("") + '<span><span class="swatch" style="background:var(--grid)"></span>Hors catalogue</span>' : "";
+    var unmapped = C.countries_price_per_gb.filter(function (c) { return !c.iso_numeric || !mappedIds[c.iso_numeric]; });
+    $("unmapped").innerHTML = unmapped.length ? "<h4>Trop petits pour la carte</h4><ul class=\"zones\">" + unmapped.map(function (c) {
+      return "<li><span><b>" + esc(c.name) + ' <span class="zero">' + esc(c.code) + "</span></b><small>" + num(c.offers) + ' offres</small></span><span class="v">' + (c.price_per_gb == null ? "—" : eur(c.price_per_gb) + "<small> / Go</small>") + "</span></li>";
+    }).join("") + "</ul>" : "";
+  }
+
   // ---------- Orchestration ----------
   function render(animate) {
     current = A.compute(state.rows, { isoNumeric: ISO });
@@ -1281,6 +1628,8 @@
     renderProviders(current);
     renderPricing(current);
     renderDestinations(current);
+    drawHeatmap(current);
+    renderMapSide(current);
     if (animate) { animateCounters($("hero-kpis")); animateCounters($("kpis")); }
     if (window.Chart) drawCharts(current, !animate);
   }
@@ -1295,20 +1644,22 @@
       if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m);
       try { if (m === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", m); } catch (e) {}
       syncButtons();
+      drawHeatmap(current);
       if (window.Chart) drawCharts(current);
     });
   });
   syncButtons();
   if (window.matchMedia) {
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (mq.addEventListener) mq.addEventListener("change", function () { if (mode() === "auto" && window.Chart) drawCharts(current); });
+    if (mq.addEventListener) mq.addEventListener("change", function () { if (mode() === "auto") { drawHeatmap(current); if (window.Chart) drawCharts(current); } });
   }
 
   renderStatic();
   initFilters();
   render(true);
   window.addEventListener("load", function () {
-    if (window.Chart) drawCharts(current); else document.body.classList.add("no-chart");
+    if (window.Chart && window.ChartGeo) Chart.register(ChartGeo.ChoroplethController, ChartGeo.GeoFeature, ChartGeo.ColorScale, ChartGeo.ProjectionScale);
+    if (window.Chart) drawCharts(current); else { document.body.classList.add("no-chart"); renderMapSide(current); $("map-fallback").style.display = "block"; }
     document.documentElement.dataset.ready = "1"; // repère utilisé par le test de rendu
   });
 })();
