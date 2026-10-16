@@ -1,0 +1,5 @@
+sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up
+a1,Prov A,eSIM France 1 Go 7 jours,FR,France,1,1 Go,7,5.00,EUR,4G,oui
+a2,Prov A,eSIM France 10 Go 30 jours,FR,France,10,10 Go,30,20.00,EUR,5G,non
+a3,Prov A,eSIM Amérique du Nord Illimité 30 jours,NA,Amérique du Nord,,Illimité,30,120.00,EUR,5G,oui
+a4,Prov A,eSIM Allemagne 5 Go 7 jours,DE,Allemagne,5,5 Go,7,10.00,EUR,4G,non

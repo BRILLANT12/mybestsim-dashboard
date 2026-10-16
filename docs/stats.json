@@ -1,0 +1,789 @@
+{
+  "headline": {
+    "total_offers": 5056,
+    "expensive": {
+      "threshold": 100,
+      "rule": "strictement supérieur",
+      "count": 56,
+      "unlimited_count": 56,
+      "validity_days": [
+        30
+      ],
+      "max_price_limited": 99.39
+    },
+    "price_range": {
+      "min": {
+        "price": 5.36,
+        "count": 5,
+        "products": [
+          {
+            "sku": "gigsky-102145",
+            "provider": "GigSky",
+            "product_name": "eSIM Vietnam 1 Go 7 jours",
+            "price": 5.36
+          },
+          {
+            "sku": "yesim-103638",
+            "provider": "Yesim",
+            "product_name": "eSIM Afrique du Sud 1 Go 7 jours",
+            "price": 5.36
+          },
+          {
+            "sku": "alosim-103290",
+            "provider": "aloSIM",
+            "product_name": "eSIM Irlande 1 Go 7 jours",
+            "price": 5.36
+          },
+          {
+            "sku": "esimx-101369",
+            "provider": "eSIMX",
+            "product_name": "eSIM Israël 1 Go 7 jours",
+            "price": 5.36
+          },
+          {
+            "sku": "esimx-101400",
+            "provider": "eSIMX",
+            "product_name": "eSIM Colombie 1 Go 7 jours",
+            "price": 5.36
+          }
+        ]
+      },
+      "max": {
+        "price": 154.63,
+        "count": 1,
+        "products": [
+          {
+            "sku": "alosim-103296",
+            "provider": "aloSIM",
+            "product_name": "eSIM Europe Illimité 30 jours",
+            "price": 154.63
+          }
+        ]
+      }
+    },
+    "data": {
+      "mean_gb": 14.4915,
+      "median_gb": 5.0,
+      "offers_with_data": 4403,
+      "unlimited_count": 653,
+      "unlimited_share": 0.1292
+    },
+    "price": {
+      "mean": 29.3013,
+      "median": 20.695,
+      "mean_limited": 24.6285,
+      "mean_unlimited": 60.8086
+    }
+  },
+  "providers": [
+    {
+      "provider": "Airalo",
+      "offers": 722,
+      "share": 0.1428,
+      "mean_price": 27.047,
+      "min_price": 5.38,
+      "mean_data_gb": 12.5293,
+      "unlimited": 91,
+      "price_per_gb": 1.7954,
+      "price_index": 99.9,
+      "share_5g": 0.3019,
+      "share_top_up": 0.5263,
+      "destinations": 54,
+      "source_files": [
+        "airalo.csv"
+      ]
+    },
+    {
+      "provider": "Ubigi",
+      "offers": 562,
+      "share": 0.1112,
+      "mean_price": 29.7595,
+      "min_price": 5.39,
+      "mean_data_gb": 15.7429,
+      "unlimited": 68,
+      "price_per_gb": 1.6266,
+      "price_index": 99.8,
+      "share_5g": 0.3772,
+      "share_top_up": 0.5694,
+      "destinations": 54,
+      "source_files": [
+        "ubigi.csv"
+      ]
+    },
+    {
+      "provider": "eSIMX",
+      "offers": 432,
+      "share": 0.0854,
+      "mean_price": 29.328,
+      "min_price": 5.36,
+      "mean_data_gb": 14.9098,
+      "unlimited": 55,
+      "price_per_gb": 1.6849,
+      "price_index": 99.7,
+      "share_5g": 0.3727,
+      "share_top_up": 0.5324,
+      "destinations": 54,
+      "source_files": [
+        "esimx.csv"
+      ]
+    },
+    {
+      "provider": "Saily",
+      "offers": 382,
+      "share": 0.0756,
+      "mean_price": 28.8587,
+      "min_price": 5.49,
+      "mean_data_gb": 14.0859,
+      "unlimited": 56,
+      "price_per_gb": 1.7181,
+      "price_index": 100.7,
+      "share_5g": 0.3586,
+      "share_top_up": 0.5681,
+      "destinations": 54,
+      "source_files": [
+        "saily.csv"
+      ]
+    },
+    {
+      "provider": "GigSky",
+      "offers": 342,
+      "share": 0.0676,
+      "mean_price": 30.6679,
+      "min_price": 5.36,
+      "mean_data_gb": 15.5973,
+      "unlimited": 44,
+      "price_per_gb": 1.6324,
+      "price_index": 98.6,
+      "share_5g": 0.345,
+      "share_top_up": 0.5292,
+      "destinations": 53,
+      "source_files": [
+        "gigsky.csv"
+      ]
+    },
+    {
+      "provider": "Nomad",
+      "offers": 312,
+      "share": 0.0617,
+      "mean_price": 30.2137,
+      "min_price": 5.38,
+      "mean_data_gb": 14.6442,
+      "unlimited": 45,
+      "price_per_gb": 1.6961,
+      "price_index": 99.8,
+      "share_5g": 0.3558,
+      "share_top_up": 0.5577,
+      "destinations": 53,
+      "source_files": [
+        "nomad.csv"
+      ]
+    },
+    {
+      "provider": "Instabridge",
+      "offers": 282,
+      "share": 0.0558,
+      "mean_price": 30.1909,
+      "min_price": 5.4,
+      "mean_data_gb": 14.6827,
+      "unlimited": 33,
+      "price_per_gb": 1.7436,
+      "price_index": 101.9,
+      "share_5g": 0.3191,
+      "share_top_up": 0.5745,
+      "destinations": 53,
+      "source_files": [
+        "instabridge.csv"
+      ]
+    },
+    {
+      "provider": "aloSIM",
+      "offers": 262,
+      "share": 0.0518,
+      "mean_price": 30.7147,
+      "min_price": 5.36,
+      "mean_data_gb": 15.12,
+      "unlimited": 37,
+      "price_per_gb": 1.6934,
+      "price_index": 101.1,
+      "share_5g": 0.3931,
+      "share_top_up": 0.5267,
+      "destinations": 54,
+      "source_files": [
+        "alosim.csv"
+      ]
+    },
+    {
+      "provider": "Holafly",
+      "offers": 242,
+      "share": 0.0479,
+      "mean_price": 27.9792,
+      "min_price": 5.37,
+      "mean_data_gb": 13.3052,
+      "unlimited": 29,
+      "price_per_gb": 1.786,
+      "price_index": 99.7,
+      "share_5g": 0.343,
+      "share_top_up": 0.5868,
+      "destinations": 54,
+      "source_files": [
+        "holafly.csv"
+      ]
+    },
+    {
+      "provider": "Yesim",
+      "offers": 222,
+      "share": 0.0439,
+      "mean_price": 32.1005,
+      "min_price": 5.36,
+      "mean_data_gb": 16.9639,
+      "unlimited": 28,
+      "price_per_gb": 1.6449,
+      "price_index": 100.7,
+      "share_5g": 0.3559,
+      "share_top_up": 0.545,
+      "destinations": 53,
+      "source_files": [
+        "yesim.csv"
+      ]
+    },
+    {
+      "provider": "Jetpac",
+      "offers": 212,
+      "share": 0.0419,
+      "mean_price": 29.9412,
+      "min_price": 5.53,
+      "mean_data_gb": 15.0815,
+      "unlimited": 28,
+      "price_per_gb": 1.6524,
+      "price_index": 98.4,
+      "share_5g": 0.3066,
+      "share_top_up": 0.5472,
+      "destinations": 54,
+      "source_files": [
+        "jetpac.csv"
+      ]
+    },
+    {
+      "provider": "Truphone",
+      "offers": 202,
+      "share": 0.04,
+      "mean_price": 27.4094,
+      "min_price": 5.47,
+      "mean_data_gb": 13.904,
+      "unlimited": 25,
+      "price_per_gb": 1.654,
+      "price_index": 99.5,
+      "share_5g": 0.3713,
+      "share_top_up": 0.5,
+      "destinations": 52,
+      "source_files": [
+        "truphone.csv"
+      ]
+    },
+    {
+      "provider": "JamboSIM",
+      "offers": 182,
+      "share": 0.036,
+      "mean_price": 30.9764,
+      "min_price": 5.46,
+      "mean_data_gb": 15.8217,
+      "unlimited": 25,
+      "price_per_gb": 1.675,
+      "price_index": 99.9,
+      "share_5g": 0.3352,
+      "share_top_up": 0.4945,
+      "destinations": 51,
+      "source_files": [
+        "jambosim.csv"
+      ]
+    },
+    {
+      "provider": "Flexiroam",
+      "offers": 172,
+      "share": 0.034,
+      "mean_price": 31.3117,
+      "min_price": 5.38,
+      "mean_data_gb": 15.2222,
+      "unlimited": 28,
+      "price_per_gb": 1.6857,
+      "price_index": 100.1,
+      "share_5g": 0.3488,
+      "share_top_up": 0.5581,
+      "destinations": 54,
+      "source_files": [
+        "flexiroam.csv"
+      ]
+    },
+    {
+      "provider": "Yatelo",
+      "offers": 162,
+      "share": 0.032,
+      "mean_price": 30.1331,
+      "min_price": 5.54,
+      "mean_data_gb": 15.0355,
+      "unlimited": 21,
+      "price_per_gb": 1.6333,
+      "price_index": 99.9,
+      "share_5g": 0.3519,
+      "share_top_up": 0.537,
+      "destinations": 46,
+      "source_files": [
+        "yatelo.csv"
+      ]
+    },
+    {
+      "provider": "Maya Mobile",
+      "offers": 152,
+      "share": 0.0301,
+      "mean_price": 28.9091,
+      "min_price": 5.98,
+      "mean_data_gb": 13.4254,
+      "unlimited": 18,
+      "price_per_gb": 1.7762,
+      "price_index": 99.6,
+      "share_5g": 0.3421,
+      "share_top_up": 0.4539,
+      "destinations": 45,
+      "source_files": [
+        "maya.csv"
+      ]
+    },
+    {
+      "provider": "Roamic",
+      "offers": 122,
+      "share": 0.0241,
+      "mean_price": 27.9665,
+      "min_price": 5.95,
+      "mean_data_gb": 13.6147,
+      "unlimited": 13,
+      "price_per_gb": 1.7717,
+      "price_index": 101.7,
+      "share_5g": 0.3361,
+      "share_top_up": 0.5082,
+      "destinations": 49,
+      "source_files": [
+        "roamic.csv"
+      ]
+    },
+    {
+      "provider": "4S eSIM",
+      "offers": 92,
+      "share": 0.0182,
+      "mean_price": 24.2609,
+      "min_price": 5.6,
+      "mean_data_gb": 10.2892,
+      "unlimited": 9,
+      "price_per_gb": 1.8805,
+      "price_index": 100.0,
+      "share_5g": 0.337,
+      "share_top_up": 0.5652,
+      "destinations": 46,
+      "source_files": [
+        "4sesim.csv"
+      ]
+    }
+  ],
+  "pricing": {
+    "price_per_gb": 1.6995,
+    "price_per_gb_median_of_ratios": 2.55,
+    "price_per_gb_mean_of_ratios": 3.1724,
+    "by_data_tier": [
+      {
+        "data_gb": 1.0,
+        "offers": 728,
+        "price_per_gb": 7.0786,
+        "mean_price": 7.0786
+      },
+      {
+        "data_gb": 3.0,
+        "offers": 751,
+        "price_per_gb": 3.827,
+        "mean_price": 11.481
+      },
+      {
+        "data_gb": 5.0,
+        "offers": 767,
+        "price_per_gb": 2.9614,
+        "mean_price": 14.8072
+      },
+      {
+        "data_gb": 10.0,
+        "offers": 709,
+        "price_per_gb": 2.203,
+        "mean_price": 22.0299
+      },
+      {
+        "data_gb": 20.0,
+        "offers": 750,
+        "price_per_gb": 1.6747,
+        "mean_price": 33.4935
+      },
+      {
+        "data_gb": 50.0,
+        "offers": 698,
+        "price_per_gb": 1.2197,
+        "mean_price": 60.9847
+      }
+    ],
+    "by_validity": [
+      {
+        "validity_days": 7,
+        "offers": 1679,
+        "mean_price": 22.8981
+      },
+      {
+        "validity_days": 15,
+        "offers": 1667,
+        "mean_price": 27.3358
+      },
+      {
+        "validity_days": 30,
+        "offers": 1710,
+        "mean_price": 37.5043
+      }
+    ]
+  },
+  "distributions": {
+    "network": [
+      {
+        "value": "4G",
+        "offers": 3302,
+        "share": 0.6531,
+        "mean_price": 27.2217
+      },
+      {
+        "value": "5G",
+        "offers": 1754,
+        "share": 0.3469,
+        "mean_price": 33.2161
+      }
+    ],
+    "network_like_for_like_5g_vs_4g": 1.0092,
+    "top_up": [
+      {
+        "value": "oui",
+        "offers": 2738,
+        "share": 0.5415,
+        "mean_price": 29.0564
+      },
+      {
+        "value": "non",
+        "offers": 2318,
+        "share": 0.4585,
+        "mean_price": 29.5904
+      }
+    ],
+    "top_up_like_for_like_yes_vs_no": 1.0023,
+    "validity": [
+      {
+        "validity_days": 7,
+        "offers": 1679,
+        "share": 0.3321
+      },
+      {
+        "validity_days": 15,
+        "offers": 1667,
+        "share": 0.3297
+      },
+      {
+        "validity_days": 30,
+        "offers": 1710,
+        "share": 0.3382
+      }
+    ],
+    "data_tiers": [
+      {
+        "label": "1 Go",
+        "offers": 728
+      },
+      {
+        "label": "3 Go",
+        "offers": 751
+      },
+      {
+        "label": "5 Go",
+        "offers": 767
+      },
+      {
+        "label": "10 Go",
+        "offers": 709
+      },
+      {
+        "label": "20 Go",
+        "offers": 750
+      },
+      {
+        "label": "50 Go",
+        "offers": 698
+      },
+      {
+        "label": "Illimité",
+        "offers": 653
+      }
+    ]
+  },
+  "coverage": {
+    "countries_count": 50,
+    "regions_count": 4,
+    "top_countries": [
+      {
+        "code": "ID",
+        "name": "Indonésie",
+        "offers": 104,
+        "providers": 18,
+        "min_price": 5.38
+      },
+      {
+        "code": "SA",
+        "name": "Arabie saoudite",
+        "offers": 102,
+        "providers": 18,
+        "min_price": 5.52
+      },
+      {
+        "code": "SG",
+        "name": "Singapour",
+        "offers": 99,
+        "providers": 16,
+        "min_price": 5.47
+      },
+      {
+        "code": "EG",
+        "name": "Égypte",
+        "offers": 98,
+        "providers": 18,
+        "min_price": 5.38
+      },
+      {
+        "code": "US",
+        "name": "États-Unis",
+        "offers": 98,
+        "providers": 17,
+        "min_price": 5.37
+      },
+      {
+        "code": "BE",
+        "name": "Belgique",
+        "offers": 96,
+        "providers": 18,
+        "min_price": 5.38
+      },
+      {
+        "code": "KE",
+        "name": "Kenya",
+        "offers": 96,
+        "providers": 18,
+        "min_price": 5.39
+      },
+      {
+        "code": "CO",
+        "name": "Colombie",
+        "offers": 95,
+        "providers": 18,
+        "min_price": 5.36
+      },
+      {
+        "code": "NL",
+        "name": "Pays-Bas",
+        "offers": 93,
+        "providers": 18,
+        "min_price": 5.52
+      },
+      {
+        "code": "TR",
+        "name": "Turquie",
+        "offers": 93,
+        "providers": 18,
+        "min_price": 5.48
+      }
+    ],
+    "regions": [
+      {
+        "code": "EU",
+        "name": "Europe",
+        "offers": 206,
+        "providers": 18,
+        "min_price": 7.52
+      },
+      {
+        "code": "AS",
+        "name": "Asie",
+        "offers": 194,
+        "providers": 18,
+        "min_price": 7.49
+      },
+      {
+        "code": "NA",
+        "name": "Amérique du Nord",
+        "offers": 192,
+        "providers": 18,
+        "min_price": 7.6
+      },
+      {
+        "code": "WW",
+        "name": "Monde",
+        "offers": 186,
+        "providers": 18,
+        "min_price": 7.91
+      }
+    ],
+    "region_codes_note": {
+      "EU": "Europe",
+      "AS": "Asie",
+      "NA": "Amérique du Nord",
+      "WW": "Monde"
+    }
+  },
+  "insights": [
+    {
+      "id": "expensive_all_unlimited",
+      "highlight": true,
+      "title": "Les 56 produits à plus de 100 € sont tous des forfaits illimités",
+      "text": "Tous sur 30 jours. Le forfait à volume limité le plus cher coûte 99,39 € : au-delà de 100 €, on ne trouve que de l'illimité.",
+      "values": {
+        "count": 56,
+        "max_price_limited": 99.39
+      }
+    },
+    {
+      "id": "volume_discount",
+      "highlight": false,
+      "title": "Le prix au Go baisse fortement avec le volume",
+      "text": "7,08 €/Go pour les forfaits de 1 Go, contre 1,22 €/Go pour ceux de 50 Go, soit 5,8 fois moins cher.",
+      "values": {
+        "from_gb": 1.0,
+        "from": 7.0786,
+        "to_gb": 50.0,
+        "to": 1.2197
+      }
+    },
+    {
+      "id": "5g_premium",
+      "highlight": false,
+      "title": "À offre égale, la 5G coûte presque le même prix que la 4G",
+      "text": "En moyenne brute, la 5G paraît 22 % plus chère. Mais à volume et durée égaux, l'écart n'est que de +0,9 % : la différence brute vient surtout de ce que les offres 5G comptent davantage de gros forfaits.",
+      "values": {
+        "raw": 0.2202,
+        "like_for_like": 0.0092
+      }
+    },
+    {
+      "id": "cheapest_provider",
+      "highlight": false,
+      "title": "Ubigi est le moins cher au Go, mais à offre égale les fournisseurs se valent",
+      "text": "1,63 €/Go, contre 1,88 €/Go pour 4S eSIM, le plus cher au Go. À volume et durée égaux, tous les fournisseurs ont un indice de prix entre 98,4 et 101,9 (100 = prix moyen du marché) : l'écart au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.",
+      "values": {
+        "best": "Ubigi",
+        "worst": "4S eSIM",
+        "best_by_index": "Jetpac",
+        "index_min": 98.4,
+        "index_max": 101.9
+      }
+    }
+  ],
+  "meta": {
+    "generated_at": "2026-10-16T18:40:46+02:00",
+    "files_count": 18,
+    "providers_count": 18
+  },
+  "anomalies": {
+    "errors": 0,
+    "warnings": 0,
+    "rows_read": 5056,
+    "rows_excluded": 0,
+    "by_rule": [],
+    "details": [],
+    "files": [
+      {
+        "file": "4sesim.csv",
+        "rows": 92,
+        "status": "ok"
+      },
+      {
+        "file": "airalo.csv",
+        "rows": 722,
+        "status": "ok"
+      },
+      {
+        "file": "alosim.csv",
+        "rows": 262,
+        "status": "ok"
+      },
+      {
+        "file": "esimx.csv",
+        "rows": 432,
+        "status": "ok"
+      },
+      {
+        "file": "flexiroam.csv",
+        "rows": 172,
+        "status": "ok"
+      },
+      {
+        "file": "gigsky.csv",
+        "rows": 342,
+        "status": "ok"
+      },
+      {
+        "file": "holafly.csv",
+        "rows": 242,
+        "status": "ok"
+      },
+      {
+        "file": "instabridge.csv",
+        "rows": 282,
+        "status": "ok"
+      },
+      {
+        "file": "jambosim.csv",
+        "rows": 182,
+        "status": "ok"
+      },
+      {
+        "file": "jetpac.csv",
+        "rows": 212,
+        "status": "ok"
+      },
+      {
+        "file": "maya.csv",
+        "rows": 152,
+        "status": "ok"
+      },
+      {
+        "file": "nomad.csv",
+        "rows": 312,
+        "status": "ok"
+      },
+      {
+        "file": "roamic.csv",
+        "rows": 122,
+        "status": "ok"
+      },
+      {
+        "file": "saily.csv",
+        "rows": 382,
+        "status": "ok"
+      },
+      {
+        "file": "truphone.csv",
+        "rows": 202,
+        "status": "ok"
+      },
+      {
+        "file": "ubigi.csv",
+        "rows": 562,
+        "status": "ok"
+      },
+      {
+        "file": "yatelo.csv",
+        "rows": 162,
+        "status": "ok"
+      },
+      {
+        "file": "yesim.csv",
+        "rows": 222,
+        "status": "ok"
+      }
+    ]
+  }
+}
