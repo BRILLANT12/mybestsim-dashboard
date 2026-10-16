@@ -522,3 +522,42 @@ footer.foot { background: #0b1b3a; color: #b4c6e6; font-size: 13.5px; padding: 6
   .menu-btn[aria-expanded="true"] + ul { display: flex; }
   .sitenav a { padding: 10px 12px; }
 }
+
+/* ---------- Comment c'est construit ---------- */
+.pipeline { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); counter-reset: step; }
+@media (max-width: 860px) { .pipeline { grid-template-columns: minmax(0, 1fr); } }
+.pipeline li { position: relative; display: grid; gap: 6px; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); counter-increment: step; }
+.pipeline li + li { margin-top: 0; }
+.pipeline li::before { content: counter(step); position: absolute; top: 14px; right: 16px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.12em; }
+.pipeline b { color: var(--ink); font-size: 15px; }
+.pipeline span:not(.step-ico) { color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.step-ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--brand-soft); color: var(--brand-ink); }
+.figures { list-style: none; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) { .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.figures li { display: grid; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); }
+.figures li + li { margin-top: 0; }
+.figures b { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.figures span { color: var(--ink-2); font-size: 13.5px; }
+code.block { display: block; margin-top: 8px; padding: 10px 12px; white-space: normal; word-break: break-word; line-height: 1.6; }
+.toc { margin: 16px 0 24px; padding: 16px 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card-2); }
+.toc ul { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 28px; }
+@media (max-width: 760px) { .toc ul { columns: 1; } }
+.toc li { break-inside: avoid; margin: 0 0 6px; font-size: 13.5px; }
+.toc li.lvl-3 { padding-left: 14px; }
+.journal h2 { font-size: 22px; margin: 40px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); }
+.journal h3 { font-size: 18px; margin: 32px 0 10px; }
+.journal h4 { font-size: 15.5px; margin: 24px 0 8px; }
+.journal hr { display: none; }
+.journal code { white-space: normal; word-break: break-word; }
+
+/* ---------- Fiches fournisseurs ---------- */
+.crumbs { margin: 0 0 24px; font-size: 13.5px; color: var(--muted); }
+.card-title { font-size: 16px; margin: 0; }
+.delta { color: var(--muted); }
+.delta.good { color: var(--good); }
+.delta.bad { color: var(--warn); }
+.hbars { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.hbars li { display: grid; grid-template-columns: 72px minmax(0, 1fr) 48px; gap: 10px; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.hbars i { display: block; height: 10px; border-radius: 4px; background: var(--series-1); }
+.hbars b { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); }
+.prose-page > .wrap > .kpis { margin-top: 0; }

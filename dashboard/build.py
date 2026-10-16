@@ -9,10 +9,12 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from dashboard import pages, site, stats
+import pandas as pd
+
+from dashboard import pages, profiles, site, stats
 from dashboard.dataset import encode_offers
 from dashboard.anomalies import ERROR, RULES, WARNING
-from dashboard.config import DATA_DIR, DEFAULT_REPOSITORY, EXPECTED_COLUMNS, OUTPUT_DIR, VENDOR_DIR
+from dashboard.config import DATA_DIR, DEFAULT_REPOSITORY, EXPECTED_COLUMNS, OUTPUT_DIR, REGION_CODES, VENDOR_DIR
 from dashboard.dataset import decode_offers
 from dashboard.loader import load_providers
 from dashboard.validation import validate
@@ -70,6 +72,8 @@ def build(data_dir: Path, now: datetime | None = None) -> tuple[dict, dict]:
         "files_count": sum(1 for f in loaded.files if f["status"] == "ok"),
         "providers_count": len(result["providers"]),
     }
+    # Une fiche par fournisseur : le tableau de bord pointe vers chacune.
+    result["provider_pages"] = profiles.page_paths([p["provider"] for p in result["providers"]])
     result["anomalies"] = anomaly_report(
         loaded.anomalies + validated.anomalies, loaded.files, validated.total_rows, validated.excluded_rows
     )
@@ -166,11 +170,45 @@ def write_assets(out_dir: Path) -> None:
     )
 
 
-def write_pages(result: dict, out_dir: Path) -> None:
+def offers_frame(offers: dict) -> pd.DataFrame:
+    """Offres valides reconstruites depuis leur encodage (testé sans perte) pour les fiches."""
+    df = pd.DataFrame(decode_offers(offers), columns=EXPECTED_COLUMNS)
+    df["data_gb"] = pd.to_numeric(df["data_gb"], errors="coerce").astype(float)
+    df["price"] = df["price"].astype(float)
+    df["is_unlimited"] = df["data_gb"].isna()
+    df["is_region"] = df["country_code"].isin(list(REGION_CODES))
+    return df
+
+
+def write_provider_pages(result: dict, offers: dict, out_dir: Path, context: dict) -> list[Path]:
+    """Une fiche par fournisseur ; les fiches d'un fournisseur disparu de data/ sont supprimées."""
+    folder = out_dir / "fournisseurs"
+    folder.mkdir(parents=True, exist_ok=True)
+    paths = result["provider_pages"]
+    df = offers_frame(offers)
+    market = profiles.market_summary(result)
+    names = sorted(paths)
+    written = []
+    for i, name in enumerate(names):
+        neighbours = (names[i - 1] if i > 0 else None, names[i + 1] if i + 1 < len(names) else None)
+        html = pages.provider_page(profiles.profile(df, name, result), market, context, neighbours, paths)
+        target = out_dir / paths[name]
+        target.write_text(html, encoding="utf-8")
+        written.append(target)
+    keep = {t.resolve() for t in written}
+    for stale in folder.glob("*.html"):
+        if stale.resolve() not in keep and stale.resolve().parent == folder.resolve():
+            stale.unlink()
+    return written
+
+
+def write_pages(result: dict, out_dir: Path, offers: dict | None = None) -> None:
     """Pages de contenu générées à chaque build."""
     context = page_context(result)
     (out_dir / "mentions-legales.html").write_text(pages.legal_page(context), encoding="utf-8")
     (out_dir / "comment-c-est-construit.html").write_text(pages.built_page(context), encoding="utf-8")
+    if offers and result.get("provider_pages"):
+        write_provider_pages(result, offers, out_dir, context)
 
 
 def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tuple[Path, Path]:
@@ -181,7 +219,7 @@ def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tu
     html_path = out_dir / "index.html"
     html_path.write_text(render_html(result, offers), encoding="utf-8")
     (out_dir / CSV_EXPORT).write_text(offers_csv(offers or {"fields": [], "currency": "EUR", "dict": {"country": []}, "rows": []}), encoding="utf-8")
-    write_pages(result, out_dir)
+    write_pages(result, out_dir, offers)
     return json_path, html_path
 
 

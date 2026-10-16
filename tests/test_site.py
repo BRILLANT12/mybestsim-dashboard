@@ -173,7 +173,9 @@ def test_footer_is_on_every_page_with_all_links(site):
 
 
 def test_no_email_or_phone_number_anywhere(site):
-    email = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+    # Seules exceptions : les adresses techniques « noreply » (identité des commits, publique dans
+    # l'historique git, et co-auteur), reproduites dans les notes. Aucune n'est un contact.
+    email = re.compile(r"[\w.+-]+@(?!users\.noreply\.github\.com\b)(?<!noreply@)[\w-]+\.[\w.]+")
     phone = re.compile(r"(?:\+33|\b0[1-9])(?:[ .-]?\d{2}){4}\b|\+1[ (]*\d{3}")
     for page in pages(site):
         text = page.read_text(encoding="utf-8")

@@ -1,11 +1,49 @@
-"""Pages de contenu générées : mentions légales (et, au lot D, « Comment c'est construit »
-et les fiches fournisseurs)."""
+"""Pages de contenu générées : mentions légales, « Comment c'est construit » et fiches fournisseurs."""
 
+import re
 from datetime import date
 from html import escape
+from pathlib import Path
 
-from dashboard import site
-from dashboard.config import AUTHOR, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL
+from dashboard import markdown, site
+from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL, ROOT_DIR
+
+NBSP = "\u202f"
+
+
+def _n(v, d=0):
+    if v is None:
+        return "—"
+    return f"{v:,.{d}f}".replace(",", NBSP).replace(".", ",")
+
+
+def _eur(v, d=2):
+    return "—" if v is None else f"{_n(v, d)}{NBSP}€"
+
+
+def _pct(v, d=0):
+    return "—" if v is None else f"{_n(v * 100, d)}{NBSP}%"
+
+
+def _points(share, reference):
+    """Écart entre deux parts, en points (38 % contre 35 % : +3 points, et non « 9 % de plus »)."""
+    if share is None or reference is None:
+        return ""
+    pts = round((share - reference) * 100)
+    gap = "au niveau du marché" if pts == 0 else f"{'+' if pts > 0 else '−'}{abs(pts)} point{'s' if abs(pts) > 1 else ''} par rapport au marché"
+    return f'<span class="delta">{gap} ({_pct(reference)})</span>'
+
+
+def _delta(value, reference, fmt, lower_is_better=True):
+    """« 3 % moins cher que le marché » : écart relatif lisible, avec le sens."""
+    if value is None or not reference:
+        return ""
+    gap = value / reference - 1
+    if abs(gap) < 0.005:
+        return '<span class="delta">au niveau du marché</span>'
+    good = (gap < 0) == lower_is_better
+    word = ("moins" if gap < 0 else "plus") + (" cher" if lower_is_better else "")
+    return f'<span class="delta {"good" if good else "bad"}">{_pct(abs(gap))} {word} que le marché ({fmt(reference)})</span>'
 
 
 def _french_day(iso: str) -> str:
@@ -76,13 +114,92 @@ def legal_page(context: dict) -> str:
     )
 
 
-def built_page(context: dict, notes_html: str = "") -> str:
-    """« Comment c'est construit » (version courte, complétée au lot D)."""
-    content = """
+
+
+PIPELINE = [
+    ("file", "Fichiers CSV", "Un fichier par fournisseur dans <code>data/</code>. Tout nouveau fichier est pris en compte automatiquement."),
+    ("shield", "Validation Python", "Lecture robuste (pandas), 20 contrôles par ligne et par fichier : les erreurs sont exclues, les avertissements signalés."),
+    ("data", "Calculs", "Indicateurs, comparaisons à offre égale, constats rédigés à partir des chiffres, fiches fournisseurs."),
+    ("check", "Tests", "pytest sur les calculs ; Node vérifie que le moteur JS donne les mêmes chiffres que Python ; Chrome teste le rendu, l'accessibilité et la vie privée."),
+    ("refresh", "GitHub Action", "À chaque modification de <code>data/</code>, chaque jour et à la demande : tests, régénération, publication."),
+    ("globe", "GitHub Pages", "Site statique (<code>docs/</code>) : aucune base de données, aucun serveur applicatif, aucun tiers."),
+]
+
+CHOICES = [
+    ("Python + pandas pour les calculs", "Lecture et contrôle de milliers de lignes en quelques lignes de code, avec des tests précis. Python reste la source de vérité de tous les chiffres."),
+    ("Un site statique", "Rien à administrer ni à sécuriser côté serveur : le site est régénéré puis publié tel quel. Il s'ouvre même en double-clic, sans serveur."),
+    ("Un moteur de calcul JavaScript, testé contre Python", "Les filtres recalculent tout dans le navigateur, sans aller-retour réseau. Un test exécute ce moteur avec Node et exige exactement les mêmes chiffres que Python."),
+    ("Chart.js plutôt qu'un framework", "Une librairie de graphiques légère, en version figée, sans framework applicatif : la page reste rapide et lisible."),
+    ("Des décisions écrites et justifiées", "Illimités hors moyenne de data, seuil strictement supérieur à 100 €, prix au Go total ÷ total, comparaisons à offre égale : chaque choix est expliqué dans la Méthodologie du tableau de bord."),
+    ("Des données contrôlées, jamais ignorées", "Une anomalie n'arrête pas la génération : elle est classée, comptée et affichée, ligne par ligne."),
+]
+
+
+def _count_tests() -> int:
+    tests = ROOT_DIR / "tests"
+    return sum(len(re.findall(r"^def test_", f.read_text(encoding="utf-8"), re.M)) for f in tests.glob("test_*.py")) if tests.exists() else 0
+
+
+def built_page(context: dict) -> str:
+    """« Comment c'est construit » : pipeline, choix, sécurité."""
+    notes_path = ROOT_DIR / "NOTES.md"
+    notes_html, toc = markdown.render(notes_path.read_text(encoding="utf-8"), heading_offset=1) if notes_path.exists() else ("", [])
+    steps = "\n".join(
+        f'<li><span class="step-ico"><svg class="icon" aria-hidden="true"><use href="#i-{ico}"/></svg></span><b>{escape(t)}</b><span>{d}</span></li>'
+        for ico, t, d in PIPELINE
+    )
+    choices = "\n".join(f"<li><b>{escape(t)}.</b> {escape(d)}</li>" for t, d in CHOICES)
+    toc_html = "\n".join(
+        f'<li class="lvl-{t["level"]}"><a href="#{t["id"]}">{markdown.inline(t["text"])}</a></li>' for t in toc if t["level"] in (2, 3)
+    )
+    n_tests = _count_tests()
+    repo = context["version"]["repo_url"]
+    content = f"""
 <div class="wrap prose">
   <section aria-labelledby="pipeline">
     <h2 id="pipeline">Le pipeline</h2>
-    <p>Les fichiers CSV des fournisseurs sont validés et agrégés en Python, testés, puis publiés en site statique par une GitHub Action.</p>
+    <p>Du fichier déposé par un fournisseur à la page publiée, chaque étape est automatique et vérifiée.</p>
+    <ol class="pipeline" aria-label="Étapes du pipeline">
+{steps}
+    </ol>
+  </section>
+
+  <section aria-labelledby="choix">
+    <h2 id="choix">Choix techniques, et pourquoi</h2>
+    <ul>
+{choices}
+    </ul>
+  </section>
+
+  <section aria-labelledby="securite">
+    <h2 id="securite">Sécurité et vie privée</h2>
+    <ul>
+      <li><b>Aucun tiers.</b> La police, les librairies et le fond de carte sont hébergés sur le site ; leurs empreintes SHA-384 sont figées et vérifiées par les tests.</li>
+      <li><b>Aucun cookie, aucun traceur.</b> Seule la préférence de thème est stockée, dans le navigateur, si vous la choisissez (voir les <a href="mentions-legales.html#cookies">mentions légales</a>).</li>
+      <li><b>Politique de sécurité du contenu (CSP) stricte</b>, identique sur toutes les pages : aucun script en ligne, aucune ressource externe, aucune connexion réseau.<br><code class="block">{escape(CONTENT_SECURITY_POLICY)}</code></li>
+      <li><b>Données intégrées sans risque d'injection</b> : les chiffres sont placés dans la page comme données JSON (jamais exécutées), en échappant les caractères qui pourraient fermer une balise.</li>
+      <li><b>Vérifié automatiquement</b> : un test ouvre chaque page dans Chrome avec le réseau externe coupé et vérifie l'absence d'erreur, de violation de CSP, de requête sortante et de cookie.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="qualite-code">
+    <h2 id="qualite-code">En chiffres</h2>
+    <ul class="figures">
+      <li><b>{n_tests}</b><span>fonctions de test (Python, Node, Chrome)</span></li>
+      <li><b>20</b><span>contrôles de qualité par import</span></li>
+      <li><b>0</b><span>cookie, traceur ou requête vers un tiers</span></li>
+      <li><b>AA</b><span>contrastes WCAG vérifiés en clair et en sombre</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="journal-ia">
+    <h2 id="journal-ia">Journal de construction avec l'IA</h2>
+    <nav class="toc" aria-label="Sommaire du journal"><ul>
+{toc_html}
+    </ul></nav>
+    <div class="journal">
+{notes_html}
+    </div>
   </section>
 </div>
 """
@@ -91,8 +208,96 @@ def built_page(context: dict, notes_html: str = "") -> str:
         description="Pipeline, choix techniques, sécurité et journal de construction de l'Observatoire eSIM.",
         eyebrow="Coulisses",
         heading="Comment c'est construit",
-        lead="Du fichier CSV à la page publiée : pipeline, choix techniques, sécurité et journal de travail avec l'IA.",
+        lead="Du fichier CSV à la page publiée : pipeline, choix techniques, sécurité, et le journal de travail avec l'IA.",
         content=content,
         active="comment-c-est-construit.html",
+        context=context,
+    )
+
+
+def provider_page(p: dict, market: dict, context: dict, neighbours: tuple[str | None, str | None], paths: dict) -> str:
+    """Fiche d'un fournisseur (page dans fournisseurs/, d'où le préfixe ../)."""
+    root = "../"
+    prev_name, next_name = neighbours
+    link = lambda name: f'<a href="{root}{paths[name]}">{escape(name)}</a>'  # noqa: E731
+
+    def kpi(label, value, sub):
+        return f'<article class="card kpi"><div class="kpi-top">{label}</div><div class="kpi-value">{value}</div><div class="kpi-sub">{sub}</div></article>'
+
+    rank_ppg = f"{p['rank_price_per_gb']}<sup>e</sup> sur {p['providers_count']}" if p["rank_price_per_gb"] else "—"
+    rank_ppg = rank_ppg.replace("1<sup>e</sup>", "1<sup>er</sup>", 1) if p["rank_price_per_gb"] == 1 else rank_ppg
+    index = p["price_index"]
+    index_txt = ("au prix moyen du marché" if abs(index - 100) < 0.5 else
+                 f"{_n(abs(index - 100), 1)} % {'moins cher' if index < 100 else 'plus cher'} que le marché, à offre comparable")
+    kpis = "".join([
+        kpi("Offres", _n(p["offers"]), f"{_pct(p['share'], 1)} du catalogue · dont {_n(p['unlimited'])} illimités"),
+        kpi("Prix moyen", _eur(p["mean_price"]), _delta(p["mean_price"], market["mean_price"], _eur)),
+        kpi("Prix au Go", _eur(p["price_per_gb"], 3), f"{rank_ppg} · " + _delta(p["price_per_gb"], market["price_per_gb"], _eur)),
+        kpi("Indice de prix", _n(index, 1), index_txt),
+        kpi("Offres 5G", _pct(p["share_5g"]), _points(p["share_5g"], market["share_5g"])),
+        kpi("Recharge possible", _pct(p["share_top_up"]), _points(p["share_top_up"], market["share_top_up"])),
+    ])
+    best_rows = "".join(
+        f"<tr><td class=\"n\">{i}</td><td class=\"wrap-sm\">{escape(o['product_name'])}</td><td>{escape(o['data_display'])}</td>"
+        f"<td class=\"n\">{o['validity_days']} j</td><td>{escape(o['network'])}</td><td>{escape(o['top_up'])}</td>"
+        f"<td class=\"n\"><b>{_eur(o['price'])}</b></td><td class=\"n\">{_eur(o['price_per_gb'], 3)}</td></tr>"
+        for i, o in enumerate(p["best_offers"], 1)
+    )
+    dest_rows = "".join(
+        f"<tr><td>{escape(d['name'])} <span class=\"zero\">{escape(d['code'])}</span>{' <span class=\"badge region\">zone</span>' if d['is_region'] else ''}</td>"
+        f"<td class=\"n\">{_n(d['offers'])}</td><td class=\"n\">{_eur(d['min_price'])}</td><td class=\"n\">{_eur(d['price_per_gb'])}</td></tr>"
+        for d in p["destinations"]
+    )
+    max_tier = max([t["offers"] for t in p["data_tiers"]] + [1])
+    tiers = "".join(
+        f'<li><span>{escape(t["label"])}</span><i style="width:{t["offers"] / max_tier * 100:.1f}%"></i><b>{_n(t["offers"])}</b></li>'
+        for t in p["data_tiers"]
+    )
+    by_validity = " · ".join(f"{c['validity_days']} j : <b>{_n(c['index'], 1)}</b>" for c in p["index_by_validity"])
+    nav = " · ".join(x for x in [
+        f"← {link(prev_name)}" if prev_name else "",
+        f'<a href="{root}index.html#fournisseurs">Tous les fournisseurs</a>',
+        f"{link(next_name)} →" if next_name else "",
+    ] if x)
+    content = f"""
+<div class="wrap">
+  <p class="crumbs">{nav}</p>
+  <div class="kpis">{kpis}</div>
+
+  <div class="grid" style="margin-top:24px">
+    <section class="card" aria-labelledby="meilleures">
+      <h2 id="meilleures" class="card-title">Les {len(p['best_offers'])} meilleures offres au Go</h2>
+      <p class="sub">Forfaits à volume limité, classés par prix au Go</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th class="n">#</th><th>Offre</th><th>Data</th><th class="n">Durée</th><th>Réseau</th><th>Recharge</th><th class="n">Prix</th><th class="n">€ / Go</th></tr></thead>
+        <tbody>{best_rows}</tbody>
+      </table></div>
+    </section>
+    <section class="card" aria-labelledby="volumes">
+      <h2 id="volumes" class="card-title">Volumes proposés</h2>
+      <p class="sub">Nombre d'offres par palier · indice de prix par durée : {by_validity}</p>
+      <ul class="hbars">{tiers}</ul>
+      <p class="note">Indice : 100 = prix moyen des offres comparables de tout le marché (même volume, même durée). Source : {", ".join(f"<code>{escape(f)}</code>" for f in p["source_files"])}.</p>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px" aria-labelledby="destinations">
+    <h2 id="destinations" class="card-title">Destinations couvertes</h2>
+    <p class="sub">{p['countries_count']} pays et {p['regions_count']} zones régionales</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Destination</th><th class="n">Offres</th><th class="n">Dès</th><th class="n">€ / Go</th></tr></thead>
+      <tbody>{dest_rows}</tbody>
+    </table></div>
+  </section>
+</div>
+"""
+    return site.page(
+        title=f"{p['provider']} · Fiche fournisseur · Observatoire eSIM",
+        description=f"Fiche du fournisseur eSIM {p['provider']} : offres, prix, prix au Go, indice de prix, destinations.",
+        eyebrow="Fiche fournisseur",
+        heading=escape(p["provider"]),
+        lead=f"{_n(p['offers'])} offres · {p['countries_count']} pays et {p['regions_count']} zones · prix au Go {_eur(p['price_per_gb'])}",
+        content=content,
+        root=root,
         context=context,
     )

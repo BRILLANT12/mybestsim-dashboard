@@ -32,16 +32,26 @@ PROBE = (
 )
 
 
-def instrument(html_path: Path, action: str = "", name: str = "probe.html") -> Path:
-    """Copie de la page avec les sondes (fichiers dans assets/) ; renvoie son chemin."""
-    assets = html_path.parent / "assets"
+def site_root(page: Path) -> Path:
+    """Dossier racine du site (celui qui contient assets/site.css ou assets/), en remontant depuis la page."""
+    for parent in page.parents:
+        if (parent / "assets").is_dir():
+            return parent
+    return page.parent
+
+
+def instrument(html_path: Path, action: str = "", name: str = "") -> Path:
+    """Copie de la page avec les sondes (fichiers dans assets/ : la CSP interdit le code en ligne)."""
+    root = site_root(html_path)
+    assets = root / "assets"
+    assets.mkdir(exist_ok=True)
     (assets / "_catch.js").write_text(CATCH, encoding="utf-8")
     (assets / "_probe.js").write_text(PROBE.replace("__ACTION__", action), encoding="utf-8")
-    prefix = "../" * (len(html_path.relative_to(html_path.parent).parts) - 1)
+    prefix = "../" * (len(html_path.relative_to(root).parts) - 1)
     html = html_path.read_text(encoding="utf-8")
     html = html.replace("<head>", f'<head>\n<script src="{prefix}assets/_catch.js"></script>', 1)
     html = html.replace("</body>", f'<script src="{prefix}assets/_probe.js"></script>\n</body>', 1)
-    page = html_path.parent / name
+    page = html_path.parent / (name or f"probe-{html_path.stem}.html")
     page.write_text(html, encoding="utf-8")
     return page
 

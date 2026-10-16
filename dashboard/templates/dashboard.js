@@ -253,7 +253,10 @@
     var rank = function (name) { return podium.indexOf(name); };
     var maxOffers = Math.max.apply(null, V.providers.map(function (p) { return p.offers; }).concat([1]));
     table($("providers-table"), [
-      { label: "Fournisseur", key: function (x) { return x.provider; }, fmt: function (x) { var k = rank(x.provider); return (k >= 0 ? '<span class="rank" title="Podium du prix au Go">' + (k + 1) + "</span>" : "") + esc(x.provider); } },
+      { label: "Fournisseur", key: function (x) { return x.provider; }, fmt: function (x) {
+        var k = rank(x.provider), page = (S.provider_pages || {})[x.provider];
+        return (k >= 0 ? '<span class="rank" title="Podium du prix au Go">' + (k + 1) + "</span>" : "") +
+          (page ? '<a href="' + esc(page) + '" title="Voir la fiche de ' + esc(x.provider) + '">' + esc(x.provider) + "</a>" : esc(x.provider)); } },
       { label: "Offres", n: true, key: function (x) { return x.offers; }, fmt: function (x) { return '<span class="bar-cell"><i style="width:' + Math.round((x.offers / maxOffers) * 56) + 'px" aria-hidden="true"></i>' + num(x.offers) + "</span>"; } },
       { label: "Part", n: true, key: function (x) { return x.share; }, fmt: function (x) { return pct(x.share, 1); } },
       { label: "Prix moyen", n: true, key: function (x) { return x.mean_price; }, fmt: function (x) { return eur(x.mean_price); } },

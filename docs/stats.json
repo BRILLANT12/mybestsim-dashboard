@@ -1640,9 +1640,29 @@
     }
   ],
   "meta": {
-    "generated_at": "2026-10-16T20:31:47+02:00",
+    "generated_at": "2026-10-16T20:38:40+02:00",
     "files_count": 18,
     "providers_count": 18
+  },
+  "provider_pages": {
+    "4S eSIM": "fournisseurs/4s-esim.html",
+    "Airalo": "fournisseurs/airalo.html",
+    "Flexiroam": "fournisseurs/flexiroam.html",
+    "GigSky": "fournisseurs/gigsky.html",
+    "Holafly": "fournisseurs/holafly.html",
+    "Instabridge": "fournisseurs/instabridge.html",
+    "JamboSIM": "fournisseurs/jambosim.html",
+    "Jetpac": "fournisseurs/jetpac.html",
+    "Maya Mobile": "fournisseurs/maya-mobile.html",
+    "Nomad": "fournisseurs/nomad.html",
+    "Roamic": "fournisseurs/roamic.html",
+    "Saily": "fournisseurs/saily.html",
+    "Truphone": "fournisseurs/truphone.html",
+    "Ubigi": "fournisseurs/ubigi.html",
+    "Yatelo": "fournisseurs/yatelo.html",
+    "Yesim": "fournisseurs/yesim.html",
+    "aloSIM": "fournisseurs/alosim.html",
+    "eSIMX": "fournisseurs/esimx.html"
   },
   "anomalies": {
     "errors": 0,

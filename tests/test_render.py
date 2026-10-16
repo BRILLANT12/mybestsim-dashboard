@@ -196,3 +196,12 @@ def test_section_menu_is_never_cut(width, tmp_path):
     assert links == "9" and cut == "0" and probe["overflow"] is False
     if width == 1280:
         assert scrolls == "false"  # tout tient sur un écran de portable
+
+
+def test_provider_table_links_to_existing_pages(tmp_path):
+    action = ("window.__extra=Array.prototype.map.call(document.querySelectorAll('#providers-table tbody td:first-child a'),"
+              "function(a){return a.getAttribute('href')}).join('|');")
+    probe = render(FIXTURES / "calculs", tmp_path, action=action)
+    hrefs = probe["extra"].split("|")
+    assert sorted(hrefs) == ["fournisseurs/prov-a.html", "fournisseurs/prov-b.html"]
+    assert all((tmp_path / h).exists() for h in hrefs)

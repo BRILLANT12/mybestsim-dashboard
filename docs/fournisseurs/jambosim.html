@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>JamboSIM · Fiche fournisseur · Observatoire eSIM</title>
+<meta name="description" content="Fiche du fournisseur eSIM JamboSIM : offres, prix, prix au Go, indice de prix, destinations.">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
+<script src="../assets/site.js" defer></script>
+
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="hero hero-compact" id="haut">
+  <div class="wrap">
+<!-- Icônes (tracés simples, style « Lucide ») -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sim" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><rect x="9" y="11" width="6" height="6" rx="1"/></symbol>
+  <symbol id="i-euro" viewBox="0 0 24 24"><path d="M17 6.5A7 7 0 1 0 17 17.5"/><path d="M4 10h9M4 14h9"/></symbol>
+  <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+  <symbol id="i-range" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M7 8l-4 4 4 4M17 8l4 4-4 4"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/></symbol>
+  <symbol id="i-infinity" viewBox="0 0 24 24"><path d="M7.5 15.5C5 15.5 3 13.9 3 12s2-3.5 4.5-3.5C11 8.5 13 15.5 16.5 15.5 19 15.5 21 13.9 21 12s-2-3.5-4.5-3.5C13 8.5 11 15.5 7.5 15.5z"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 20v-3M10 20v-7M15 20v-11M20 20V5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.7L16 9.5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 19h16"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 21h14"/><path d="M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6 0C6.8 2.8 5.8 3.1 5.8 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></symbol>
+  <symbol id="i-cookie" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 4 4 0 0 1-5-4 4 4 0 0 1-4-5z"/><path d="M8.5 11.5v.01M12 15.5v.01M15.5 13v.01M9 16v.01"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></symbol>
+</svg>
+    <div class="topbar">
+      <a class="brand" href="../index.html" aria-label="Observatoire MyBestSim, accueil">
+        <span class="brand-mark" aria-hidden="true">MB</span>
+        <span><b>MyBestSim</b> <span>Observatoire</span></span>
+      </a>
+      <nav class="sitenav" aria-label="Pages du site">
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu"><svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>Menu</button>
+        <ul id="site-menu">
+          <li><a href="../index.html">Tableau de bord</a></li>
+          <li><a href="../comment-c-est-construit.html">Comment c&#x27;est construit</a></li>
+          <li><a href="../mentions-legales.html">Mentions légales</a></li>
+        </ul>
+      </nav>
+      <div class="theme-switch" role="group" aria-label="Thème d'affichage">
+        <button type="button" data-mode="auto" title="Thème automatique" aria-label="Thème automatique"><svg class="icon" aria-hidden="true"><use href="#i-auto"/></svg></button>
+        <button type="button" data-mode="light" title="Thème clair" aria-label="Thème clair"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></button>
+        <button type="button" data-mode="dark" title="Thème sombre" aria-label="Thème sombre"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+      </div>
+    </div>
+    <div class="hero-head">
+      <p class="eyebrow">Fiche fournisseur</p>
+      <h1>JamboSIM</h1>
+      <p class="hero-sub">182 offres · 47 pays et 4 zones · prix au Go 1,68 €</p>
+    </div>
+  </div>
+</header>
+<main id="main" class="prose-page">
+
+<div class="wrap">
+  <p class="crumbs">← <a href="../fournisseurs/instabridge.html">Instabridge</a> · <a href="../index.html#fournisseurs">Tous les fournisseurs</a> · <a href="../fournisseurs/jetpac.html">Jetpac</a> →</p>
+  <div class="kpis"><article class="card kpi"><div class="kpi-top">Offres</div><div class="kpi-value">182</div><div class="kpi-sub">3,6 % du catalogue · dont 25 illimités</div></article><article class="card kpi"><div class="kpi-top">Prix moyen</div><div class="kpi-value">30,98 €</div><div class="kpi-sub"><span class="delta bad">6 % plus cher que le marché (29,30 €)</span></div></article><article class="card kpi"><div class="kpi-top">Prix au Go</div><div class="kpi-value">1,675 €</div><div class="kpi-sub">7<sup>e</sup> sur 18 · <span class="delta good">1 % moins cher que le marché (1,70 €)</span></div></article><article class="card kpi"><div class="kpi-top">Indice de prix</div><div class="kpi-value">99,9</div><div class="kpi-sub">au prix moyen du marché</div></article><article class="card kpi"><div class="kpi-top">Offres 5G</div><div class="kpi-value">34 %</div><div class="kpi-sub"><span class="delta">−1 point par rapport au marché (35 %)</span></div></article><article class="card kpi"><div class="kpi-top">Recharge possible</div><div class="kpi-value">49 %</div><div class="kpi-sub"><span class="delta">−5 points par rapport au marché (54 %)</span></div></article></div>
+
+  <div class="grid" style="margin-top:24px">
+    <section class="card" aria-labelledby="meilleures">
+      <h2 id="meilleures" class="card-title">Les 5 meilleures offres au Go</h2>
+      <p class="sub">Forfaits à volume limité, classés par prix au Go</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th class="n">#</th><th>Offre</th><th>Data</th><th class="n">Durée</th><th>Réseau</th><th>Recharge</th><th class="n">Prix</th><th class="n">€ / Go</th></tr></thead>
+        <tbody><tr><td class="n">1</td><td class="wrap-sm">eSIM Chine 50 Go 7 jours</td><td>50 Go</td><td class="n">7 j</td><td>5G</td><td>oui</td><td class="n"><b>46,04 €</b></td><td class="n">0,921 €</td></tr><tr><td class="n">2</td><td class="wrap-sm">eSIM Pays-Bas 50 Go 7 jours</td><td>50 Go</td><td class="n">7 j</td><td>4G</td><td>oui</td><td class="n"><b>48,43 €</b></td><td class="n">0,969 €</td></tr><tr><td class="n">3</td><td class="wrap-sm">eSIM Tanzanie 50 Go 7 jours</td><td>50 Go</td><td class="n">7 j</td><td>4G</td><td>oui</td><td class="n"><b>50,10 €</b></td><td class="n">1,002 €</td></tr><tr><td class="n">4</td><td class="wrap-sm">eSIM Inde 50 Go 7 jours</td><td>50 Go</td><td class="n">7 j</td><td>4G</td><td>oui</td><td class="n"><b>51,18 €</b></td><td class="n">1,024 €</td></tr><tr><td class="n">5</td><td class="wrap-sm">eSIM Canada 50 Go 15 jours</td><td>50 Go</td><td class="n">15 j</td><td>4G</td><td>non</td><td class="n"><b>51,26 €</b></td><td class="n">1,025 €</td></tr></tbody>
+      </table></div>
+    </section>
+    <section class="card" aria-labelledby="volumes">
+      <h2 id="volumes" class="card-title">Volumes proposés</h2>
+      <p class="sub">Nombre d'offres par palier · indice de prix par durée : 7 j : <b>101,1</b> · 15 j : <b>100,6</b> · 30 j : <b>98,0</b></p>
+      <ul class="hbars"><li><span>1 Go</span><i style="width:71.9%"></i><b>23</b></li><li><span>3 Go</span><i style="width:68.8%"></i><b>22</b></li><li><span>5 Go</span><i style="width:78.1%"></i><b>25</b></li><li><span>10 Go</span><i style="width:87.5%"></i><b>28</b></li><li><span>20 Go</span><i style="width:100.0%"></i><b>32</b></li><li><span>50 Go</span><i style="width:84.4%"></i><b>27</b></li><li><span>Illimité</span><i style="width:78.1%"></i><b>25</b></li></ul>
+      <p class="note">Indice : 100 = prix moyen des offres comparables de tout le marché (même volume, même durée). Source : <code>jambosim.csv</code>.</p>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px" aria-labelledby="destinations">
+    <h2 id="destinations" class="card-title">Destinations couvertes</h2>
+    <p class="sub">47 pays et 4 zones régionales</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Destination</th><th class="n">Offres</th><th class="n">Dès</th><th class="n">€ / Go</th></tr></thead>
+      <tbody><tr><td>Allemagne <span class="zero">DE</span></td><td class="n">1</td><td class="n">24,40 €</td><td class="n">2,44 €</td></tr><tr><td>Arabie saoudite <span class="zero">SA</span></td><td class="n">6</td><td class="n">5,65 €</td><td class="n">1,43 €</td></tr><tr><td>Argentine <span class="zero">AR</span></td><td class="n">2</td><td class="n">19,67 €</td><td class="n">2,24 €</td></tr><tr><td>Australie <span class="zero">AU</span></td><td class="n">3</td><td class="n">6,03 €</td><td class="n">6,17 €</td></tr><tr><td>Autriche <span class="zero">AT</span></td><td class="n">1</td><td class="n">35,24 €</td><td class="n">—</td></tr><tr><td>Belgique <span class="zero">BE</span></td><td class="n">1</td><td class="n">12,54 €</td><td class="n">2,51 €</td></tr><tr><td>Brésil <span class="zero">BR</span></td><td class="n">7</td><td class="n">10,23 €</td><td class="n">1,70 €</td></tr><tr><td>Canada <span class="zero">CA</span></td><td class="n">4</td><td class="n">6,10 €</td><td class="n">1,34 €</td></tr><tr><td>Chili <span class="zero">CL</span></td><td class="n">5</td><td class="n">5,77 €</td><td class="n">2,22 €</td></tr><tr><td>Chine <span class="zero">CN</span></td><td class="n">2</td><td class="n">17,09 €</td><td class="n">1,05 €</td></tr><tr><td>Colombie <span class="zero">CO</span></td><td class="n">3</td><td class="n">35,48 €</td><td class="n">1,77 €</td></tr><tr><td>Corée du Sud <span class="zero">KR</span></td><td class="n">4</td><td class="n">7,18 €</td><td class="n">1,45 €</td></tr><tr><td>Croatie <span class="zero">HR</span></td><td class="n">2</td><td class="n">21,95 €</td><td class="n">1,47 €</td></tr><tr><td>Espagne <span class="zero">ES</span></td><td class="n">3</td><td class="n">13,52 €</td><td class="n">2,22 €</td></tr><tr><td>France <span class="zero">FR</span></td><td class="n">6</td><td class="n">6,13 €</td><td class="n">1,90 €</td></tr><tr><td>Grèce <span class="zero">GR</span></td><td class="n">2</td><td class="n">19,42 €</td><td class="n">1,74 €</td></tr><tr><td>Inde <span class="zero">IN</span></td><td class="n">3</td><td class="n">6,32 €</td><td class="n">1,13 €</td></tr><tr><td>Indonésie <span class="zero">ID</span></td><td class="n">3</td><td class="n">35,25 €</td><td class="n">—</td></tr><tr><td>Irlande <span class="zero">IE</span></td><td class="n">3</td><td class="n">6,03 €</td><td class="n">2,20 €</td></tr><tr><td>Israël <span class="zero">IL</span></td><td class="n">2</td><td class="n">22,63 €</td><td class="n">1,32 €</td></tr><tr><td>Japon <span class="zero">JP</span></td><td class="n">4</td><td class="n">11,32 €</td><td class="n">1,26 €</td></tr><tr><td>Jordanie <span class="zero">JO</span></td><td class="n">2</td><td class="n">31,77 €</td><td class="n">—</td></tr><tr><td>Kenya <span class="zero">KE</span></td><td class="n">4</td><td class="n">11,25 €</td><td class="n">1,79 €</td></tr><tr><td>Malaisie <span class="zero">MY</span></td><td class="n">2</td><td class="n">39,21 €</td><td class="n">1,96 €</td></tr><tr><td>Maroc <span class="zero">MA</span></td><td class="n">3</td><td class="n">7,05 €</td><td class="n">2,66 €</td></tr><tr><td>Mexique <span class="zero">MX</span></td><td class="n">3</td><td class="n">5,46 €</td><td class="n">2,27 €</td></tr><tr><td>Nigeria <span class="zero">NG</span></td><td class="n">1</td><td class="n">24,72 €</td><td class="n">2,47 €</td></tr><tr><td>Norvège <span class="zero">NO</span></td><td class="n">6</td><td class="n">6,52 €</td><td class="n">2,50 €</td></tr><tr><td>Nouvelle-Zélande <span class="zero">NZ</span></td><td class="n">2</td><td class="n">18,28 €</td><td class="n">1,72 €</td></tr><tr><td>Pays-Bas <span class="zero">NL</span></td><td class="n">5</td><td class="n">6,68 €</td><td class="n">1,45 €</td></tr><tr><td>Pologne <span class="zero">PL</span></td><td class="n">3</td><td class="n">10,24 €</td><td class="n">1,42 €</td></tr><tr><td>Portugal <span class="zero">PT</span></td><td class="n">4</td><td class="n">11,68 €</td><td class="n">1,40 €</td></tr><tr><td>Pérou <span class="zero">PE</span></td><td class="n">1</td><td class="n">71,02 €</td><td class="n">—</td></tr><tr><td>Qatar <span class="zero">QA</span></td><td class="n">3</td><td class="n">6,19 €</td><td class="n">3,37 €</td></tr><tr><td>Royaume-Uni <span class="zero">GB</span></td><td class="n">4</td><td class="n">8,47 €</td><td class="n">1,39 €</td></tr><tr><td>Rép. dominicaine <span class="zero">DO</span></td><td class="n">3</td><td class="n">11,11 €</td><td class="n">2,00 €</td></tr><tr><td>Singapour <span class="zero">SG</span></td><td class="n">6</td><td class="n">11,00 €</td><td class="n">1,59 €</td></tr><tr><td>Suisse <span class="zero">CH</span></td><td class="n">2</td><td class="n">18,29 €</td><td class="n">1,71 €</td></tr><tr><td>Suède <span class="zero">SE</span></td><td class="n">1</td><td class="n">11,69 €</td><td class="n">2,34 €</td></tr><tr><td>Tanzanie <span class="zero">TZ</span></td><td class="n">3</td><td class="n">31,19 €</td><td class="n">1,16 €</td></tr><tr><td>Tchéquie <span class="zero">CZ</span></td><td class="n">1</td><td class="n">38,64 €</td><td class="n">1,93 €</td></tr><tr><td>Thaïlande <span class="zero">TH</span></td><td class="n">3</td><td class="n">6,27 €</td><td class="n">1,85 €</td></tr><tr><td>Turquie <span class="zero">TR</span></td><td class="n">4</td><td class="n">5,97 €</td><td class="n">1,47 €</td></tr><tr><td>Vietnam <span class="zero">VN</span></td><td class="n">3</td><td class="n">7,14 €</td><td class="n">1,56 €</td></tr><tr><td>Égypte <span class="zero">EG</span></td><td class="n">6</td><td class="n">6,29 €</td><td class="n">2,95 €</td></tr><tr><td>Émirats arabes unis <span class="zero">AE</span></td><td class="n">6</td><td class="n">6,08 €</td><td class="n">2,04 €</td></tr><tr><td>États-Unis <span class="zero">US</span></td><td class="n">4</td><td class="n">10,13 €</td><td class="n">1,79 €</td></tr><tr><td>Amérique du Nord <span class="zero">NA</span> <span class="badge region">zone</span></td><td class="n">9</td><td class="n">17,76 €</td><td class="n">1,73 €</td></tr><tr><td>Asie <span class="zero">AS</span> <span class="badge region">zone</span></td><td class="n">5</td><td class="n">7,55 €</td><td class="n">2,19 €</td></tr><tr><td>Europe <span class="zero">EU</span> <span class="badge region">zone</span></td><td class="n">7</td><td class="n">12,40 €</td><td class="n">2,14 €</td></tr><tr><td>Monde <span class="zero">WW</span> <span class="badge region">zone</span></td><td class="n">9</td><td class="n">15,83 €</td><td class="n">1,85 €</td></tr></tbody>
+    </table></div>
+  </section>
+</div>
+
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <section aria-labelledby="f-projet">
+        <h2 id="f-projet">Projet</h2>
+        <p><b>Observatoire eSIM</b>, réalisé par Jean Bonheur NGUEMA pour le test de recrutement MyBestSim.</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/BRILLANT12" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"/></svg>GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/jean-bonheur-nguema-097044346" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn</a></li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-donnees">
+        <h2 id="f-donnees">Données</h2>
+        <p>18 fichiers fournisseurs · dernière génération le <span id="footer-gen">16 octobre 2026 à 20:38</span> (heure de Paris).</p>
+        <ul class="foot-links">
+          <li><a href="../stats.json" download><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>stats.json</a></li>
+          <li><a href="../offres-esim.csv" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export CSV complet</a></li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-technique">
+        <h2 id="f-technique">Technique</h2>
+        <p>Python + pandas, Chart.js, GitHub Actions. Généré depuis le <a href="https://github.com/BRILLANT12/mybestsim-dashboard/commit/1b03d73f1ad82e3210d7611119c582df734937f0" rel="noopener noreferrer">commit 1b03d73</a>.</p>
+        <ul class="foot-links">
+          <li><a href="https://github.com/BRILLANT12/mybestsim-dashboard" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code source</a></li>
+          <li><a href="../comment-c-est-construit.html">Comment c'est construit</a></li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-methode">
+        <h2 id="f-methode">Méthode</h2>
+        <ul class="foot-links">
+        </ul>
+      </section>
+    </div>
+    <div class="foot-bottom">
+      <a href="../mentions-legales.html#cookies"><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg>Aucun cookie · aucun traceur</a>
+      <span>Outil non officiel, inspiré de l'identité visuelle de mybestsim.com</span>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="#haut"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg>Retour en haut</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
