@@ -215,3 +215,59 @@ def test_compact_site_menu_on_small_screens(tmp_path):
               "window.__extra=r.join('|');")
     probe = render(FIXTURES / "calculs", tmp_path, width=500, action=action)
     assert probe["extra"] == "inline-flex|none|flex|Tableau de bord|none|true"
+
+
+# --- iPhone (~390 px de large) --------------------------------------------------------
+
+from tests.narrow import OVERFLOW_JS  # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def real_site(tmp_path_factory):
+    out = tmp_path_factory.mktemp("site-reel")
+    result, offers = build(DATA_DIR_REAL)
+    write_outputs(result, out, offers)
+    return out
+
+
+@pytest.mark.parametrize("page, query, action", [
+    ("index.html", "", ""),
+    ("index.html", "?reseau=5G&destination=FR,EU", "document.getElementById('fb-toggle').click();"),
+    ("mentions-legales.html", "", ""),
+    ("comment-c-est-construit.html", "", ""),
+    ("fournisseurs/ubigi.html", "", ""),
+], ids=["accueil", "accueil-filtres-ouverts", "mentions", "construit", "fiche"])
+def test_nothing_overflows_at_390px(real_site, tmp_path, page, query, action):
+    probe = run_page(instrument(real_site / page, OVERFLOW_JS + action + "window.__extra=JSON.stringify(__overflow());"),
+                     tmp_path, width=390, query=query)
+    assert probe["errors"] == [] and probe["csp"] == []
+    assert json.loads(probe["extra"]) == [], f"{page} : éléments qui débordent à 390 px"
+
+
+def test_comparator_price_and_provider_visible_at_390px(real_site, tmp_path):
+    action = (
+        "var vw=document.documentElement.clientWidth,inView=function(e){if(!e)return false;var r=e.getBoundingClientRect();"
+        "return r.width>0&&r.left>=0&&r.right<=vw&&getComputedStyle(e).visibility!=='hidden'};"
+        "var c=document.querySelector('#cmp-cards .cmp-card'),b=document.querySelector('#cmp-best .best'),k=document.querySelector('#cmp-best .k');"
+        "var br=b.getBoundingClientRect(),kr=k.getBoundingClientRect();"
+        "window.__extra=JSON.stringify({table:getComputedStyle(document.getElementById('cmp-table-wrap')).display,"
+        "price:inView(c.querySelector('.cc-price'))&&/€/.test(c.querySelector('.cc-price').textContent),provider:inView(c.querySelector('.cc-prov')),"
+        "perGb:inView(c.querySelector('.cc-sub span')),bestPrice:inView(b.querySelector('.p')),"
+        "labelInside:kr.left>=br.left&&kr.right<=br.right&&kr.width>0,validity:document.getElementById('cmp-validity').selectedOptions[0].textContent});"
+    )
+    probe = run_page(instrument(real_site / "index.html", action), tmp_path, width=390)
+    got = json.loads(probe["extra"])
+    assert got == {"table": "none", "price": True, "provider": True, "perGb": True, "bestPrice": True, "labelInside": True, "validity": "Toutes"}
+
+
+def test_filter_bar_is_one_line_with_panel_at_390px(real_site, tmp_path):
+    action = (
+        "var bar=document.getElementById('filterbar'),t=document.getElementById('fb-toggle'),f=document.getElementById('fb-filters');"
+        "var r=[Math.round(bar.getBoundingClientRect().height),getComputedStyle(f).display];t.click();r.push(getComputedStyle(f).display,t.getAttribute('aria-expanded'));"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));r.push(getComputedStyle(f).display,document.activeElement===t,"
+        "getComputedStyle(document.querySelector('#fb-export .btn-text')).width);window.__extra=r.join('|');"
+    )
+    probe = run_page(instrument(real_site / "index.html", action), tmp_path, width=390, query="?reseau=5G")
+    height, closed, opened, expanded, after, focus_back, export_text = probe["extra"].split("|")
+    assert int(height) <= 70, f"barre de {height} px"
+    assert (closed, opened, expanded, after, focus_back, export_text) == ("none", "flex", "true", "none", "true", "1px")

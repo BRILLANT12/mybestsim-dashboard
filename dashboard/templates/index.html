@@ -38,7 +38,8 @@
 
 <div class="filterbar" id="filterbar" role="region" aria-label="Filtres">
   <div class="wrap fb-row">
-    <div class="fb-filters">
+    <button class="btn fb-toggle" type="button" id="fb-toggle" aria-expanded="false" aria-controls="fb-filters"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg>Filtres<span class="count" id="fb-toggle-count" hidden></span></button>
+    <div class="fb-filters" id="fb-filters">
     <span class="fb-label" title="Filtres"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg><span class="sr-only">Filtres</span></span>
     <div class="dd" data-key="provider">
       <button class="btn" type="button" aria-expanded="false" aria-controls="dd-provider" id="dd-provider-btn">Fournisseur</button>
@@ -61,7 +62,7 @@
     <div class="fb-actions">
     <span class="fb-result" id="fb-result" role="status" aria-live="polite"></span>
     <button class="btn ghost icon-only" type="button" id="fb-reset" disabled title="Réinitialiser les filtres"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">Réinitialiser les filtres</span></button>
-    <button class="btn primary" type="button" id="fb-export" title="Exporter les offres filtrées au format CSV"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Exporter CSV</button>
+    <button class="btn primary" type="button" id="fb-export" title="Exporter les offres filtrées au format CSV"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span class="btn-text">Exporter CSV</span></button>
     </div>
   </div>
   <div class="wrap"><p class="empty-state" id="empty-state"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Aucune offre ne correspond à ces filtres. <button class="btn ghost" type="button" data-reset>Réinitialiser les filtres</button></p></div>
@@ -289,7 +290,8 @@
         </form>
         <p class="cmp-summary" id="cmp-summary" role="status" aria-live="polite"></p>
         <div id="cmp-best"></div>
-        <div class="table-wrap"><table id="cmp-table"><caption class="sr-only">Offres classées par prix</caption></table></div>
+        <div class="table-wrap" id="cmp-table-wrap"><table id="cmp-table"><caption class="sr-only">Offres classées par prix</caption></table></div>
+        <ol class="cmp-cards" id="cmp-cards" aria-label="Offres classées par prix"></ol>
         <p style="margin:12px 0 0"><button class="btn" type="button" id="cmp-more" hidden aria-controls="cmp-table"></button></p>
         <p class="note" id="cmp-note"></p>
       </div>

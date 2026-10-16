@@ -39,7 +39,17 @@ PROBE = (
     "errors:__errs,csp:__csp,external:ext,cookie:document.cookie,storage:st,overflow:d.scrollWidth>d.clientWidth,"
     "kpis:document.querySelectorAll('#kpis .kpi').length,hero:q('hero-kpis'),result:q('fb-result'),"
     "empty:document.body.classList.contains('is-empty'),search:location.search,extra:window.__extra||null});"
-    "document.body.appendChild(p)},1500)})"
+    "document.body.appendChild(p);if(window.parent!==window)parent.postMessage(p.textContent,'*')},1500)})"
+)
+
+# Page hôte pour tester une vraie largeur d'écran étroite : Chrome headless ne descend pas sous
+# 500 px de fenêtre, la page est donc chargée dans une iframe de la largeur voulue ; la sonde
+# renvoie son rapport par postMessage (le parent ne peut pas lire l'iframe en file://).
+FRAME = (
+    "<!doctype html><meta charset=utf-8><body style=margin:0>"
+    "<iframe src=\"{src}\" style=\"width:{width}px;height:900px;border:0;display:block\"></iframe>"
+    "<script>addEventListener('message',function(e){{var p=document.createElement('pre');p.id='PROBE';"
+    "p.textContent=e.data;document.body.appendChild(p)}})</script>"
 )
 
 
@@ -68,7 +78,13 @@ def instrument(html_path: Path, action: str = "", name: str = "") -> Path:
 
 
 def run_page(page: Path, tmp_path: Path, width: int = 1280, query: str = "", offline: bool = False) -> dict:
-    """Ouvre la page instrumentée et renvoie le rapport de la sonde."""
+    """Ouvre la page instrumentée et renvoie le rapport de la sonde.
+
+    Sous 500 px, la page est chargée dans une iframe de la largeur demandée (largeur d'écran réelle)."""
+    if width < 500:
+        host = page.parent / f"frame-{page.stem}.html"
+        host.write_text(FRAME.format(src=page.name + query, width=width), encoding="utf-8")
+        page, query, width = host, "", 600
     if CHROME is None:
         pytest.fail("Chrome est obligatoire en CI (CI=true) pour les tests de rendu, de vie privée et d'accessibilité.")
     args = [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox", f"--user-data-dir={tmp_path / 'profile'}",

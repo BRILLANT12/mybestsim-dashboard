@@ -489,8 +489,29 @@
       b.setAttribute("aria-expanded", "false"); p.hidden = true;
     });
   }
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(true); });
-  document.addEventListener("click", function (e) { if (!e.target.closest(".dd")) closeAll(false); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    var openDd = document.querySelector(".dd button[aria-expanded=true]");
+    if (openDd) closeAll(true); else closePanel(true);
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".dd")) closeAll(false);
+    if (!e.target.closest(".filterbar")) closePanel(false);
+  });
+  // Sous 640 px, les filtres sont rangés dans un panneau ouvert par le bouton « Filtres (n) ».
+  function closePanel(focus) {
+    var t = $("fb-toggle");
+    if (t.getAttribute("aria-expanded") !== "true") return;
+    t.setAttribute("aria-expanded", "false");
+    $("filterbar").classList.remove("is-open");
+    if (focus) t.focus();
+  }
+  $("fb-toggle").addEventListener("click", function () {
+    var open = this.getAttribute("aria-expanded") === "true";
+    this.setAttribute("aria-expanded", String(!open));
+    $("filterbar").classList.toggle("is-open", !open);
+    if (!open) { var first = $("fb-filters").querySelector("button"); if (first) first.focus(); }
+  });
 
   function syncControls() {
     ["provider", "place"].forEach(function (key) {
@@ -502,7 +523,9 @@
       var v = t.dataset.key === "validity_days" ? Number(t.dataset.value) : t.dataset.value;
       t.setAttribute("aria-pressed", String(filters[t.dataset.key].indexOf(v) !== -1));
     });
-    var active = activeCount(), n = state.rows.length;
+    var active = activeCount(), n = state.rows.length, tc = $("fb-toggle-count");
+    tc.hidden = !active; tc.textContent = active;
+    $("fb-toggle").setAttribute("aria-label", "Filtres" + (active ? ", " + active + " " + plural(active, "critère actif", "critères actifs") : ""));
     $("fb-reset").disabled = !active;
     $("fb-result").innerHTML = active ? "<b>" + num(n) + "</b> " + plural(n, "offre", "offres") + " sur " + num(ALL.length) : "<b>" + num(ALL.length) + "</b> offres";
     document.body.classList.toggle("is-filtered", active > 0);
@@ -803,7 +826,7 @@
       (ALL.some(function (r) { return r.is_unlimited; }) ? '<option value="unlimited">Illimité</option>' : "");
     var vs = {};
     ALL.forEach(function (r) { vs[r.validity_days] = true; });
-    $("cmp-validity").innerHTML = '<option value="">Toutes les durées</option>' + Object.keys(vs).map(Number).sort(function (a, b) { return a - b; }).map(function (v) { return '<option value="' + v + '">' + v + " jours</option>"; }).join("");
+    $("cmp-validity").innerHTML = '<option value="">Toutes</option>' + Object.keys(vs).map(Number).sort(function (a, b) { return a - b; }).map(function (v) { return '<option value="' + v + '">' + v + " jours</option>"; }).join("");
     // Valeurs par défaut : la France si elle existe (sinon la destination la plus fournie), 5 Go si disponible.
     var def = names.FR ? "FR" : countries.slice().sort(function (a, b) { return offersBy[b] - offersBy[a]; })[0];
     if (def) $("cmp-place").value = def;
@@ -822,17 +845,18 @@
     var placeName = $("cmp-place").selectedOptions[0].textContent, volName = $("cmp-volume").selectedOptions[0].textContent;
     if (!res.length) {
       $("cmp-summary").innerHTML = "Aucune offre pour <b>" + esc(placeName) + "</b> en <b>" + esc(volName) + "</b>" + (validity ? " sur " + validity + " jours" : "") + ".";
-      $("cmp-best").innerHTML = ""; $("cmp-table").innerHTML = $("cmp-table").querySelector("caption").outerHTML; $("cmp-note").innerHTML = ""; return;
+      $("cmp-best").innerHTML = ""; $("cmp-table").innerHTML = $("cmp-table").querySelector("caption").outerHTML; $("cmp-cards").innerHTML = ""; $("cmp-note").innerHTML = ""; $("cmp-more").hidden = true; return;
     }
     var best = res[0], worst = res[res.length - 1], nReg = res.filter(function (x) { return x.regional; }).length;
     $("cmp-summary").innerHTML = "<b>" + num(res.length) + "</b> " + plural(res.length, "offre", "offres") + " pour <b>" + esc(placeName) + "</b> en <b>" + esc(volName) + "</b>" +
       (validity ? " sur " + validity + " jours" : "") + " · de <b>" + eur(best.offer.price) + "</b> à <b>" + eur(worst.offer.price) + "</b>" +
       (res.length > 1 ? " (écart de " + pct(worst.offer.price / best.offer.price - 1) + ")" : "") + (nReg ? " · dont " + num(nReg) + " " + plural(nReg, "forfait régional", "forfaits régionaux") : "") + ".";
     var bo = best.offer;
-    $("cmp-best").innerHTML = '<div class="best"><span class="medal">' + icon("trophy") + '</span><span class="k">Meilleur prix</span><span class="p">' + eur(bo.price) +
-      (best.price_per_gb != null ? "<small>" + eur(best.price_per_gb) + " / Go</small>" : "<small>illimité</small>") + '</span><span class="t">' + esc(bo.provider) +
-      " · " + esc(bo.product_name) + " <small>· " + bo.validity_days + " j · " + esc(bo.network) + " · recharge " + esc(bo.top_up) + "</small>" +
-      (best.regional ? ' <span class="badge region">Forfait régional : ' + esc(coverageLabel(bo.country_code)) + "</span>" : "") + "</span></div>";
+    // Étiquette « Meilleur prix » DANS le bloc de texte (sous le trophée sur mobile) : elle ne peut plus déborder.
+    $("cmp-best").innerHTML = '<div class="best"><span class="medal">' + icon("trophy") + '</span><div class="best-main"><span class="k">Meilleur prix</span>' +
+      '<span class="t">' + esc(bo.provider) + " · " + esc(bo.product_name) + " <small>· " + bo.validity_days + " j · " + esc(bo.network) + " · recharge " + esc(bo.top_up) + "</small>" +
+      (best.regional ? ' <span class="badge region">Forfait régional : ' + esc(coverageLabel(bo.country_code)) + "</span>" : "") + "</span></div>" +
+      '<div class="p">' + eur(bo.price) + (best.price_per_gb != null ? "<small>" + eur(best.price_per_gb) + " / Go</small>" : "<small>illimité</small>") + "</div></div>";
     var SHORT = 10, MAX = 200, expanded = cmpExpanded && res.length > SHORT;
     var shown = expanded ? res.slice(0, MAX) : res.slice(0, SHORT);
     var more = $("cmp-more");
@@ -851,6 +875,16 @@
       { label: "vs meilleur", n: true, fmt: function (x) { var d = x.offer.price / bo.price - 1; return d === 0 ? '<span class="delta">—</span>' : '<span class="delta">+' + pct(d, d < 0.1 ? 1 : 0) + "</span>"; } },
       { label: "SKU", fmt: function (x) { return '<span class="zero">' + esc(x.offer.sku) + "</span>"; } }
     ], shown, { rowClass: function (x) { return x === best ? "is-best" : ""; } });
+    // Sous 640 px, le tableau laisse la place à des cartes compactes : fournisseur, prix et €/Go d'abord,
+    // toujours visibles sans défilement horizontal ; couverture, durée, réseau et recharge en petit.
+    $("cmp-cards").innerHTML = shown.map(function (x) {
+      var o = x.offer, d = o.price / bo.price - 1;
+      return '<li class="cmp-card' + (x === best ? " is-best" : "") + '"><div class="cc-top"><span class="cc-rank">' + num(res.indexOf(x) + 1) + '</span><b class="cc-prov">' + esc(o.provider) +
+        '</b><span class="cc-price">' + eur(o.price) + "</span></div>" +
+        '<div class="cc-sub"><span>' + (x.price_per_gb == null ? "illimité" : eur(x.price_per_gb) + " / Go") + "</span><span>" + (d === 0 ? "meilleur prix" : "+" + pct(d, d < 0.1 ? 1 : 0) + " vs meilleur") + "</span></div>" +
+        '<div class="cc-meta">' + (x.regional ? '<span class="badge region">' + esc(coverageLabel(o.country_code)) + "</span>" : '<span class="badge country">' + esc(o.country_name) + "</span>") +
+        "<span>" + o.validity_days + " j</span><span>" + esc(o.network) + "</span><span>recharge " + esc(o.top_up) + "</span></div></li>";
+    }).join("");
     var zoneTxt = regional && REGION_CODES.indexOf(place) === -1
       ? "Les forfaits régionaux proposés sont ceux des zones supposées couvrir " + esc(placeName) + " (hypothèse détaillée dans la Méthodologie)."
       : regional ? "Les forfaits des zones qui englobent cette zone (ex. Monde) sont aussi proposés." : "Forfaits régionaux exclus.";
