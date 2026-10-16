@@ -14,6 +14,12 @@ FIXTURES = Path(__file__).parent / "fixtures"
 HEADER = "sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up"
 
 
+def test_slugify():
+    assert profiles.slugify("Maya Mobile") == "maya-mobile"
+    assert profiles.slugify("Étape 0 bis : l'été") == "etape-0-bis-l-ete"
+    assert profiles.slugify("!!!") == "fournisseur"
+
+
 def test_page_paths_are_unique_and_readable():
     paths = profiles.page_paths(["Maya Mobile", "4S eSIM", "aloSIM", "A-b", "A b"])
     assert paths["Maya Mobile"] == "fournisseurs/maya-mobile.html"

@@ -166,15 +166,15 @@ def test_footer_is_on_every_page_with_all_links(site):
         for needed in (GITHUB_URL, LINKEDIN_URL):
             assert needed in hrefs, f"{name} : lien {needed} absent"
         assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
+        assert not any("NOTES_" + "IA" in h for h in hrefs), f"{name} : lien vers le journal (privé)"
+        assert "plan, validation de chaque étape, tests et relecture à chaque lot" in html, name
         assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
         assert f"réalisé par {AUTHOR}" in html and "Aucun cookie · aucun traceur" in html, name
         assert "Outil non officiel, inspiré de l'identité visuelle de mybestsim.com" in html, name
 
 
 def test_no_email_or_phone_number_anywhere(site):
-    # Seules exceptions : les adresses techniques « noreply » (identité des commits, publique dans
-    # l'historique git, et co-auteur), reproduites dans les notes. Aucune n'est un contact.
-    email = re.compile(r"[\w.+-]+@(?!users\.noreply\.github\.com\b)(?<!noreply@)[\w-]+\.[\w.]+")
+    email = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
     phone = re.compile(r"(?:\+33|\b0[1-9])(?:[ .-]?\d{2}){4}\b|\+1[ (]*\d{3}")
     for page in pages(site):
         text = page.read_text(encoding="utf-8")
@@ -255,3 +255,33 @@ def test_readme_mentions_test_data_and_its_images_exist():
     assert "données de test fournies par MyBestSim pour le recrutement" in readme
     images = re.findall(r"!\[[^\]]*\]\(([^)]+)\)", readme)
     assert len(images) == 3 and all(Path(i).exists() for i in images)
+
+
+def test_private_journal_is_not_published(site):
+    for page in pages(site):
+        html = page.read_text(encoding="utf-8")
+        assert "NOTES_" + "IA" not in html and "Journal de construction" not in html, page.name
+    built = (site / "comment-c-est-construit.html").read_text(encoding="utf-8")
+    for kept in ('id="pipeline"', 'id="choix"', 'id="securite"'):
+        assert kept in built
+
+
+def test_no_local_path_or_email_in_tracked_files():
+    """Garde-fou sur le contenu public du dépôt : aucun chemin de la machine de développement,
+    aucune adresse e-mail. (Volontairement générique : aucun nom n'est écrit ici en clair.)"""
+    import subprocess
+
+    files = subprocess.run(["git", "ls-files"], capture_output=True, text=True, check=True).stdout.split()
+    # Classes d'un caractère ([s], [r], [o]) : le motif détecte les dossiers personnels et temporaires
+    # (macOS, Linux, Windows) sans se détecter lui-même.
+    local_path = re.compile(r"/U[s]ers/[^/\s]+|/p[r]ivate/(?:tmp|var)/|/h[o]me/[a-z][\w-]*/|[A-Z]:\\U[s]ers\\")
+    email = re.compile(r"[\w.+-]+@[\w-]+\.[a-z]{2,}")
+    for name in files:
+        path = Path(name)
+        if not path.exists() or path.suffix in (".woff2", ".png", ".bundle") or path.parts[:2] == ("dashboard", "vendor"):
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if path.parts[0] == "docs" and path.parts[1:2] == ("assets",) and "vendor" in path.parts:
+            continue
+        assert not local_path.search(text), f"{name} : chemin local"
+        assert not email.search(text), f"{name} : adresse e-mail"

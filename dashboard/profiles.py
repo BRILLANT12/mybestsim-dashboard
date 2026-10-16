@@ -5,12 +5,20 @@ code. Les indicateurs réutilisent les fonctions de stats.py (mêmes règles que
 de bord) ; l'indice de prix est calculé face à tout le marché, à offre comparable.
 """
 
+import re
+import unicodedata
+
 import pandas as pd
 
 from dashboard import stats
-from dashboard.markdown import slugify
 
 TOP_OFFERS = 5
+
+
+def slugify(text: str) -> str:
+    """« Maya Mobile » -> « maya-mobile » (nom de fichier lisible, sans accents)."""
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", ascii_text.lower()).strip("-") or "fournisseur"
 
 
 def page_paths(providers: list[str]) -> dict[str, str]:

@@ -539,16 +539,6 @@ footer.foot { background: #0b1b3a; color: #b4c6e6; font-size: 13.5px; padding: 6
 .figures b { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .figures span { color: var(--ink-2); font-size: 13.5px; }
 code.block { display: block; margin-top: 8px; padding: 10px 12px; white-space: normal; word-break: break-word; line-height: 1.6; }
-.toc { margin: 16px 0 24px; padding: 16px 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card-2); }
-.toc ul { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 28px; }
-@media (max-width: 760px) { .toc ul { columns: 1; } }
-.toc li { break-inside: avoid; margin: 0 0 6px; font-size: 13.5px; }
-.toc li.lvl-3 { padding-left: 14px; }
-.journal h2 { font-size: 22px; margin: 40px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); }
-.journal h3 { font-size: 18px; margin: 32px 0 10px; }
-.journal h4 { font-size: 15.5px; margin: 24px 0 8px; }
-.journal hr { display: none; }
-.journal code { white-space: normal; word-break: break-word; }
 
 /* ---------- Fiches fournisseurs ---------- */
 .crumbs { margin: 0 0 24px; font-size: 13.5px; color: var(--muted); }

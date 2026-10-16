@@ -5,7 +5,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 
-from dashboard import markdown, site
+from dashboard import site
 from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL, ROOT_DIR
 
 NBSP = "\u202f"
@@ -121,7 +121,7 @@ PIPELINE = [
     ("shield", "Validation Python", "Lecture robuste (pandas), 20 contrôles par ligne et par fichier : les erreurs sont exclues, les avertissements signalés."),
     ("data", "Calculs", "Indicateurs, comparaisons à offre égale, constats rédigés à partir des chiffres, fiches fournisseurs."),
     ("check", "Tests", "pytest sur les calculs ; Node vérifie que le moteur JS donne les mêmes chiffres que Python ; Chrome teste le rendu, l'accessibilité et la vie privée."),
-    ("refresh", "GitHub Action", "À chaque modification de <code>data/</code>, chaque jour et à la demande : tests, régénération, publication."),
+    ("refresh", "GitHub Action", "À chaque modification des données (<code>data/</code>) ou du code, une fois par jour et à la demande : tests, régénération, publication."),
     ("globe", "GitHub Pages", "Site statique (<code>docs/</code>) : aucune base de données, aucun serveur applicatif, aucun tiers."),
 ]
 
@@ -141,19 +141,13 @@ def _count_tests() -> int:
 
 
 def built_page(context: dict) -> str:
-    """« Comment c'est construit » : pipeline, choix, sécurité."""
-    notes_path = ROOT_DIR / "NOTES.md"
-    notes_html, toc = markdown.render(notes_path.read_text(encoding="utf-8"), heading_offset=1) if notes_path.exists() else ("", [])
+    """« Comment c'est construit » : pipeline, choix techniques, sécurité."""
     steps = "\n".join(
         f'<li><span class="step-ico"><svg class="icon" aria-hidden="true"><use href="#i-{ico}"/></svg></span><b>{escape(t)}</b><span>{d}</span></li>'
         for ico, t, d in PIPELINE
     )
     choices = "\n".join(f"<li><b>{escape(t)}.</b> {escape(d)}</li>" for t, d in CHOICES)
-    toc_html = "\n".join(
-        f'<li class="lvl-{t["level"]}"><a href="#{t["id"]}">{markdown.inline(t["text"])}</a></li>' for t in toc if t["level"] in (2, 3)
-    )
     n_tests = _count_tests()
-    repo = context["version"]["repo_url"]
     content = f"""
 <div class="wrap prose">
   <section aria-labelledby="pipeline">
@@ -192,23 +186,14 @@ def built_page(context: dict) -> str:
     </ul>
   </section>
 
-  <section aria-labelledby="journal-ia">
-    <h2 id="journal-ia">Journal de construction avec l'IA</h2>
-    <nav class="toc" aria-label="Sommaire du journal"><ul>
-{toc_html}
-    </ul></nav>
-    <div class="journal">
-{notes_html}
-    </div>
-  </section>
 </div>
 """
     return site.page(
         title="Comment c'est construit · Observatoire eSIM",
-        description="Pipeline, choix techniques, sécurité et journal de construction de l'Observatoire eSIM.",
+        description="Pipeline, choix techniques et sécurité de l'Observatoire eSIM.",
         eyebrow="Coulisses",
         heading="Comment c'est construit",
-        lead="Du fichier CSV à la page publiée : pipeline, choix techniques, sécurité, et le journal de travail avec l'IA.",
+        lead="Du fichier CSV à la page publiée : pipeline, choix techniques et sécurité.",
         content=content,
         active="comment-c-est-construit.html",
         context=context,

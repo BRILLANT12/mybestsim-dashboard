@@ -109,8 +109,6 @@ def footer(root: str, context: dict) -> str:
       </section>
       <section aria-labelledby="f-methode">
         <h2 id="f-methode">Méthode</h2>
-        <ul class="foot-links">
-        </ul>
       </section>
     </div>
     <div class="foot-bottom">

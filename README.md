@@ -33,7 +33,7 @@ Réalisé par Jean Bonheur NGUEMA pour le test de recrutement **Développeur IA 
 - **Filtres en direct** (fournisseur, pays ou zone, réseau, recharge, durée), vue partageable par lien, **export CSV**.
 - **Comparateur** : destination × volume × durée, forfaits régionaux inclus.
 - **Qualité des données** : 20 contrôles à chaque import, rapport d'anomalies ligne par ligne.
-- **Pages** : une **fiche par fournisseur** (générée automatiquement), « Comment c'est construit », mentions légales.
+- **Pages** : une **fiche par fournisseur** (générée automatiquement), « Comment c'est construit » (pipeline, choix techniques, sécurité), mentions légales.
 - Responsive (375 px), thème clair ou sombre, format français, contrastes WCAG AA vérifiés automatiquement.
 
 ## Lancer en local
