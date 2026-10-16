@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from dashboard import fmt, stats
-from dashboard.build import build_stats, write_outputs
+from dashboard.build import PLACEHOLDER, build_stats, render_html, write_outputs
 from dashboard.loader import load_providers
 from dashboard.validation import validate
 
@@ -130,7 +130,20 @@ def test_insights_are_computed_from_data(result):
     assert "30,00 €" in ins["expensive_all_unlimited"]["text"]
     assert ins["volume_discount"]["values"]["from"] == 5 and ins["volume_discount"]["values"]["to"] == 2.5
     # Écart d'indice de 10 points : les fournisseurs ne sont pas jugés homogènes.
-    assert ins["cheapest_provider"]["title"] == "Prov A est le fournisseur le moins cher au Go"
+    # Seulement 2 fournisseurs (podium tronqué), 2,19 vs 2,81 €/Go : pas d'égalité.
+    cheapest = ins["cheapest_provider"]
+    assert cheapest["title"] == "Moins chers au Go : Prov A et Prov B"
+    assert [t["provider"] for t in cheapest["values"]["top"]] == ["Prov A", "Prov B"]
+    assert cheapest["values"]["tied"] is False
+
+
+def test_cheapest_podium_declares_tie_when_close(df):
+    close = df.copy()
+    close.loc[close["sku"] == "b2", "price"] = 20.1  # B : 35,10 € / 16 Go, à 0,3 % de A
+    cheapest = {i["id"]: i for i in stats.compute(close)["insights"]}["cheapest_provider"]
+    assert cheapest["values"]["tied"] is True
+    assert cheapest["title"] == "Moins chers au Go : Prov A et Prov B, quasiment à égalité"
+    assert "2,19\u202f€/Go" in cheapest["text"]
 
 
 def test_expensive_insight_when_not_all_unlimited(df):
@@ -157,8 +170,8 @@ def _no_nan(obj):
 def test_build_writes_valid_json_with_report(tmp_path):
     now = datetime.fromisoformat("2026-10-22T08:00:00+02:00")
     result = build_stats(FIXTURES / "pieges", now=now)
-    path = write_outputs(result, tmp_path)
-    loaded = json.loads(path.read_text(encoding="utf-8"))  # JSON strict : pas de NaN
+    json_path, html_path = write_outputs(result, tmp_path)
+    loaded = json.loads(json_path.read_text(encoding="utf-8"))  # JSON strict : pas de NaN
     assert _no_nan(loaded)
     assert loaded["meta"]["generated_at"] == "2026-10-22T08:00:00+02:00"
     assert loaded["meta"]["files_count"] == 3  # vide.csv et mauvais_schema.csv ignorés
@@ -166,6 +179,10 @@ def test_build_writes_valid_json_with_report(tmp_path):
     assert (rep["rows_read"], rep["rows_excluded"]) == (18, 9)
     assert rep["errors"] == 11 and rep["warnings"] == 6  # 9 lignes + 2 fichiers ; 5 lignes + 1 colonne en trop
     assert rep["by_rule"][0]["severity"] == "erreur"
+    # Chaque règle déclenchée dans le code figure au catalogue affiché sur le dashboard.
+    checks = {c["rule"]: c["count"] for c in rep["checks"]}
+    assert {r["rule"] for r in rep["by_rule"]} <= set(checks)
+    assert checks["prix_non_positif"] == 2 and checks["prix_aberrant"] == 0
 
 
 def test_build_on_empty_folder_does_not_crash(tmp_path):
@@ -180,3 +197,17 @@ def test_french_formatting():
     assert fmt.euros(12.5) == "12,50 €"
     assert fmt.percent(0.2208) == "22 %"
     assert fmt.percent(0.009, 1, signed=True) == "+0,9 %"
+
+
+def test_html_embeds_the_stats_and_escapes_script_tags(df):
+    hostile = df.copy()
+    hostile.loc[hostile["sku"] == "b2", "price"] = 0.5  # devient le prix min, donc listé dans la page
+    hostile.loc[hostile["sku"] == "b2", "product_name"] = "</script><script>alert(1)</script>"
+    result = stats.compute(hostile)
+    result.update(meta={"generated_at": "2026-10-22T08:00:00+02:00", "files_count": 1, "providers_count": 2},
+                  anomalies={"details": []})
+    html = render_html(result)
+    assert PLACEHOLDER not in html
+    assert "alert(1)" in html and "</script><script>alert" not in html
+    embedded = html.split('<script id="stats-data" type="application/json">')[1].split("</script>")[0]
+    assert json.loads(embedded)["headline"]["price_range"]["min"]["products"][0]["product_name"].startswith("</script>")

@@ -670,10 +670,24 @@
     {
       "id": "cheapest_provider",
       "highlight": false,
-      "title": "Ubigi est le moins cher au Go, mais à offre égale les fournisseurs se valent",
-      "text": "1,63 €/Go, contre 1,88 €/Go pour 4S eSIM, le plus cher au Go. À volume et durée égaux, tous les fournisseurs ont un indice de prix entre 98,4 et 101,9 (100 = prix moyen du marché) : l'écart au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.",
+      "title": "Moins chers au Go : Ubigi, GigSky et Yatelo, quasiment à égalité",
+      "text": "Ubigi (1,63 €/Go), GigSky (1,63 €/Go) et Yatelo (1,63 €/Go) sont quasiment à égalité en tête : moins de 1 % d'écart entre eux. Le plus cher au Go est 4S eSIM (1,88 €/Go). À volume et durée égaux, tous les fournisseurs ont un indice de prix entre 98,4 et 101,9 (100 = prix moyen du marché) : l'écart au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.",
       "values": {
-        "best": "Ubigi",
+        "top": [
+          {
+            "provider": "Ubigi",
+            "price_per_gb": 1.6266
+          },
+          {
+            "provider": "GigSky",
+            "price_per_gb": 1.6324
+          },
+          {
+            "provider": "Yatelo",
+            "price_per_gb": 1.6333
+          }
+        ],
+        "tied": true,
         "worst": "4S eSIM",
         "best_by_index": "Jetpac",
         "index_min": 98.4,
@@ -682,7 +696,7 @@
     }
   ],
   "meta": {
-    "generated_at": "2026-10-16T18:40:46+02:00",
+    "generated_at": "2026-10-16T18:51:03+02:00",
     "files_count": 18,
     "providers_count": 18
   },
@@ -692,6 +706,128 @@
     "rows_read": 5056,
     "rows_excluded": 0,
     "by_rule": [],
+    "checks": [
+      {
+        "rule": "fichier_vide",
+        "severity": "erreur",
+        "label": "Fichier vide",
+        "count": 0
+      },
+      {
+        "rule": "fichier_illisible",
+        "severity": "erreur",
+        "label": "Fichier illisible (encodage, format)",
+        "count": 0
+      },
+      {
+        "rule": "colonnes_manquantes",
+        "severity": "erreur",
+        "label": "Colonnes obligatoires manquantes",
+        "count": 0
+      },
+      {
+        "rule": "colonnes_en_trop",
+        "severity": "avertissement",
+        "label": "Colonnes inconnues (ignorées)",
+        "count": 0
+      },
+      {
+        "rule": "fichier_sans_ligne",
+        "severity": "avertissement",
+        "label": "Fichier sans aucune offre",
+        "count": 0
+      },
+      {
+        "rule": "champ_vide",
+        "severity": "erreur",
+        "label": "Champ obligatoire vide",
+        "count": 0
+      },
+      {
+        "rule": "prix_illisible",
+        "severity": "erreur",
+        "label": "Prix illisible",
+        "count": 0
+      },
+      {
+        "rule": "prix_non_positif",
+        "severity": "erreur",
+        "label": "Prix nul ou négatif",
+        "count": 0
+      },
+      {
+        "rule": "devise",
+        "severity": "erreur",
+        "label": "Devise autre que EUR",
+        "count": 0
+      },
+      {
+        "rule": "duree_invalide",
+        "severity": "erreur",
+        "label": "Durée de validité invalide",
+        "count": 0
+      },
+      {
+        "rule": "data_manquante",
+        "severity": "erreur",
+        "label": "Volume de data manquant (hors illimité)",
+        "count": 0
+      },
+      {
+        "rule": "data_invalide",
+        "severity": "erreur",
+        "label": "Volume de data invalide",
+        "count": 0
+      },
+      {
+        "rule": "sku_duplique",
+        "severity": "erreur",
+        "label": "SKU en double",
+        "count": 0
+      },
+      {
+        "rule": "virgule_decimale",
+        "severity": "avertissement",
+        "label": "Virgule décimale convertie",
+        "count": 0
+      },
+      {
+        "rule": "data_incoherente",
+        "severity": "avertissement",
+        "label": "data_gb incohérent avec data_display",
+        "count": 0
+      },
+      {
+        "rule": "reseau_inconnu",
+        "severity": "avertissement",
+        "label": "Réseau autre que 4G/5G",
+        "count": 0
+      },
+      {
+        "rule": "recharge_inconnue",
+        "severity": "avertissement",
+        "label": "Recharge autre que oui/non",
+        "count": 0
+      },
+      {
+        "rule": "code_pays",
+        "severity": "avertissement",
+        "label": "Code pays mal formé",
+        "count": 0
+      },
+      {
+        "rule": "doublon_probable",
+        "severity": "avertissement",
+        "label": "Offre identique sous un autre SKU",
+        "count": 0
+      },
+      {
+        "rule": "prix_aberrant",
+        "severity": "avertissement",
+        "label": "Prix aberrant par rapport aux offres comparables",
+        "count": 0
+      }
+    ],
     "details": [],
     "files": [
       {

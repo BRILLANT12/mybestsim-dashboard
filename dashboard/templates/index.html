@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observatoire eSIM · MyBestSim</title>
+<meta name="description" content="Tableau de bord interne du catalogue d'offres eSIM : volumes, prix, data, fournisseurs et qualité des données.">
+<meta name="robots" content="noindex">
+<script>
+  // Thème appliqué avant le rendu pour éviter un flash (auto / clair / sombre).
+  (function () {
+    try {
+      var t = localStorage.getItem("theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+        integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
+        crossorigin="anonymous" defer></script>
+<style>
+  /* Palette inspirée de mybestsim.com : marine (contour du logo), bleu de marque, jaune d'accent.
+     Couleurs de séries validées (contraste, daltonisme) pour chaque mode. */
+  :root {
+    color-scheme: light;
+    --bg: #f3f7fd;
+    --surface: #ffffff;
+    --surface-2: #f6faff;
+    --ink: #0f1c33;
+    --ink-2: #44526a;
+    --muted: #64748b;
+    --border: rgba(15, 28, 51, 0.10);
+    --grid: #e6ecf4;
+    --axis: #c5cfdc;
+    --brand: #007bff;
+    --brand-ink: #0a5fc4;
+    --accent: #ffcc00;
+    --accent-soft: #fff7d6;
+    --series-1: #0a6cdc;
+    --series-2: #d98e00;
+    --series-muted: #c9d3e0;
+    --header-bg: #0b1b3a;
+    --header-ink: #ffffff;
+    --header-ink-2: #b9c6dc;
+    --good: #0b7a3b;
+    --good-soft: #e5f6ec;
+    --warn: #9a5800;
+    --warn-soft: #fff2dc;
+    --crit: #c62828;
+    --crit-soft: #fdeaea;
+    --shadow: 0 1px 2px rgba(15, 28, 51, 0.06), 0 4px 16px rgba(15, 28, 51, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0a1222;
+      --surface: #14213a;
+      --surface-2: #182742;
+      --ink: #e8eef8;
+      --ink-2: #b4c0d3;
+      --muted: #8d9ab0;
+      --border: rgba(255, 255, 255, 0.10);
+      --grid: #223150;
+      --axis: #34466a;
+      --brand: #3a8cf2;
+      --brand-ink: #7cb4ff;
+      --accent: #ffcc00;
+      --accent-soft: #2e2a14;
+      --series-1: #3a8cf2;
+      --series-2: #c48500;
+      --series-muted: #34466a;
+      --header-bg: #07101f;
+      --header-ink: #ffffff;
+      --header-ink-2: #9fb0cc;
+      --good: #4ad08a;
+      --good-soft: #10301f;
+      --warn: #f2b84b;
+      --warn-soft: #33260c;
+      --crit: #ff7b7b;
+      --crit-soft: #3a1717;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0a1222;
+    --surface: #14213a;
+    --surface-2: #182742;
+    --ink: #e8eef8;
+    --ink-2: #b4c0d3;
+    --muted: #8d9ab0;
+    --border: rgba(255, 255, 255, 0.10);
+    --grid: #223150;
+    --axis: #34466a;
+    --brand: #3a8cf2;
+    --brand-ink: #7cb4ff;
+    --accent: #ffcc00;
+    --accent-soft: #2e2a14;
+    --series-1: #3a8cf2;
+    --series-2: #c48500;
+    --series-muted: #34466a;
+    --header-bg: #07101f;
+    --header-ink: #ffffff;
+    --header-ink-2: #9fb0cc;
+    --good: #4ad08a;
+    --good-soft: #10301f;
+    --warn: #f2b84b;
+    --warn-soft: #33260c;
+    --crit: #ff7b7b;
+    --crit-soft: #3a1717;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand-ink); }
+  h1, h2, h3 { line-height: 1.25; margin: 0; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+  /* En-tête */
+  .top { background: var(--header-bg); color: var(--header-ink); }
+  .top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-top: 18px; padding-bottom: 18px; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--brand);
+    display: grid; place-items: center; font-weight: 800; font-size: 15px; letter-spacing: -0.5px; position: relative; flex: none;
+  }
+  .brand-mark::after { content: ""; position: absolute; right: -3px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: 2px solid var(--header-bg); }
+  .brand-name { font-weight: 700; font-size: 17px; }
+  .brand-sub { color: var(--header-ink-2); font-size: 13px; }
+  .meta { color: var(--header-ink-2); font-size: 13px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.10); color: var(--header-ink); }
+  .theme-btn {
+    font: inherit; font-size: 13px; color: var(--header-ink); background: transparent; cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px; padding: 6px 12px;
+  }
+  .theme-btn:hover { background: rgba(255, 255, 255, 0.08); }
+  .theme-btn:focus-visible, .nav a:focus-visible, th button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .nav { position: sticky; top: 0; z-index: 10; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .nav .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .nav a { flex: none; padding: 12px 10px; color: var(--ink-2); text-decoration: none; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; }
+  .nav a:hover { color: var(--ink); border-bottom-color: var(--brand); }
+
+  main { padding: 24px 0 48px; }
+  section { margin-bottom: 40px; }
+  .section-head { margin-bottom: 16px; }
+  .section-head h2 { font-size: 20px; }
+  .section-head p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 75ch; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; min-width: 0; }
+  .card h3 { font-size: 15px; font-weight: 650; }
+  .card .sub { color: var(--muted); font-size: 13px; margin: 2px 0 12px; }
+  .grid { display: grid; gap: 16px; }
+  .g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .g-2, .g-3 { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Indicateurs clés */
+  .kpis { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .kpis { grid-template-columns: minmax(0, 1fr); } }
+  .kpi { display: flex; flex-direction: column; gap: 4px; }
+  .kpi-label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
+  .kpi-num { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; }
+  .kpi-num small { font-size: 18px; font-weight: 600; color: var(--ink-2); }
+  .kpi-note { color: var(--muted); font-size: 13px; }
+  .kpi-note b { color: var(--ink-2); font-weight: 600; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--brand-ink); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; }
+
+  .explain { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-2); font-size: 14px; }
+
+  /* Insights */
+  .insights { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+  @media (max-width: 900px) { .insights { grid-template-columns: minmax(0, 1fr); } }
+  .insight h3 { font-size: 15px; margin-bottom: 6px; }
+  .insight p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .insight.hero { grid-column: 1 / -1; border-left: 5px solid var(--accent); background: linear-gradient(90deg, var(--accent-soft), var(--surface) 60%); }
+  .insight.hero h3 { font-size: 18px; }
+  .insight .kicker { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+
+  /* Graphiques */
+  .chart-box { position: relative; width: 100%; }
+  .chart-fallback { display: none; color: var(--muted); font-size: 13px; }
+  .no-chart .chart-box { display: none; }
+  .no-chart .chart-fallback { display: block; }
+  details.data { margin-top: 10px; font-size: 13px; }
+  details.data summary { cursor: pointer; color: var(--brand-ink); font-weight: 500; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+  /* Barres de proportion (2 catégories : un camembert serait moins lisible) */
+  .split { display: flex; gap: 2px; height: 28px; border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .split span { display: flex; align-items: center; padding: 0 8px; font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; min-width: 0; overflow: hidden; }
+  .split-legend { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--ink-2); }
+  .split-legend b { color: var(--ink); }
+  .callout { margin-top: 12px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--border); padding-top: 10px; }
+
+  /* Tableaux */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { background: var(--surface-2); color: var(--ink-2); font-weight: 600; font-size: 12.5px; position: sticky; top: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th button { all: unset; cursor: pointer; }
+  th button::after { content: " ↕"; color: var(--muted); font-size: 11px; }
+  th[aria-sort="ascending"] button::after { content: " ↑"; color: var(--brand-ink); }
+  th[aria-sort="descending"] button::after { content: " ↓"; color: var(--brand-ink); }
+  tr.top3 td:first-child { font-weight: 700; }
+  /* Colonne « Fournisseur » figée lors du défilement horizontal (mobile). */
+  #providers-table th:first-child, #providers-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--border); }
+  #providers-table th:first-child { background: var(--surface-2); z-index: 2; }
+  .rank { display: inline-block; min-width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--accent); color: #0b1b3a; margin-right: 6px; }
+  .wrap-cell { white-space: normal; min-width: 240px; }
+
+  /* Qualité des données */
+  .status { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); }
+  .status svg { flex: none; margin-top: 2px; }
+  .status.ok { background: var(--good-soft); color: var(--good); }
+  .status.warn { background: var(--warn-soft); color: var(--warn); }
+  .status.crit { background: var(--crit-soft); color: var(--crit); }
+  .status strong { display: block; font-size: 15px; }
+  .status span { color: var(--ink-2); font-size: 14px; }
+  .sev { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
+  .sev.erreur { color: var(--crit); }
+  .sev.avertissement { color: var(--warn); }
+  .count-0 { color: var(--muted); }
+  .count-pos { font-weight: 700; color: var(--ink); }
+  .ok-mark { color: var(--good); font-weight: 700; }
+
+  /* Méthodologie */
+  .method { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .method { grid-template-columns: minmax(0, 1fr); } }
+  .method h3 { font-size: 15px; margin-bottom: 6px; }
+  .method p, .method li { color: var(--ink-2); font-size: 14px; margin: 0; }
+  .method ul { margin: 6px 0 0; padding-left: 18px; }
+  .method li + li { margin-top: 4px; }
+  code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 0 4px; }
+
+  footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; padding: 20px 0 32px; }
+  footer p { margin: 4px 0; }
+
+  @media print {
+    .nav, .theme-btn { display: none; }
+    .card { break-inside: avoid; box-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">MB</div>
+      <div>
+        <div class="brand-name">Observatoire des offres eSIM</div>
+        <div class="brand-sub">MyBestSim · outil interne · catalogue fournisseurs</div>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="pill" id="meta-scope"></span>
+      <span id="meta-date"></span>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Changer de thème"></button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <div class="wrap">
+    <a href="#synthese">Synthèse</a>
+    <a href="#fournisseurs">Fournisseurs</a>
+    <a href="#prix-data">Prix et data</a>
+    <a href="#destinations">Destinations</a>
+    <a href="#qualite">Qualité des données</a>
+    <a href="#methodologie">Méthodologie</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="synthese" aria-labelledby="h-synthese">
+    <div class="section-head">
+      <h2 id="h-synthese">Synthèse du catalogue</h2>
+      <p id="synthese-lead"></p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <p class="explain" id="ppg-explain"></p>
+    <div class="insights" id="insights"></div>
+  </section>
+
+  <section id="fournisseurs" aria-labelledby="h-fournisseurs">
+    <div class="section-head">
+      <h2 id="h-fournisseurs">Répartition par fournisseur</h2>
+      <p>Nombre d'offres par fournisseur, et comparaison des prix. Cliquez sur un en-tête du tableau pour trier.</p>
+    </div>
+    <div class="grid g-2">
+      <div class="card">
+        <h3>Offres par fournisseur</h3>
+        <p class="sub">Nombre d'offres valides au catalogue</p>
+        <div class="chart-box" id="box-providers"><canvas id="chart-providers" role="img" aria-label="Nombre d'offres par fournisseur"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible (Chart.js non chargé) : les valeurs figurent dans le tableau ci-dessous.</p>
+      </div>
+      <div class="card">
+        <h3>Prix au Go par fournisseur</h3>
+        <p class="sub" id="ppg-provider-sub"></p>
+        <div class="legend" id="ppg-provider-legend"></div>
+        <div class="chart-box" id="box-ppg-provider"><canvas id="chart-ppg-provider" role="img" aria-label="Prix au Go par fournisseur"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible : voir la colonne « € / Go » du tableau.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Tableau détaillé</h3>
+      <p class="sub">Prix au Go et data moyenne : forfaits à volume limité uniquement. Indice : 100 = prix moyen du marché à volume et durée égaux (moins de 100 = moins cher).</p>
+      <div class="table-wrap"><table id="providers-table"></table></div>
+    </div>
+  </section>
+
+  <section id="prix-data" aria-labelledby="h-prix-data">
+    <div class="section-head">
+      <h2 id="h-prix-data">Prix, data et options</h2>
+      <p>Comment le prix varie avec le volume, la durée, le réseau et la recharge.</p>
+    </div>
+    <div class="grid g-2">
+      <div class="card">
+        <h3>Prix au Go selon le volume du forfait</h3>
+        <p class="sub">Total des prix ÷ total des Go, par palier de data</p>
+        <div class="chart-box"><canvas id="chart-ppg-tier" role="img" aria-label="Prix au Go par palier de data"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-ppg-tier"></table></div></details>
+      </div>
+      <div class="card">
+        <h3>Offres par volume de data</h3>
+        <div class="sub" id="tiers-sub"></div>
+        <div class="chart-box"><canvas id="chart-tiers" role="img" aria-label="Nombre d'offres par volume de data"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-tiers"></table></div></details>
+      </div>
+      <div class="card">
+        <h3>Durées de validité</h3>
+        <p class="sub">Nombre d'offres par durée</p>
+        <div class="chart-box"><canvas id="chart-validity" role="img" aria-label="Nombre d'offres par durée de validité"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+        <details class="data" open><summary>Voir les données</summary><div class="table-wrap"><table id="table-validity"></table></div></details>
+      </div>
+      <div class="card">
+        <h3>Réseau et recharge</h3>
+        <p class="sub">Part des offres, et surcoût réel à offre égale</p>
+        <div id="split-network"></div>
+        <div id="split-topup" style="margin-top:18px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="destinations" aria-labelledby="h-destinations">
+    <div class="section-head">
+      <h2 id="h-destinations">Destinations couvertes</h2>
+      <p id="coverage-lead"></p>
+    </div>
+    <div class="grid g-2">
+      <div class="card">
+        <h3>Top 10 des pays</h3>
+        <p class="sub">Nombre d'offres par pays (hors zones régionales)</p>
+        <div class="chart-box"><canvas id="chart-countries" role="img" aria-label="Top 10 des pays par nombre d'offres"></canvas></div>
+        <p class="chart-fallback">Graphique indisponible : voir les données ci-dessous.</p>
+        <details class="data"><summary>Voir les données</summary><div class="table-wrap"><table id="table-countries"></table></div></details>
+      </div>
+      <div class="card">
+        <h3>Zones régionales</h3>
+        <p class="sub">Forfaits multi-pays, comptés à part des pays</p>
+        <div class="table-wrap"><table id="table-regions"></table></div>
+        <p class="callout">Les codes <code>EU</code>, <code>AS</code>, <code>NA</code> et <code>WW</code> désignent des zones dans ces fichiers. En norme ISO, <code>NA</code> serait la Namibie et <code>AS</code> les Samoa américaines : le dashboard suit la convention des fournisseurs.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="qualite" aria-labelledby="h-qualite">
+    <div class="section-head">
+      <h2 id="h-qualite">Qualité des données</h2>
+      <p>Chaque ligne de chaque fichier est contrôlée. Une <b>erreur</b> exclut la ligne (ou le fichier) des calculs ; un <b>avertissement</b> la garde mais la signale.</p>
+    </div>
+    <div id="quality-status"></div>
+    <div class="grid g-2" style="margin-top:16px">
+      <div class="card">
+        <h3>Contrôles effectués</h3>
+        <p class="sub">Nombre d'anomalies détectées par règle</p>
+        <div class="table-wrap"><table id="table-checks"></table></div>
+      </div>
+      <div class="card">
+        <h3>Fichiers lus</h3>
+        <p class="sub">Tout fichier <code>.csv</code> déposé dans <code>data/</code> est pris en compte automatiquement</p>
+        <div class="table-wrap"><table id="table-files"></table></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px" id="details-card" hidden>
+      <h3>Détail des anomalies</h3>
+      <p class="sub" id="details-sub"></p>
+      <div class="table-wrap"><table id="table-details"></table></div>
+    </div>
+  </section>
+
+  <section id="methodologie" aria-labelledby="h-methodologie">
+    <div class="section-head">
+      <h2 id="h-methodologie">Méthodologie</h2>
+      <p>Les choix de calcul, et pourquoi.</p>
+    </div>
+    <div class="method">
+      <div class="card">
+        <h3>Périmètre</h3>
+        <p>Une carte eSIM = une offre (une ligne, un SKU) valide. Tous les fichiers <code>data/*.csv</code> sont lus automatiquement : ajouter un fournisseur ne demande aucune modification du code. Les lignes en erreur sont exclues et listées dans « Qualité des données ».</p>
+      </div>
+      <div class="card">
+        <h3>Produits chers</h3>
+        <p>Un produit est compté « à plus de <span data-fill="threshold"></span> » si son prix est <b>strictement supérieur</b> au seuil : un produit à exactement <span data-fill="threshold"></span> n'est pas compté.</p>
+      </div>
+      <div class="card">
+        <h3>Forfaits illimités</h3>
+        <ul>
+          <li>Exclus de la moyenne de data : on ne peut pas faire la moyenne d'une quantité infinie, et leur attribuer une valeur (50 Go, 100 Go…) serait arbitraire.</li>
+          <li>Comptés et affichés à part (nombre, part, prix moyen).</li>
+          <li>La <b>médiane</b> est affichée en plus de la moyenne : la moyenne (<span data-fill="mean-gb"></span>) est tirée vers le haut par les gros forfaits, alors que la moitié des offres ont <span data-fill="median-gb"></span> ou moins.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Prix au Go</h3>
+        <ul>
+          <li><b>Valeur principale</b> : total des prix ÷ total des Go des forfaits limités. C'est le coût réel d'un Go sur l'ensemble du catalogue.</li>
+          <li><b>En complément</b> : la médiane des prix au Go de chaque forfait. Elle est plus élevée, car les petits forfaits, chers au Go, y pèsent autant que les gros.</li>
+          <li>Le classement des fournisseurs suit la même règle.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Comparaisons à offre égale</h3>
+        <p>Une moyenne brute peut tromper : si un fournisseur (ou la 5G) propose davantage de gros forfaits, sa moyenne monte sans que ses prix soient plus élevés. Pour l'éviter, on compare les offres <b>à volume et durée égaux</b> : pour chaque segment (ex. 5 Go / 15 jours), on compare les prix, puis on fait la moyenne des écarts. L'<b>indice de prix</b> d'un fournisseur vaut 100 s'il est au prix moyen du marché sur des offres comparables.</p>
+      </div>
+      <div class="card">
+        <h3>Pays et zones</h3>
+        <p>Les codes <code>EU</code> (Europe), <code>AS</code> (Asie), <code>NA</code> (Amérique du Nord) et <code>WW</code> (Monde) sont des zones, comptées à part des pays. Les fichiers sont lus de façon à ce que le code <code>NA</code> ne soit pas confondu avec une valeur manquante, piège classique de la lecture de CSV.</p>
+      </div>
+      <div class="card">
+        <h3>Validation des données</h3>
+        <ul>
+          <li><b>Erreur, ligne exclue</b> : champ obligatoire vide, prix illisible, nul ou négatif, devise autre que EUR (aucun taux de conversion n'est fourni), durée ou volume invalide, SKU en double.</li>
+          <li><b>Avertissement, ligne conservée</b> : réseau ou recharge inconnus, incohérence data_gb / data_display, prix aberrant, offre identique sous un autre SKU.</li>
+          <li><b>SKU en double</b> : la première occurrence valide est gardée (fichiers par ordre alphabétique).</li>
+          <li><b>Prix aberrant</b> : plus de 5 fois, ou moins d'un cinquième de, la médiane des offres comparables (même volume, même durée, 5 offres au moins). Un seuil global signalerait à tort tous les forfaits illimités.</li>
+          <li>Un fichier vide, illisible ou incomplet est signalé et ignoré : il ne bloque jamais la génération.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Mise à jour</h3>
+        <p>Le dashboard est régénéré automatiquement par une GitHub Action à chaque modification du dossier <code>data/</code>, ainsi qu'une fois par jour, pour refléter l'import quotidien des fournisseurs. Tous les chiffres et tous les constats sont recalculés à chaque génération : si les données changent, les textes des constats changent aussi.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p id="footer-gen"></p>
+    <p>Projet réalisé dans le cadre d'un test de recrutement MyBestSim. Outil non officiel, inspiré de l'identité visuelle de mybestsim.com.</p>
+  </div>
+</footer>
+
+<script id="stats-data" type="application/json">__STATS_JSON__</script>
+<script>
+(function () {
+  "use strict";
+  var S = JSON.parse(document.getElementById("stats-data").textContent);
+  var H = S.headline;
+
+  // ---------- Format français ----------
+  var nf = function (d) { return new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+  var num = function (v, d) { return v == null ? "—" : nf(d).format(v); };
+  var eur = function (v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " €"; };
+  var pct = function (v, d) { return v == null ? "—" : nf(d || 0).format(v * 100) + " %"; };
+  var gb = function (v, d) { return v == null ? "—" : nf(d == null ? 2 : d).format(v) + " Go"; };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var $ = function (id) { return document.getElementById(id); };
+  var plural = function (n, one, many) { return n > 1 ? many : one; };
+
+  // ---------- En-tête ----------
+  var gen = new Date(S.meta.generated_at);
+  var genText = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" }).format(gen);
+  $("meta-date").textContent = "Mis à jour le " + genText;
+  $("meta-scope").textContent = num(S.meta.providers_count) + " fournisseurs · " + num(H.total_offers) + " offres";
+  $("footer-gen").textContent = "Dernière génération : " + genText + " (heure de Paris), à partir de " + num(S.meta.files_count) + " " + plural(S.meta.files_count, "fichier", "fichiers") + " fournisseurs.";
+  var fills = { threshold: eur(H.expensive.threshold, 0), "mean-gb": gb(H.data.mean_gb), "median-gb": gb(H.data.median_gb, 0) };
+  document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
+
+  // ---------- Synthèse ----------
+  var d = H.data, p = H.price, e = H.expensive, r = H.price_range, P = S.pricing;
+  $("synthese-lead").textContent = num(H.total_offers) + " offres eSIM valides de " + num(S.meta.providers_count) + " fournisseurs, couvrant " +
+    num(S.coverage.countries_count) + " pays et " + num(S.coverage.regions_count) + " zones régionales.";
+
+  function kpi(label, value, note, tag) {
+    return '<div class="card kpi"><div class="kpi-label">' + label + (tag ? ' <span class="tag">' + tag + "</span>" : "") +
+      '</div><div class="kpi-num">' + value + '</div><div class="kpi-note">' + note + "</div></div>";
+  }
+  var minNote = r.min ? (r.min.count > 1
+    ? num(r.min.count) + " produits ex æquo : " + r.min.products.map(function (x) { return esc(x.provider); }).join(", ") + (r.min.count > r.min.products.length ? "…" : "")
+    : esc(r.min.products[0].provider) + " · " + esc(r.min.products[0].product_name)) : "";
+  var maxNote = r.max ? r.max.products.map(function (x) { return esc(x.provider) + " · " + esc(x.product_name); }).join(" ; ") : "";
+  $("kpis").innerHTML = [
+    kpi("Cartes eSIM au catalogue", num(H.total_offers), "offres valides · <b>" + num(S.meta.providers_count) + "</b> fournisseurs"),
+    kpi("Produits à plus de " + eur(e.threshold, 0), num(e.count),
+      "prix <b>strictement supérieur</b> à " + eur(e.threshold, 0) + " · dont <b>" + num(e.unlimited_count) + "</b> illimités"),
+    kpi("Fourchette de prix", eur(r.min && r.min.price) + ' <small>→</small> ' + eur(r.max && r.max.price),
+      "<b>Min</b> : " + minNote + "<br><b>Max</b> : " + maxNote),
+    kpi("Data moyenne par carte", gb(d.mean_gb), "médiane <b>" + gb(d.median_gb, 0) + "</b> · hors <b>" + num(d.unlimited_count) + "</b> forfaits illimités (" + pct(d.unlimited_share) + ")", "hors illimités"),
+    kpi("Prix moyen", eur(p.mean), "médiane <b>" + eur(p.median) + "</b> · limités <b>" + eur(p.mean_limited) + "</b> · illimités <b>" + eur(p.mean_unlimited) + "</b>"),
+    kpi("Prix moyen au Go", eur(P.price_per_gb) + " <small>/ Go</small>", "médiane des forfaits : <b>" + eur(P.price_per_gb_median_of_ratios) + " / Go</b>", "bonus")
+  ].join("");
+  $("ppg-explain").innerHTML = "<b>Pourquoi deux prix au Go ?</b> " + eur(P.price_per_gb) + "/Go divise le total des prix par le total des Go : c'est ce que coûte réellement un Go sur le catalogue. " +
+    "La médiane des forfaits (" + eur(P.price_per_gb_median_of_ratios) + "/Go) est plus élevée, car les petits forfaits, chers au Go, y comptent autant que les gros.";
+
+  $("insights").innerHTML = S.insights.map(function (i) {
+    return '<article class="card insight' + (i.highlight ? " hero" : "") + '">' +
+      (i.highlight ? '<div class="kicker">Constat clé</div>' : "") +
+      "<h3>" + esc(i.title) + "</h3><p>" + esc(i.text) + "</p></article>";
+  }).join("");
+
+  // ---------- Tableaux ----------
+  function table(el, cols, rows, opts) {
+    opts = opts || {};
+    var head = "<thead><tr>" + cols.map(function (c, k) {
+      var cls = c.num ? ' class="num"' : "";
+      return opts.sortable ? "<th" + cls + ' aria-sort="none" data-k="' + k + '"><button type="button">' + c.label + "</button></th>" : "<th" + cls + ">" + c.label + "</th>";
+    }).join("") + "</tr></thead>";
+    function body(list) {
+      return "<tbody>" + list.map(function (row) {
+        return "<tr" + (opts.rowClass ? ' class="' + opts.rowClass(row) + '"' : "") + ">" + cols.map(function (c) {
+          return "<td" + (c.num ? ' class="num"' : c.wrap ? ' class="wrap-cell"' : "") + ">" + c.fmt(row) + "</td>";
+        }).join("") + "</tr>";
+      }).join("") + "</tbody>";
+    }
+    el.innerHTML = head + body(rows);
+    if (!opts.sortable) return;
+    el.querySelectorAll("th").forEach(function (th) {
+      th.querySelector("button").addEventListener("click", function () {
+        var k = +th.dataset.k, c = cols[k];
+        var dir = th.getAttribute("aria-sort") === "descending" ? "ascending" : "descending";
+        el.querySelectorAll("th").forEach(function (o) { o.setAttribute("aria-sort", "none"); });
+        th.setAttribute("aria-sort", dir);
+        var sorted = rows.slice().sort(function (a, b) {
+          var x = c.key(a), y = c.key(b);
+          if (x == null) return 1; if (y == null) return -1;
+          var res = typeof x === "string" ? x.localeCompare(y, "fr") : x - y;
+          return dir === "ascending" ? res : -res;
+        });
+        el.querySelector("tbody").outerHTML = body(sorted);
+      });
+    });
+  }
+
+  var providers = S.providers;
+  var byPpg = providers.filter(function (x) { return x.price_per_gb != null; }).slice().sort(function (a, b) { return a.price_per_gb - b.price_per_gb; });
+  var cheapest = (S.insights.filter(function (i) { return i.id === "cheapest_provider"; })[0] || {}).values;
+  var topNames = cheapest ? cheapest.top.map(function (t) { return t.provider; }) : byPpg.slice(0, 3).map(function (x) { return x.provider; });
+  var rankOf = function (name) { return topNames.indexOf(name); };
+
+  table($("providers-table"), [
+    { label: "Fournisseur", key: function (x) { return x.provider; }, fmt: function (x) { var k = rankOf(x.provider); return (k >= 0 ? '<span class="rank" title="Top ' + topNames.length + ' prix au Go">' + (k + 1) + "</span>" : "") + esc(x.provider); } },
+    { label: "Offres", num: true, key: function (x) { return x.offers; }, fmt: function (x) { return num(x.offers); } },
+    { label: "Part", num: true, key: function (x) { return x.share; }, fmt: function (x) { return pct(x.share, 1); } },
+    { label: "Prix moyen", num: true, key: function (x) { return x.mean_price; }, fmt: function (x) { return eur(x.mean_price); } },
+    { label: "Prix min", num: true, key: function (x) { return x.min_price; }, fmt: function (x) { return eur(x.min_price); } },
+    { label: "Data moy.", num: true, key: function (x) { return x.mean_data_gb; }, fmt: function (x) { return gb(x.mean_data_gb, 1); } },
+    { label: "Illimités", num: true, key: function (x) { return x.unlimited; }, fmt: function (x) { return num(x.unlimited); } },
+    { label: "€ / Go", num: true, key: function (x) { return x.price_per_gb; }, fmt: function (x) { return eur(x.price_per_gb); } },
+    { label: "Indice prix", num: true, key: function (x) { return x.price_index; }, fmt: function (x) { return num(x.price_index, 1); } },
+    { label: "5G", num: true, key: function (x) { return x.share_5g; }, fmt: function (x) { return pct(x.share_5g); } },
+    { label: "Recharge", num: true, key: function (x) { return x.share_top_up; }, fmt: function (x) { return pct(x.share_top_up); } },
+    { label: "Destinations", num: true, key: function (x) { return x.destinations; }, fmt: function (x) { return num(x.destinations); } }
+  ], providers, { sortable: true, rowClass: function (x) { return rankOf(x.provider) >= 0 ? "top3" : ""; } });
+
+  $("ppg-provider-sub").textContent = cheapest && cheapest.tied
+    ? "Les " + topNames.length + " premiers (" + topNames.join(", ") + ") sont quasiment à égalité."
+    : "Classement du moins cher au plus cher.";
+
+  var tiers = P.by_data_tier;
+  table($("table-ppg-tier"), [
+    { label: "Volume", fmt: function (x) { return gb(x.data_gb, 0); } },
+    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
+    { label: "Prix moyen", num: true, fmt: function (x) { return eur(x.mean_price); } },
+    { label: "€ / Go", num: true, fmt: function (x) { return eur(x.price_per_gb); } }
+  ], tiers);
+
+  var D = S.distributions;
+  $("tiers-sub").innerHTML = '<span class="legend" style="margin:0"><span><span class="swatch" style="background:var(--series-1)"></span>Volume limité</span>' +
+    '<span><span class="swatch" style="background:var(--series-2)"></span>Illimité : ' + num(d.unlimited_count) + " offres, " + pct(d.unlimited_share) + " du catalogue</span></span>";
+  table($("table-tiers"), [
+    { label: "Volume", fmt: function (x) { return esc(x.label); } },
+    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } }
+  ], D.data_tiers);
+
+  var validityPrice = {};
+  P.by_validity.forEach(function (v) { validityPrice[v.validity_days] = v.mean_price; });
+  table($("table-validity"), [
+    { label: "Durée", fmt: function (x) { return num(x.validity_days) + " jours"; } },
+    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
+    { label: "Part", num: true, fmt: function (x) { return pct(x.share, 1); } },
+    { label: "Prix moyen", num: true, fmt: function (x) { return eur(validityPrice[x.validity_days]); } }
+  ], D.validity);
+
+  // Barres de proportion 4G/5G et recharge
+  function split(el, title, items, labels, l4l, l4lText) {
+    var colors = ["var(--series-1)", "var(--series-2)"];
+    var known = items.filter(function (x) { return labels[x.value]; });
+    var segs = known.map(function (x, k) {
+      return '<span style="flex:' + x.offers + ";background:" + colors[k % 2] + '" title="' + esc(labels[x.value]) + " : " + pct(x.share, 1) + '">' + pct(x.share) + "</span>";
+    }).join("");
+    var legend = known.map(function (x, k) {
+      return '<div><span class="swatch" style="background:' + colors[k % 2] + '"></span>' + esc(labels[x.value]) + " : <b>" + num(x.offers) + "</b> offres · prix moyen " + eur(x.mean_price) + "</div>";
+    }).join("");
+    var other = items.filter(function (x) { return !labels[x.value]; });
+    el.innerHTML = "<h3 style='font-size:14px'>" + title + "</h3>" +
+      '<div class="split" role="img" aria-label="' + esc(title) + '">' + segs + "</div>" +
+      '<div class="split-legend">' + legend + "</div>" +
+      (other.length ? '<p class="kpi-note">Autres valeurs : ' + other.map(function (x) { return esc(x.value) + " (" + num(x.offers) + ")"; }).join(", ") + "</p>" : "") +
+      (l4l != null ? '<p class="callout">' + l4lText + "</p>" : "");
+  }
+  var net = {}; D.network.forEach(function (x) { net[x.value] = x; });
+  var rawNet = net["5G"] && net["4G"] ? net["5G"].mean_price / net["4G"].mean_price - 1 : null;
+  split($("split-network"), "Réseau 4G / 5G", D.network, { "4G": "4G", "5G": "5G" }, D.network_like_for_like_5g_vs_4g,
+    "<b>5G vs 4G :</b> " + (rawNet != null ? (rawNet >= 0 ? "+" : "") + pct(rawNet) + " en moyenne brute, mais " : "") +
+    "<b>" + (D.network_like_for_like_5g_vs_4g >= 1 ? "+" : "") + pct(D.network_like_for_like_5g_vs_4g - 1, 1) + "</b> à volume et durée égaux. L'écart brut vient de la composition du catalogue (davantage de gros forfaits en 5G).");
+  split($("split-topup"), "Recharge possible", D.top_up, { "oui": "Rechargeable", "non": "Non rechargeable" }, D.top_up_like_for_like_yes_vs_no,
+    "<b>Surcoût de la recharge à offre égale :</b> " + (D.top_up_like_for_like_yes_vs_no >= 1 ? "+" : "") + pct(D.top_up_like_for_like_yes_vs_no - 1, 1) + ". L'option ne se paie pratiquement pas.");
+
+  // Destinations
+  var C = S.coverage;
+  $("coverage-lead").innerHTML = "<b>" + num(C.countries_count) + "</b> pays et <b>" + num(C.regions_count) + "</b> zones régionales (Europe, Asie, Amérique du Nord, Monde…), comptés séparément.";
+  var placeCols = [
+    { label: "Destination", fmt: function (x) { return esc(x.name) + ' <span class="kpi-note">' + esc(x.code) + "</span>"; } },
+    { label: "Offres", num: true, fmt: function (x) { return num(x.offers); } },
+    { label: "Fournisseurs", num: true, fmt: function (x) { return num(x.providers); } },
+    { label: "Dès", num: true, fmt: function (x) { return eur(x.min_price); } }
+  ];
+  table($("table-countries"), placeCols, C.top_countries);
+  table($("table-regions"), placeCols, C.regions);
+
+  // ---------- Qualité des données ----------
+  var A = S.anomalies;
+  var icon = {
+    ok: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6 10.5l2.6 2.5L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    warn: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2l9 16H1z" fill="currentColor"/><path d="M10 8v4" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="15" r="1.2" fill="#fff"/></svg>',
+    crit: '<svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+  var level = A.errors ? "crit" : A.warnings ? "warn" : "ok";
+  var statusTitle = level === "ok"
+    ? "Aucune anomalie détectée"
+    : num(A.errors) + " " + plural(A.errors, "erreur", "erreurs") + " · " + num(A.warnings) + " " + plural(A.warnings, "avertissement", "avertissements");
+  $("quality-status").innerHTML = '<div class="status ' + level + '">' + icon[level] + "<div><strong>" + statusTitle + "</strong><span>" +
+    num(A.rows_read) + " lignes lues, " + (A.rows_excluded ? num(A.rows_excluded) + " " + plural(A.rows_excluded, "exclue", "exclues") : "aucune exclue") + " des calculs, " +
+    num(A.checks.length) + " contrôles appliqués à chaque génération.</span></div></div>";
+
+  var sevLabel = function (s) { return '<span class="sev ' + s + '">' + (s === "erreur" ? "Erreur · exclue" : "Avertissement") + "</span>"; };
+  table($("table-checks"), [
+    { label: "Contrôle", fmt: function (x) { return esc(x.label); } },
+    { label: "Niveau", fmt: function (x) { return sevLabel(x.severity); } },
+    { label: "Détectées", num: true, fmt: function (x) { return x.count ? '<span class="count-pos">' + num(x.count) + "</span>" : '<span class="ok-mark" aria-label="aucune">✓</span> <span class="count-0">0</span>'; } }
+  ], A.checks.slice().sort(function (a, b) { return b.count - a.count; }));
+
+  table($("table-files"), [
+    { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },
+    { label: "Lignes", num: true, fmt: function (x) { return num(x.rows); } },
+    { label: "Statut", fmt: function (x) { return x.status === "ok" ? '<span class="ok-mark">✓</span> lu' : '<span class="sev erreur">✕ ' + esc(x.status) + "</span>"; } }
+  ], A.files);
+
+  if (A.details.length) {
+    var MAX = 300;
+    $("details-card").hidden = false;
+    $("details-sub").textContent = A.details.length > MAX ? "Les " + num(MAX) + " premières sur " + num(A.details.length) + " (liste complète dans stats.json)." : num(A.details.length) + " " + plural(A.details.length, "anomalie", "anomalies") + ".";
+    table($("table-details"), [
+      { label: "Niveau", fmt: function (x) { return sevLabel(x.severity); } },
+      { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },
+      { label: "Ligne", num: true, fmt: function (x) { return x.line == null ? "—" : num(x.line); } },
+      { label: "SKU", fmt: function (x) { return esc(x.sku || "—"); } },
+      { label: "Détail", wrap: true, fmt: function (x) { return esc(x.message); } }
+    ], A.details.slice(0, MAX));
+  }
+
+  // ---------- Thème ----------
+  var btn = $("theme-btn");
+  var modes = ["auto", "light", "dark"], names = { auto: "Thème : auto", light: "Thème : clair", dark: "Thème : sombre" };
+  function currentMode() { return document.documentElement.getAttribute("data-theme") || "auto"; }
+  function setMode(m) {
+    if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m);
+    try { if (m === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", m); } catch (err) {}
+    btn.textContent = names[m];
+    drawCharts();
+  }
+  btn.textContent = names[currentMode()];
+  btn.addEventListener("click", function () { setMode(modes[(modes.indexOf(currentMode()) + 1) % modes.length]); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function () { if (currentMode() === "auto") drawCharts(); });
+  }
+
+  // ---------- Graphiques (Chart.js) ----------
+  var charts = [];
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  function bar(id, labels, values, o) {
+    o = o || {};
+    var horizontal = !!o.horizontal;
+    var canvas = $(id);
+    var box = canvas.parentNode;
+    box.style.height = (horizontal ? Math.max(180, labels.length * 26 + 40) : 240) + "px";
+    var valueAxis = {
+      beginAtZero: true,
+      grid: { color: css("--grid"), drawTicks: false },
+      border: { display: false },
+      ticks: { color: css("--muted"), padding: 6, callback: function (v) { return o.fmt ? o.fmt(v, true) : num(v); } }
+    };
+    var catAxis = { grid: { display: false }, border: { color: css("--axis") }, ticks: { color: css("--ink-2"), autoSkip: false } };
+    charts.push(new Chart(canvas, {
+      type: "bar",
+      data: { labels: labels, datasets: [{
+        data: values,
+        backgroundColor: o.colors || css("--series-1"),
+        borderRadius: 4,
+        borderSkipped: "start",
+        maxBarThickness: horizontal ? 18 : 48,
+        categoryPercentage: 0.8,
+        barPercentage: 0.9
+      }] },
+      options: {
+        indexAxis: horizontal ? "y" : "x",
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: css("--header-bg"), titleColor: "#fff", bodyColor: "#fff", padding: 10, cornerRadius: 8, displayColors: false,
+            callbacks: { label: function (c) { return o.fmt ? o.fmt(c.raw) : num(c.raw) + " offres"; } }
+          }
+        },
+        scales: horizontal ? { x: valueAxis, y: catAxis } : { x: catAxis, y: valueAxis }
+      }
+    }));
+  }
+
+  function drawCharts() {
+    if (typeof Chart === "undefined") { document.body.classList.add("no-chart"); return; }
+    charts.forEach(function (c) { c.destroy(); });
+    charts = [];
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    Chart.defaults.font.size = 12;
+
+    bar("chart-providers", providers.map(function (x) { return x.provider; }), providers.map(function (x) { return x.offers; }), { horizontal: true });
+
+    var s1 = css("--series-1"), muted = css("--series-muted");
+    $("ppg-provider-legend").innerHTML = '<span><span class="swatch" style="background:var(--series-1)"></span>Top ' + topNames.length + " (moins chers au Go)</span>" +
+      '<span><span class="swatch" style="background:var(--series-muted)"></span>Autres fournisseurs</span>';
+    bar("chart-ppg-provider", byPpg.map(function (x) { return x.provider; }), byPpg.map(function (x) { return x.price_per_gb; }), {
+      horizontal: true,
+      colors: byPpg.map(function (x) { return rankOf(x.provider) >= 0 ? s1 : muted; }),
+      fmt: function (v, axis) { return axis ? eur(v, 1) : eur(v) + " / Go"; }
+    });
+
+    bar("chart-ppg-tier", tiers.map(function (x) { return gb(x.data_gb, 0); }), tiers.map(function (x) { return x.price_per_gb; }), {
+      fmt: function (v, axis) { return axis ? eur(v, 0) : eur(v) + " / Go"; }
+    });
+    bar("chart-tiers", D.data_tiers.map(function (x) { return x.label; }), D.data_tiers.map(function (x) { return x.offers; }), {
+      colors: D.data_tiers.map(function (x) { return x.label === "Illimité" ? css("--series-2") : s1; })
+    });
+    bar("chart-validity", D.validity.map(function (x) { return num(x.validity_days) + " jours"; }), D.validity.map(function (x) { return x.offers; }));
+    bar("chart-countries", C.top_countries.map(function (x) { return x.name; }), C.top_countries.map(function (x) { return x.offers; }), { horizontal: true });
+  }
+
+  if (document.readyState === "complete") drawCharts();
+  else window.addEventListener("load", drawCharts);
+})();
+</script>
+</body>
+</html>

@@ -17,6 +17,9 @@ MAX_LISTED_PRODUCTS = 5  # produits ex æquo listés pour le prix min / max
 TOP_DESTINATIONS = 10
 # Écart d'indice (en points) sous lequel on considère les fournisseurs au même prix.
 HOMOGENEOUS_INDEX_SPREAD = 5
+# « Moins cher au Go » : on montre un podium, déclaré à égalité si l'écart 1er/dernier < 1 %.
+CHEAPEST_TOP_N = 3
+TIE_TOLERANCE = 0.01
 
 
 def _num(value, digits=4):
@@ -264,25 +267,36 @@ def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
 
     ranked = sorted((pr for pr in providers if pr["price_per_gb"] is not None), key=lambda pr: pr["price_per_gb"])
     if len(ranked) >= 2:
-        best, worst = ranked[0], ranked[-1]
+        top = ranked[:CHEAPEST_TOP_N]
+        worst = ranked[-1]
+        names = [pr["provider"] for pr in top]
+        listed = ", ".join(f"{pr['provider']} ({fmt.euros(pr['price_per_gb'])}/Go)" for pr in top[:-1])
+        listed += f" et {top[-1]['provider']} ({fmt.euros(top[-1]['price_per_gb'])}/Go)"
+        tied = top[-1]["price_per_gb"] / top[0]["price_per_gb"] - 1 < TIE_TOLERANCE
+        joined = ", ".join(names[:-1]) + f" et {names[-1]}"
+        if tied:
+            title = f"Moins chers au Go : {joined}, quasiment à égalité"
+            lead = (f"{listed} sont quasiment à égalité en tête : moins de "
+                    f"{fmt.percent(TIE_TOLERANCE)} d'écart entre eux.")
+        else:
+            title = f"Moins chers au Go : {joined}"
+            lead = f"En tête : {listed}."
         indices = [pr["price_index"] for pr in providers if pr["price_index"] is not None]
         lo_idx, hi_idx = min(indices), max(indices)
         by_index = min(providers, key=lambda pr: pr["price_index"])
         spread = f"entre {fmt.number(lo_idx, 1)} et {fmt.number(hi_idx, 1)} (100 = prix moyen du marché)"
         if hi_idx - lo_idx < HOMOGENEOUS_INDEX_SPREAD:
-            title = f"{best['provider']} est le moins cher au Go, mais à offre égale les fournisseurs se valent"
             check = (f"À volume et durée égaux, tous les fournisseurs ont un indice de prix {spread} : l'écart "
                      "au Go vient surtout de la part de gros forfaits dans leur catalogue, pas de tarifs différents.")
         else:
-            title = f"{best['provider']} est le fournisseur le moins cher au Go"
             check = (f"À volume et durée égaux, les indices de prix vont {spread} ; "
                      f"le plus bas est celui de {by_index['provider']}.")
         out.append({
             "id": "cheapest_provider", "highlight": False,
             "title": title,
-            "text": f"{fmt.euros(best['price_per_gb'])}/Go, contre {fmt.euros(worst['price_per_gb'])}/Go pour "
-                    f"{worst['provider']}, le plus cher au Go. {check}",
-            "values": {"best": best["provider"], "worst": worst["provider"], "best_by_index": by_index["provider"],
+            "text": f"{lead} Le plus cher au Go est {worst['provider']} ({fmt.euros(worst['price_per_gb'])}/Go). {check}",
+            "values": {"top": [{"provider": pr["provider"], "price_per_gb": pr["price_per_gb"]} for pr in top],
+                       "tied": tied, "worst": worst["provider"], "best_by_index": by_index["provider"],
                        "index_min": lo_idx, "index_max": hi_idx},
         })
     return out
