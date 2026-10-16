@@ -335,6 +335,61 @@
   .method li + li { margin-top: 5px; }
   .hypothesis { border-left: 3px solid var(--accent); }
 
+  /* Barre de filtres collante */
+  .filterbar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--page) 88%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
+  .filterbar .wrap { padding-top: 10px; padding-bottom: 10px; }
+  .fb-row { display: flex; align-items: center; gap: 8px 16px; }
+  .fb-filters { display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; flex-wrap: wrap; }
+  .fb-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+  .btn.icon-only { width: 34px; padding: 0; justify-content: center; }
+  .fb-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink); margin-right: 2px; }
+  .fb-group { display: inline-flex; align-items: center; gap: 4px; }
+  .fb-group > span { font-size: 12px; color: var(--muted); font-weight: 600; margin: 0 2px 0 6px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--border-strong);
+    background: var(--card); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--brand); }
+  .btn[aria-expanded="true"] { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+  .btn .count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; }
+  .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--brand-ink); }
+  .btn.ghost:hover { background: var(--brand-soft); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+  .btn .icon { width: 16px; height: 16px; }
+  .toggle { height: 34px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--card); color: var(--ink-2);
+    font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .toggle:hover { border-color: var(--brand); color: var(--ink); }
+  .toggle[aria-pressed="true"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-ink); }
+  .fb-result { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+  .fb-result b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .dd { position: relative; }
+  .dd-panel { position: absolute; top: calc(100% + 6px); left: 0; z-index: 40; width: 290px; max-height: min(420px, 70vh); display: flex; flex-direction: column;
+    background: var(--card); border: 1px solid var(--border-strong); border-radius: 12px; box-shadow: var(--shadow-md); overflow: hidden; }
+  .dd-panel[hidden] { display: none; }
+  .dd-search { margin: 10px; height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--page); color: var(--ink); font: inherit; font-size: 13.5px; }
+  .dd-list { overflow: auto; padding: 0 6px 6px; }
+  .dd-list h4 { margin: 8px 8px 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .dd-list label { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 7px; font-size: 13.5px; cursor: pointer; }
+  .dd-list label:hover { background: var(--card-2); }
+  .dd-list label span.n { margin-left: auto; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .dd-list input { width: 16px; height: 16px; accent-color: var(--brand); margin: 0; }
+  .dd-foot { display: flex; justify-content: space-between; padding: 8px 10px; border-top: 1px solid var(--border); }
+  .filterbar .wrap + .wrap { padding-top: 0; }
+  .empty-state { display: none; align-items: center; gap: 10px; margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 13.5px; font-weight: 600; }
+  .is-empty .empty-state { display: flex; }
+  .filter-scope { display: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--brand-ink); background: var(--brand-soft); border-radius: 999px; padding: 3px 10px; }
+  .is-filtered .filter-scope { display: inline-flex; }
+  @media (max-width: 1100px) {
+    .fb-row { flex-direction: column; align-items: stretch; gap: 8px; }
+    .fb-filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .fb-actions .fb-result { margin-right: auto; }
+  }
+  @media (max-width: 860px) {
+    .dd { position: static; }
+    .dd-panel { position: fixed; left: 12px; right: 12px; top: auto; width: auto; margin-top: 6px; }
+  }
+
   footer.foot { background: #0b1b3a; color: #a9bde0; font-size: 13px; padding: 28px 0 36px; }
   footer.foot p { margin: 4px 0; }
   footer.foot b { color: #fff; }
@@ -376,6 +431,8 @@
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
   <symbol id="i-auto" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 19h16"/></symbol>
   <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 21h14"/><path d="M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/></symbol>
 </svg>
 
@@ -414,6 +471,37 @@
   </div>
 </header>
 
+<div class="filterbar" id="filterbar" role="region" aria-label="Filtres">
+  <div class="wrap fb-row">
+    <div class="fb-filters">
+    <span class="fb-label" title="Filtres"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg><span class="sr-only">Filtres</span></span>
+    <div class="dd" data-key="provider">
+      <button class="btn" type="button" aria-expanded="false" aria-controls="dd-provider" id="dd-provider-btn">Fournisseur</button>
+      <div class="dd-panel" id="dd-provider" role="group" aria-label="Filtrer par fournisseur" hidden></div>
+    </div>
+    <div class="dd" data-key="place">
+      <button class="btn" type="button" aria-expanded="false" aria-controls="dd-place" id="dd-place-btn">Destination</button>
+      <div class="dd-panel" id="dd-place" role="group" aria-label="Filtrer par pays ou zone" hidden></div>
+    </div>
+    <div class="fb-group" role="group" aria-label="Réseau"><span>Réseau</span>
+      <button class="toggle" type="button" aria-pressed="false" data-key="network" data-value="4G">4G</button>
+      <button class="toggle" type="button" aria-pressed="false" data-key="network" data-value="5G">5G</button>
+    </div>
+    <div class="fb-group" role="group" aria-label="Recharge"><span>Recharge</span>
+      <button class="toggle" type="button" aria-pressed="false" data-key="top_up" data-value="oui">Oui</button>
+      <button class="toggle" type="button" aria-pressed="false" data-key="top_up" data-value="non">Non</button>
+    </div>
+    <div class="fb-group" role="group" aria-label="Durée" id="fb-validity"><span>Durée</span></div>
+    </div>
+    <div class="fb-actions">
+    <span class="fb-result" id="fb-result" role="status" aria-live="polite"></span>
+    <button class="btn ghost icon-only" type="button" id="fb-reset" disabled title="Réinitialiser les filtres"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">Réinitialiser les filtres</span></button>
+    <button class="btn primary" type="button" id="fb-export" title="Exporter les offres filtrées au format CSV"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Exporter CSV</button>
+    </div>
+  </div>
+  <div class="wrap"><p class="empty-state" id="empty-state"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Aucune offre ne correspond à ces filtres. <button class="btn ghost" type="button" data-reset>Réinitialiser les filtres</button></p></div>
+</div>
+
 <main id="main">
   <section class="band band-white" id="indicateurs" aria-labelledby="h-indicateurs">
     <div class="wrap">
@@ -421,6 +509,7 @@
         <div>
           <p class="eyebrow">Indicateurs</p>
           <h2 id="h-indicateurs">Prix, data et options</h2>
+          <span class="filter-scope" data-scope></span>
           <p>Les autres chiffres clés demandés, avec leurs règles de calcul.</p>
         </div>
       </div>
@@ -449,6 +538,7 @@
         <div>
           <p class="eyebrow">Fournisseurs</p>
           <h2 id="h-fournisseurs">Répartition par fournisseur</h2>
+          <span class="filter-scope" data-scope></span>
           <p>Volume d'offres et compétitivité de chaque fournisseur. Cliquez sur un en-tête du tableau pour trier.</p>
         </div>
       </div>
@@ -481,6 +571,7 @@
         <div>
           <p class="eyebrow">Prix et data</p>
           <h2 id="h-prix-data">Comment se forme le prix</h2>
+          <span class="filter-scope" data-scope></span>
           <p>Volume, durée, réseau, recharge : ce qui fait vraiment varier le prix, et ce qui ne le fait pas.</p>
         </div>
       </div>
@@ -522,6 +613,7 @@
         <div>
           <p class="eyebrow">Destinations</p>
           <h2 id="h-destinations">Destinations couvertes</h2>
+          <span class="filter-scope" data-scope></span>
           <p id="coverage-lead"></p>
         </div>
       </div>
@@ -798,7 +890,7 @@
   }
   function renderHero(V) {
     var H = V.headline, C = V.coverage, np = V.providers.length;
-    $("hero-sub").textContent = num(H.total_offers) + " offres de " + num(np) + " " + plural(np, "fournisseur", "fournisseurs") + ", couvrant " +
+    $("hero-sub").textContent = (activeCount() ? "Sélection filtrée : " : "") + num(H.total_offers) + " " + plural(H.total_offers, "offre", "offres") + " de " + num(np) + " " + plural(np, "fournisseur", "fournisseurs") + ", couvrant " +
       num(C.countries_count) + " pays et " + num(C.regions_count) + " " + plural(C.regions_count, "zone régionale", "zones régionales") + ".";
     var hist = V.pricing.histogram.bins.map(function (b) { return b.offers; });
     var tiers = V.distributions.data_tiers.filter(function (t) { return t.label !== "Illimité"; }).map(function (t) { return t.offers; });
@@ -871,12 +963,18 @@
     $("insights").innerHTML = html;
   }
 
+  var PODIUM_MIN_OFFERS = 10;
   function renderProviders(V) {
     byPpg = V.providers.filter(function (p) { return p.price_per_gb != null; }).sort(function (a, b) { return a.price_per_gb - b.price_per_gb; });
-    podium = byPpg.slice(0, 3).map(function (p) { return p.provider; });
-    var tied = byPpg.length >= 3 && byPpg[2].price_per_gb / byPpg[0].price_per_gb - 1 < 0.01;
-    $("ppg-provider-sub").textContent = !podium.length ? "Aucun forfait à volume limité dans la sélection."
-      : tied ? "Podium : " + podium.join(", ") + ", quasiment à égalité (moins de 1 % d'écart)." : "Du moins cher au plus cher au Go.";
+    // Podium réservé aux fournisseurs ayant assez de forfaits limités : sur 3 offres, un classement ne veut rien dire.
+    var eligible = byPpg.filter(function (p) { return p.offers - p.unlimited >= PODIUM_MIN_OFFERS; });
+    podium = eligible.slice(0, 3).map(function (p) { return p.provider; });
+    var tied = eligible.length >= 3 && eligible[2].price_per_gb / eligible[0].price_per_gb - 1 < 0.01;
+    var excluded = byPpg.length - eligible.length;
+    $("ppg-provider-sub").textContent = !byPpg.length ? "Aucun forfait à volume limité dans la sélection."
+      : !podium.length ? "Échantillon trop petit pour un classement (moins de " + PODIUM_MIN_OFFERS + " forfaits limités par fournisseur)."
+      : (tied ? "Podium : " + podium.join(", ") + ", quasiment à égalité (moins de 1 % d'écart)." : "Podium du moins cher au Go : " + podium.join(", ") + ".") +
+        (excluded ? " " + num(excluded) + " " + plural(excluded, "fournisseur exclu", "fournisseurs exclus") + " du podium (moins de " + PODIUM_MIN_OFFERS + " forfaits limités)." : "");
     var rank = function (name) { return podium.indexOf(name); };
     var maxOffers = Math.max.apply(null, V.providers.map(function (p) { return p.offers; }).concat([1]));
     table($("providers-table"), [
@@ -1011,13 +1109,15 @@
       data: { labels: labels, datasets: [{ data: values, backgroundColor: o.colors || css("--series-1"), borderRadius: 4, borderSkipped: "start",
         maxBarThickness: horizontal ? 16 : 44, categoryPercentage: 0.82, barPercentage: 0.9 }] },
       options: {
-        indexAxis: horizontal ? "y" : "x", maintainAspectRatio: false, animation: REDUCED ? false : { duration: 450 },
+        indexAxis: horizontal ? "y" : "x", maintainAspectRatio: false, animation: REDUCED || instant ? false : { duration: 450 },
         plugins: { legend: { display: false }, tooltip: Object.assign(tooltipStyle(), { callbacks: { label: function (c) { return o.fmt ? o.fmt(c.raw) : num(c.raw) + " offres"; } } }) },
         scales: horizontal ? { x: valueAxis, y: catAxis } : { x: catAxis, y: valueAxis }
       }
     });
   }
-  function drawCharts(V) {
+  var instant = false; // pas d'animation des graphiques pendant le filtrage : retour immédiat
+  function drawCharts(V, noAnim) {
+    instant = !!noAnim;
     if (typeof Chart === "undefined") { document.body.classList.add("no-chart"); return; }
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.font.size = 12;
@@ -1037,6 +1137,142 @@
     bar("chart-countries", V.coverage.top_countries.map(function (c) { return c.name; }), V.coverage.top_countries.map(function (c) { return c.offers; }), { horizontal: true });
   }
 
+  // ---------- Filtres ----------
+  var KEYS = ["provider", "place", "network", "top_up", "validity_days"];
+  var URL_KEYS = { provider: "fournisseur", place: "destination", network: "reseau", top_up: "recharge", validity_days: "duree" };
+  var filters = { provider: [], place: [], network: [], top_up: [], validity_days: [] };
+  var LABELS = { network: "Réseau", top_up: "Recharge", validity_days: "Durée" };
+
+  function activeCount() { return KEYS.reduce(function (n, k) { return n + (filters[k].length ? 1 : 0); }, 0); }
+  function readUrl() {
+    var q = new URLSearchParams(location.search);
+    KEYS.forEach(function (k) {
+      var raw = q.get(URL_KEYS[k]);
+      filters[k] = raw ? raw.split(",").filter(Boolean).map(function (v) { return k === "validity_days" ? Number(v) : v; }) : [];
+    });
+  }
+  function writeUrl() {
+    var q = new URLSearchParams();
+    KEYS.forEach(function (k) { if (filters[k].length) q.set(URL_KEYS[k], filters[k].join(",")); });
+    var s = q.toString();
+    try { history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash); } catch (e) {}
+  }
+  function counts(key) {
+    var m = {};
+    ALL.forEach(function (r) { var v = key === "place" ? r.country_code : r[key]; m[v] = (m[v] || 0) + 1; });
+    return m;
+  }
+
+  // Menus déroulants à cases à cocher (fournisseur, destination)
+  function buildDropdown(key, groups) {
+    var panel = $("dd-" + key), btn = $("dd-" + key + "-btn");
+    panel.innerHTML = '<input class="dd-search" type="search" placeholder="Rechercher…" aria-label="Rechercher dans la liste">' +
+      '<div class="dd-list">' + groups.map(function (g) {
+        return (g.title ? "<h4>" + esc(g.title) + "</h4>" : "") + g.items.map(function (it) {
+          return '<label data-text="' + esc((it.label + " " + it.value).toLowerCase()) + '"><input type="checkbox" value="' + esc(it.value) + '">' +
+            esc(it.label) + '<span class="n">' + num(it.count) + "</span></label>";
+        }).join("");
+      }).join("") + "</div>" +
+      '<div class="dd-foot"><button class="btn ghost" type="button" data-clear>Tout effacer</button><button class="btn primary" type="button" data-close>OK</button></div>';
+    var search = panel.querySelector(".dd-search");
+    search.addEventListener("input", function () {
+      var t = search.value.trim().toLowerCase();
+      panel.querySelectorAll(".dd-list label").forEach(function (l) { l.hidden = t && l.dataset.text.indexOf(t) === -1; });
+    });
+    panel.addEventListener("change", function (e) {
+      if (!e.target.matches("input[type=checkbox]")) return;
+      filters[key] = Array.prototype.filter.call(panel.querySelectorAll("input[type=checkbox]"), function (c) { return c.checked; }).map(function (c) { return c.value; });
+      apply();
+    });
+    panel.querySelector("[data-clear]").addEventListener("click", function () { filters[key] = []; apply(); });
+    panel.querySelector("[data-close]").addEventListener("click", function () { closeAll(true); });
+    btn.addEventListener("click", function () {
+      var open = btn.getAttribute("aria-expanded") === "true";
+      closeAll(false);
+      if (!open) { btn.setAttribute("aria-expanded", "true"); panel.hidden = false; search.focus(); }
+    });
+  }
+  function closeAll(restoreFocus) {
+    document.querySelectorAll(".dd").forEach(function (dd) {
+      var b = dd.querySelector("button[aria-expanded]"), p = dd.querySelector(".dd-panel");
+      if (b.getAttribute("aria-expanded") === "true" && restoreFocus) b.focus();
+      b.setAttribute("aria-expanded", "false"); p.hidden = true;
+    });
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(true); });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".dd")) closeAll(false); });
+
+  function syncControls() {
+    ["provider", "place"].forEach(function (key) {
+      var btn = $("dd-" + key + "-btn"), n = filters[key].length;
+      btn.innerHTML = (key === "provider" ? "Fournisseur" : "Destination") + (n ? ' <span class="count">' + n + "</span>" : "");
+      $("dd-" + key).querySelectorAll("input[type=checkbox]").forEach(function (c) { c.checked = filters[key].indexOf(c.value) !== -1; });
+    });
+    document.querySelectorAll(".toggle[data-key]").forEach(function (t) {
+      var v = t.dataset.key === "validity_days" ? Number(t.dataset.value) : t.dataset.value;
+      t.setAttribute("aria-pressed", String(filters[t.dataset.key].indexOf(v) !== -1));
+    });
+    var active = activeCount(), n = state.rows.length;
+    $("fb-reset").disabled = !active;
+    $("fb-result").innerHTML = active ? "<b>" + num(n) + "</b> " + plural(n, "offre", "offres") + " sur " + num(ALL.length) : "<b>" + num(ALL.length) + "</b> offres";
+    document.body.classList.toggle("is-filtered", active > 0);
+    document.body.classList.toggle("is-empty", active > 0 && n === 0);
+    $("fb-export").disabled = n === 0;
+    document.querySelectorAll("[data-scope]").forEach(function (el) {
+      el.textContent = "Filtré · " + num(n) + " " + plural(n, "offre", "offres");
+    });
+  }
+
+  function apply() {
+    state.rows = A.applyFilters(ALL, filters);
+    writeUrl();
+    syncControls();
+    render(false);
+  }
+  function resetFilters() { KEYS.forEach(function (k) { filters[k] = []; }); closeAll(false); apply(); }
+
+  function initFilters() {
+    var pc = counts("provider"), plc = counts("place");
+    var providers = Object.keys(pc).sort(function (a, b) { return a.localeCompare(b, "fr"); });
+    buildDropdown("provider", [{ items: providers.map(function (p) { return { value: p, label: p, count: pc[p] }; }) }]);
+    var names = {};
+    ALL.forEach(function (r) { names[r.country_code] = r.country_name; });
+    var regions = REGION_CODES.filter(function (c) { return plc[c]; });
+    var countries = Object.keys(plc).filter(function (c) { return REGION_CODES.indexOf(c) === -1; }).sort(function (a, b) { return names[a].localeCompare(names[b], "fr"); });
+    buildDropdown("place", [
+      { title: "Zones régionales", items: regions.map(function (c) { return { value: c, label: names[c], count: plc[c] }; }) },
+      { title: "Pays", items: countries.map(function (c) { return { value: c, label: names[c], count: plc[c] }; }) }
+    ]);
+    var validities = Object.keys(counts("validity_days")).map(Number).sort(function (a, b) { return a - b; });
+    $("fb-validity").insertAdjacentHTML("beforeend", validities.map(function (v) {
+      return '<button class="toggle" type="button" aria-pressed="false" data-key="validity_days" data-value="' + v + '">' + v + " j</button>";
+    }).join(""));
+    document.querySelectorAll(".toggle[data-key]").forEach(function (t) {
+      t.addEventListener("click", function () {
+        var k = t.dataset.key, v = k === "validity_days" ? Number(t.dataset.value) : t.dataset.value, i = filters[k].indexOf(v);
+        if (i === -1) filters[k].push(v); else filters[k].splice(i, 1);
+        apply();
+      });
+    });
+    $("fb-reset").addEventListener("click", resetFilters);
+    document.querySelectorAll("[data-reset]").forEach(function (b) { b.addEventListener("click", resetFilters); });
+    $("fb-export").addEventListener("click", exportCsv);
+    readUrl();
+    state.rows = A.applyFilters(ALL, filters);
+    syncControls();
+  }
+
+  // ---------- Export CSV (même format que les fichiers sources, redéposable dans data/) ----------
+  function exportCsv() {
+    var blob = new Blob([A.toCSV(state.rows)], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "offres-esim-" + (activeCount() ? "filtrees" : "toutes") + "-" + S.meta.generated_at.slice(0, 10) + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }
+
   // ---------- Orchestration ----------
   function render(animate) {
     current = A.compute(state.rows, { isoNumeric: ISO });
@@ -1046,7 +1282,7 @@
     renderPricing(current);
     renderDestinations(current);
     if (animate) { animateCounters($("hero-kpis")); animateCounters($("kpis")); }
-    if (window.Chart) drawCharts(current);
+    if (window.Chart) drawCharts(current, !animate);
   }
 
   // ---------- Thème ----------
@@ -1069,6 +1305,7 @@
   }
 
   renderStatic();
+  initFilters();
   render(true);
   window.addEventListener("load", function () {
     if (window.Chart) drawCharts(current); else document.body.classList.add("no-chart");
