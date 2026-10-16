@@ -13,7 +13,7 @@ import pytest
 
 from dashboard.build import build, write_outputs
 from dashboard.config import CONTENT_SECURITY_POLICY, VENDOR_DIR, VENDOR_FILES
-from tests.browser import CHROME, instrument, run_page
+from tests.browser import instrument, needs_chrome, run_page
 
 FIXTURES = Path(__file__).parent / "fixtures"
 OWN_JS = ["theme.js", "site.js", "analytics.js", "dashboard.js"]
@@ -109,7 +109,6 @@ def test_only_storage_is_the_theme_key():
 # --- En conditions réelles, réseau externe coupé --------------------------------------
 
 
-needs_chrome = pytest.mark.skipif(CHROME is None, reason="Chrome/Chromium introuvable")
 
 
 @needs_chrome

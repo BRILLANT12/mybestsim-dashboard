@@ -1,10 +1,13 @@
 """Pilotage de Chrome headless pour les tests : sondes chargées comme fichiers (CSP stricte)."""
 
 import json
+import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
 
 MAC_CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 CHROME = next(
@@ -12,6 +15,14 @@ CHROME = next(
                  MAC_CHROME if Path(MAC_CHROME).exists() else None) if c),
     None,
 )
+
+# Même règle que pour Node : sans Chrome, les tests de rendu, de vie privée et d'accessibilité
+# sont ignorés en local, mais ÉCHOUENT en CI (CI=true) — sinon la publication passerait sans
+# avoir vérifié l'absence de cookie, de tiers ou les contrastes.
+IN_CI = os.environ.get("CI", "").strip().lower() in ("true", "1")
+CHROME_REQUIRED = CHROME is None and IN_CI
+needs_chrome = pytest.mark.skipif(CHROME is None and not IN_CI, reason="Chrome/Chromium introuvable : ignoré en local uniquement")
+
 
 # Sondes de test, chargées comme fichiers (la CSP du site interdit tout script en ligne) :
 # erreurs JS, violations de CSP, requêtes sortantes, cookies et stockage local.
@@ -58,6 +69,8 @@ def instrument(html_path: Path, action: str = "", name: str = "") -> Path:
 
 def run_page(page: Path, tmp_path: Path, width: int = 1280, query: str = "", offline: bool = False) -> dict:
     """Ouvre la page instrumentée et renvoie le rapport de la sonde."""
+    if CHROME is None:
+        pytest.fail("Chrome est obligatoire en CI (CI=true) pour les tests de rendu, de vie privée et d'accessibilité.")
     args = [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox", f"--user-data-dir={tmp_path / 'profile'}",
             f"--window-size={width},900", "--virtual-time-budget=8000"]
     if offline:  # toute résolution DNS échoue : la moindre ressource externe casserait la page

@@ -9,13 +9,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.browser import CHROME, instrument, run_page
+from tests.browser import instrument, needs_chrome, run_page
 
 from dashboard.build import build, write_outputs
 from dashboard.config import DATA_DIR as DATA_DIR_REAL
 
 FIXTURES = Path(__file__).parent / "fixtures"
-pytestmark = pytest.mark.skipif(CHROME is None, reason="Chrome/Chromium introuvable : test de rendu ignoré")
+pytestmark = needs_chrome
 
 
 def render(data_dir: Path, tmp_path: Path, width: int = 1280, query: str = "", action: str = "") -> dict:
