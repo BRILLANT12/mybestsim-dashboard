@@ -561,3 +561,4 @@ code.block { display: block; margin-top: 8px; padding: 10px 12px; white-space: n
 .hbars i { display: block; height: 10px; border-radius: 4px; background: var(--series-1); }
 .hbars b { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); }
 .prose-page > .wrap > .kpis { margin-top: 0; }
+@media (max-width: 420px) { .brand > span > span { display: none; } }

@@ -231,3 +231,28 @@ def test_clear_theme_button_on_legal_page(site, tmp_path):
               "(document.documentElement.getAttribute('data-theme')||'auto');")
     probe = run_page(instrument(site / "mentions-legales.html", action), tmp_path, offline=True)
     assert probe["extra"] == "theme|0|auto" and probe["csp"] == []
+
+
+# --- Contrastes sur toutes les pages (vérification finale) ------------------------------
+
+
+@needs_chrome
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_text_contrast_on_every_page(site, theme, tmp_path):
+    import json
+
+    from tests.test_render import CONTRAST_AUDIT
+
+    action = f"document.querySelector('.theme-switch button[data-mode={theme}]').click();setTimeout(function(){{{CONTRAST_AUDIT}}},400);"
+    for page in pages(site):
+        probe = run_page(instrument(page, action), tmp_path)
+        audit = json.loads(probe["extra"])
+        assert audit["checked"] > 20, (page.name, audit)
+        assert audit["n"] == 0, (page.relative_to(site), theme, audit["fails"])
+
+
+def test_readme_mentions_test_data_and_its_images_exist():
+    readme = Path("README.md").read_text(encoding="utf-8")
+    assert "données de test fournies par MyBestSim pour le recrutement" in readme
+    images = re.findall(r"!\[[^\]]*\]\(([^)]+)\)", readme)
+    assert len(images) == 3 and all(Path(i).exists() for i in images)

@@ -205,3 +205,13 @@ def test_provider_table_links_to_existing_pages(tmp_path):
     hrefs = probe["extra"].split("|")
     assert sorted(hrefs) == ["fournisseurs/prov-a.html", "fournisseurs/prov-b.html"]
     assert all((tmp_path / h).exists() for h in hrefs)
+
+
+def test_compact_site_menu_on_small_screens(tmp_path):
+    # Sous 760 px, les pages sont derrière un bouton « Menu » : ouverture, focus, Échap.
+    action = ("var b=document.querySelector('.menu-btn'),u=document.getElementById('site-menu');var r=[getComputedStyle(b).display,getComputedStyle(u).display];"
+              "b.click();r.push(getComputedStyle(u).display,document.activeElement.textContent);"
+              "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));r.push(getComputedStyle(u).display,document.activeElement===b);"
+              "window.__extra=r.join('|');")
+    probe = render(FIXTURES / "calculs", tmp_path, width=500, action=action)
+    assert probe["extra"] == "inline-flex|none|flex|Tableau de bord|none|true"
