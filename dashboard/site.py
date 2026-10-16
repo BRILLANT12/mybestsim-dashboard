@@ -8,7 +8,7 @@ pour que le site fonctionne aussi bien sur GitHub Pages qu'ouvert en double-clic
 from html import escape
 from pathlib import Path
 
-from dashboard.config import CONTENT_SECURITY_POLICY
+from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, GITHUB_URL, LINKEDIN_URL
 
 ICONS = (Path(__file__).parent / "templates" / "icons.svg").read_text(encoding="utf-8")
 
@@ -66,14 +66,91 @@ def topbar(root: str = "", active: str = "") -> str:
     </div>"""
 
 
+def _ext(url: str, label: str, icon: str = "") -> str:
+    """Lien externe : simple navigation (aucune ressource chargée), sans transmettre la page d'origine."""
+    ico = f'<svg class="icon" aria-hidden="true"><use href="#i-{icon}"/></svg>' if icon else ""
+    return f'<a href="{escape(url)}" rel="noopener noreferrer">{ico}{escape(label)}</a>'
+
+
 def footer(root: str, context: dict) -> str:
-    """Pied de page commun (enrichi au lot C)."""
+    """Pied de page commun : projet, données, technique, méthode, puis barre légale."""
+    meta = context.get("meta", {})
+    version = context.get("version", {"repo_url": "", "sha": "", "short_sha": ""})
+    repo = version["repo_url"]
+    files = meta.get("files_count", 0)
+    commit = (_ext(f"{repo}/commit/{version['sha']}", f"commit {version['short_sha']}") if version["sha"]
+              else "version locale")
     return f"""<footer class="foot">
   <div class="wrap">
-    <p id="footer-gen">Dernière génération : <b>{escape(context.get("generated_text", ""))}</b> (heure de Paris).</p>
-    <p>Projet réalisé dans le cadre d'un test de recrutement <b>MyBestSim</b>. Outil non officiel, inspiré de l'identité visuelle de mybestsim.com.</p>
+    <div class="foot-grid">
+      <section aria-labelledby="f-projet">
+        <h2 id="f-projet">Projet</h2>
+        <p><b>Observatoire eSIM</b>, réalisé par {escape(AUTHOR)} pour le test de recrutement MyBestSim.</p>
+        <ul class="foot-links">
+          <li>{_ext(GITHUB_URL, "GitHub", "github")}</li>
+          <li>{_ext(LINKEDIN_URL, "LinkedIn", "linkedin")}</li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-donnees">
+        <h2 id="f-donnees">Données</h2>
+        <p>{files} {"fichier fournisseur" if files == 1 else "fichiers fournisseurs"} · dernière génération le <span id="footer-gen">{escape(context.get("generated_text", ""))}</span> (heure de Paris).</p>
+        <ul class="foot-links">
+          <li><a href="{root}stats.json" download><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>stats.json</a></li>
+          <li><a href="{root}{context.get("csv_export", "offres-esim.csv")}" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export CSV complet</a></li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-technique">
+        <h2 id="f-technique">Technique</h2>
+        <p>Python + pandas, Chart.js, GitHub Actions. Généré depuis le {commit}.</p>
+        <ul class="foot-links">
+          <li>{_ext(repo, "Code source", "code")}</li>
+          <li><a href="{root}comment-c-est-construit.html">Comment c'est construit</a></li>
+        </ul>
+      </section>
+      <section aria-labelledby="f-methode">
+        <h2 id="f-methode">Méthode</h2>
+        <ul class="foot-links">
+        </ul>
+      </section>
+    </div>
+    <div class="foot-bottom">
+      <a href="{root}mentions-legales.html#cookies"><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg>Aucun cookie · aucun traceur</a>
+      <span>Outil non officiel, inspiré de l'identité visuelle de mybestsim.com</span>
+      <a href="{root}mentions-legales.html">Mentions légales</a>
+      <a href="#haut"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg>Retour en haut</a>
+    </div>
   </div>
 </footer>"""
+
+
+def page(*, title: str, description: str, eyebrow: str, heading: str, lead: str, content: str,
+         root: str = "", active: str = "", context: dict | None = None, scripts: tuple[str, ...] = ()) -> str:
+    """Page de contenu (mentions légales, fiches…) : même en-tête, même pied de page."""
+    template = f"""<!doctype html>
+<html lang="fr">
+<head>
+<!--@HEAD-->
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="hero hero-compact" id="haut">
+  <div class="wrap">
+<!--@TOPBAR-->
+    <div class="hero-head">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{heading}</h1>
+      <p class="hero-sub">{lead}</p>
+    </div>
+  </div>
+</header>
+<main id="main" class="prose-page">
+{content}
+</main>
+<!--@FOOTER-->
+</body>
+</html>
+"""
+    return fill(template, title=title, description=description, root=root, active=active, scripts=scripts, context=context)
 
 
 def fill(template: str, *, title: str, description: str, root: str = "", active: str = "",

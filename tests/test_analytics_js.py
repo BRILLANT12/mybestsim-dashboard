@@ -244,3 +244,12 @@ def test_quantiles_match_pandas(tmp_path):
     js = run_js(DECODE + f" const p = rows.map(r => r.price); return {qs}.map(q => A.quantile(p, q));", engine_input(DATA_DIR), tmp_path)
     assert js == pytest.approx([clean["price"].quantile(q) for q in qs], abs=1e-9)
     assert run_js(" return A.quantile([], 0.5);", {}, tmp_path) is None
+
+
+def test_python_csv_export_matches_browser_export(tmp_path):
+    from dashboard.build import offers_csv
+
+    for data_dir in (FIXTURES / "calculs", DATA_DIR):
+        payload = engine_input(data_dir)
+        js = run_js(DECODE + " return A.toCSV(rows);", payload, tmp_path)
+        assert offers_csv(payload["offers"]) == js, data_dir.name

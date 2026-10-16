@@ -132,3 +132,100 @@ def test_theme_choice_is_the_only_thing_stored(site, tmp_path):
     back = run_page(instrument(index, "document.querySelector('.theme-switch [data-mode=dark]').click();"
                                       "document.querySelector('.theme-switch [data-mode=auto]').click();"), tmp_path, offline=True)
     assert back["storage"] == []  # revenir à « auto » efface la préférence
+
+
+# --- Pied de page, mentions légales, liens (lot C) ------------------------------------
+
+from dashboard.build import offers_csv, source_version  # noqa: E402
+from dashboard.config import AUTHOR, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL  # noqa: E402
+
+
+class Links(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.hrefs, self.ids = [], set()
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if a.get("id"):
+            self.ids.add(a["id"])
+        if tag == "a" and a.get("href"):
+            self.hrefs.append(a["href"])
+
+
+def parse_links(page: Path) -> Links:
+    p = Links()
+    p.feed(page.read_text(encoding="utf-8"))
+    return p
+
+
+def test_footer_is_on_every_page_with_all_links(site):
+    for page in pages(site):
+        html = page.read_text(encoding="utf-8")
+        hrefs = parse_links(page).hrefs
+        name = page.relative_to(site)
+        for needed in (GITHUB_URL, LINKEDIN_URL):
+            assert needed in hrefs, f"{name} : lien {needed} absent"
+        assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
+        assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
+        assert f"réalisé par {AUTHOR}" in html and "Aucun cookie · aucun traceur" in html, name
+        assert "Outil non officiel, inspiré de l'identité visuelle de mybestsim.com" in html, name
+
+
+def test_no_email_or_phone_number_anywhere(site):
+    email = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+    phone = re.compile(r"(?:\+33|\b0[1-9])(?:[ .-]?\d{2}){4}\b|\+1[ (]*\d{3}")
+    for page in pages(site):
+        text = page.read_text(encoding="utf-8")
+        assert not email.search(text), f"{page.name} : adresse e-mail"
+        assert not phone.search(text), f"{page.name} : numéro de téléphone"
+
+
+def test_internal_links_and_anchors_resolve(site):
+    parsed = {p.resolve(): parse_links(p) for p in pages(site)}
+    for page, links in parsed.items():
+        for href in links.hrefs:
+            if re.match(r"^(https?:|mailto:|tel:)", href):
+                continue
+            path, _, anchor = href.partition("#")
+            target = (page.parent / path).resolve() if path else page
+            assert target.exists(), f"{page.name} : lien cassé {href}"
+            if anchor and target.suffix == ".html":
+                ids = parsed[target].ids if target in parsed else parse_links(target).ids
+                assert anchor in ids, f"{page.name} : ancre absente {href}"
+
+
+def test_legal_page_content(site):
+    html = (site / "mentions-legales.html").read_text(encoding="utf-8")
+    for section in ("editeur", "directeur", "hebergeur", "propriete", "donnees", "cookies"):
+        assert f'id="{section}"' in html
+    assert HOST["address"] in html and "6-III-2" in html and "licence MIT" in html
+    assert "<code>theme</code>" in html and "<code>localStorage</code>" in html
+    assert "16 octobre 2026" in html and LEGAL_UPDATED == "2026-10-16"
+    assert "Aucune donnée personnelle n'est collectée" in html
+
+
+def test_version_comes_from_ci_variables(monkeypatch):
+    monkeypatch.setenv("GITHUB_REPOSITORY", "someone/repo")
+    monkeypatch.setenv("GITHUB_SHA", "0123456789abcdef")
+    assert source_version() == {"repo_url": "https://github.com/someone/repo", "sha": "0123456789abcdef", "short_sha": "0123456"}
+
+
+def test_full_csv_export_is_written_and_reimportable(site, tmp_path):
+    from dashboard.loader import load_providers
+    from dashboard.validation import validate
+
+    data = tmp_path / "data"
+    data.mkdir()
+    (data / "export.csv").write_bytes((site / "offres-esim.csv").read_bytes())
+    validated = validate(load_providers(data).rows)
+    assert validated.anomalies == [] and len(validated.clean) == 8
+
+
+@needs_chrome
+def test_clear_theme_button_on_legal_page(site, tmp_path):
+    action = ("document.querySelector('.theme-switch [data-mode=dark]').click();var before=Object.keys(localStorage).join(',');"
+              "document.getElementById('clear-theme').click();window.__extra=before+'|'+Object.keys(localStorage).length+'|'+"
+              "(document.documentElement.getAttribute('data-theme')||'auto');")
+    probe = run_page(instrument(site / "mentions-legales.html", action), tmp_path, offline=True)
+    assert probe["extra"] == "theme|0|auto" and probe["csp"] == []

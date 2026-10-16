@@ -1,16 +1,19 @@
 """Point d'entrée : data/*.csv -> site statique dans docs/ (pages, assets, stats.json)."""
 
 import json
+import os
 import shutil
+import subprocess
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from dashboard import site, stats
+from dashboard import pages, site, stats
 from dashboard.dataset import encode_offers
 from dashboard.anomalies import ERROR, RULES, WARNING
-from dashboard.config import DATA_DIR, OUTPUT_DIR, VENDOR_DIR
+from dashboard.config import DATA_DIR, DEFAULT_REPOSITORY, EXPECTED_COLUMNS, OUTPUT_DIR, VENDOR_DIR
+from dashboard.dataset import decode_offers
 from dashboard.loader import load_providers
 from dashboard.validation import validate
 
@@ -79,14 +82,52 @@ def _embed(data: dict) -> str:
     return json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
 
 
+MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+CSV_EXPORT = "offres-esim.csv"
+
+
+def french_date(d: datetime, with_time: bool = True) -> str:
+    text = f"{d.day}{'er' if d.day == 1 else ''} {MONTHS[d.month - 1]} {d.year}"
+    return text + (f" à {d:%H:%M}" if with_time else "")
+
+
+def source_version() -> dict:
+    """Dépôt et commit d'où provient la génération (affichés dans le pied de page).
+
+    En CI, GitHub fournit GITHUB_REPOSITORY et GITHUB_SHA ; en local, on interroge git.
+    """
+    repo = os.environ.get("GITHUB_REPOSITORY") or DEFAULT_REPOSITORY
+    sha = os.environ.get("GITHUB_SHA", "")
+    if not sha:
+        try:
+            sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10,
+                                 cwd=Path(__file__).parent).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            sha = ""
+    return {"repo_url": f"https://github.com/{repo}", "sha": sha, "short_sha": sha[:7]}
+
+
 def page_context(result: dict) -> dict:
     """Informations communes aux pages (pied de page, etc.)."""
     generated = datetime.fromisoformat(result["meta"]["generated_at"])
-    months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-    return {
-        "generated_text": f"{generated.day} {months[generated.month - 1]} {generated.year} à {generated:%H:%M}",
-        "meta": result["meta"],
-    }
+    return {"generated_text": french_date(generated), "meta": result["meta"], "version": source_version(), "csv_export": CSV_EXPORT}
+
+
+def offers_csv(offers: dict) -> str:
+    """Export complet des offres valides, au format exact des fichiers sources (comme le bouton
+    « Exporter CSV » du navigateur) : peut être redéposé dans data/."""
+    def cell(v):
+        if v is None:
+            s = ""
+        elif isinstance(v, float):  # même écriture que JavaScript : 10.0 -> « 10 », 17.4 -> « 17.4 »
+            s = str(int(v)) if v.is_integer() else repr(v)
+        else:
+            s = str(v)
+        return '"' + s.replace('"', '""') + '"' if any(c in s for c in ',"\n\r') else s
+    lines = [",".join(EXPECTED_COLUMNS)]
+    for row in decode_offers(offers):
+        lines.append(",".join(cell(row[c]) for c in EXPECTED_COLUMNS))
+    return "\ufeff" + "\n".join(lines) + "\n"
 
 
 def render_html(result: dict, offers: dict | None = None) -> str:
@@ -125,6 +166,13 @@ def write_assets(out_dir: Path) -> None:
     )
 
 
+def write_pages(result: dict, out_dir: Path) -> None:
+    """Pages de contenu générées à chaque build."""
+    context = page_context(result)
+    (out_dir / "mentions-legales.html").write_text(pages.legal_page(context), encoding="utf-8")
+    (out_dir / "comment-c-est-construit.html").write_text(pages.built_page(context), encoding="utf-8")
+
+
 def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     write_assets(out_dir)
@@ -132,6 +180,8 @@ def write_outputs(result: dict, out_dir: Path, offers: dict | None = None) -> tu
     json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     html_path = out_dir / "index.html"
     html_path.write_text(render_html(result, offers), encoding="utf-8")
+    (out_dir / CSV_EXPORT).write_text(offers_csv(offers or {"fields": [], "currency": "EUR", "dict": {"country": []}, "rows": []}), encoding="utf-8")
+    write_pages(result, out_dir)
     return json_path, html_path
 
 

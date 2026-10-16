@@ -42,3 +42,16 @@
     document.addEventListener("click", function (e) { if (!e.target.closest(".sitenav")) close(false); });
   }
 })();
+
+// Mentions légales : bouton « Effacer ma préférence de thème ».
+(function () {
+  var btn = document.getElementById("clear-theme"), status = document.getElementById("clear-theme-status");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    try { localStorage.removeItem("theme"); } catch (e) {}
+    document.documentElement.removeAttribute("data-theme");
+    document.querySelectorAll(".theme-switch button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.mode === "auto")); });
+    document.dispatchEvent(new CustomEvent("themechange", { detail: { mode: "auto" } }));
+    if (status) status.textContent = "Préférence effacée : le thème suit désormais celui de votre appareil.";
+  });
+})();

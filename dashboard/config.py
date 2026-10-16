@@ -80,3 +80,21 @@ CONTENT_SECURITY_POLICY = (
     "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; "
     "img-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
 )
+
+# Éditeur du site (aucun e-mail ni téléphone : contact via GitHub ou LinkedIn uniquement).
+AUTHOR = "Jean Bonheur NGUEMA"
+GITHUB_URL = "https://github.com/BRILLANT12"
+LINKEDIN_URL = "https://www.linkedin.com/in/jean-bonheur-nguema-097044346"
+# Dépôt du code source. En CI, GitHub fournit le nom exact (GITHUB_REPOSITORY), qui prime.
+DEFAULT_REPOSITORY = "BRILLANT12/mybestsim-dashboard"
+
+# Hébergeur. Adresse vérifiée le 16/10/2026 dans la « GitHub General Privacy Statement »
+# (en vigueur au 27/04/2026). GitHub ne publie pas de numéro de téléphone (« We do not
+# offer telephone support », GitHub Terms of Service) : contact via son formulaire.
+HOST = {
+    "name": "GitHub, Inc. (service GitHub Pages)",
+    "address": "88 Colin P. Kelly Jr. St., San Francisco, CA 94107, États-Unis",
+    "contact": "https://support.github.com/contact",
+    "source": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+}
+LEGAL_UPDATED = "2026-10-16"  # date de dernière modification du contenu des mentions légales

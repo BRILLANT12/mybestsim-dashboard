@@ -147,8 +147,6 @@
     q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (level === "ok"
       ? "Données vérifiées · aucune anomalie"
       : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements"));
-    $("footer-gen").innerHTML = "Dernière génération : <b>" + esc(genText) + "</b> (heure de Paris), à partir de " + num(S.meta.files_count) + " " +
-      plural(S.meta.files_count, "fichier", "fichiers") + " fournisseurs.";
     var fills = { threshold: eur(S.headline.expensive.threshold, 0), "mean-gb": gb(S.headline.data.mean_gb), "median-gb": gb(S.headline.data.median_gb, 0) };
     document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
     renderInsights();
