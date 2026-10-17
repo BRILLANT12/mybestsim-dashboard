@@ -1,12 +1,10 @@
-"""Pages de contenu générées : mentions légales, « Comment c'est construit » et fiches fournisseurs."""
+"""Pages de contenu générées : mentions légales et fiches fournisseurs."""
 
-import re
 from datetime import date
 from html import escape
-from pathlib import Path
 
 from dashboard import site
-from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL, ROOT_DIR
+from dashboard.config import AUTHOR, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL
 
 NBSP = "\u202f"
 
@@ -114,90 +112,6 @@ def legal_page(context: dict) -> str:
     )
 
 
-
-
-PIPELINE = [
-    ("file", "Fichiers CSV", "Un fichier par fournisseur dans <code>data/</code>. Tout nouveau fichier est pris en compte automatiquement."),
-    ("shield", "Validation Python", "Lecture robuste (pandas), 20 contrôles par ligne et par fichier : les erreurs sont exclues, les avertissements signalés."),
-    ("data", "Calculs", "Indicateurs, comparaisons à offre égale, constats rédigés à partir des chiffres, fiches fournisseurs."),
-    ("check", "Tests", "pytest sur les calculs ; Node vérifie que le moteur JS donne les mêmes chiffres que Python ; Chrome teste le rendu, l'accessibilité et la vie privée."),
-    ("refresh", "GitHub Action", "À chaque modification des données (<code>data/</code>) ou du code, une fois par jour et à la demande : tests, régénération, publication."),
-    ("globe", "GitHub Pages", "Site statique (<code>docs/</code>) : aucune base de données, aucun serveur applicatif, aucun tiers."),
-]
-
-CHOICES = [
-    ("Python + pandas pour les calculs", "Lecture et contrôle de milliers de lignes en quelques lignes de code, avec des tests précis. Python reste la source de vérité de tous les chiffres."),
-    ("Un site statique", "Rien à administrer ni à sécuriser côté serveur : le site est régénéré puis publié tel quel. Il s'ouvre même en double-clic, sans serveur."),
-    ("Un moteur de calcul JavaScript, testé contre Python", "Les filtres recalculent tout dans le navigateur, sans aller-retour réseau. Un test exécute ce moteur avec Node et exige exactement les mêmes chiffres que Python."),
-    ("Chart.js plutôt qu'un framework", "Une librairie de graphiques légère, en version figée, sans framework applicatif : la page reste rapide et lisible."),
-    ("Des décisions écrites et justifiées", "Illimités hors moyenne de data, seuil strictement supérieur à 100 €, prix au Go total ÷ total, comparaisons à offre égale : chaque choix est expliqué dans la Méthodologie du tableau de bord."),
-    ("Des données contrôlées, jamais ignorées", "Une anomalie n'arrête pas la génération : elle est classée, comptée et affichée, ligne par ligne."),
-]
-
-
-def _count_tests() -> int:
-    tests = ROOT_DIR / "tests"
-    return sum(len(re.findall(r"^def test_", f.read_text(encoding="utf-8"), re.M)) for f in tests.glob("test_*.py")) if tests.exists() else 0
-
-
-def built_page(context: dict) -> str:
-    """« Comment c'est construit » : pipeline, choix techniques, sécurité."""
-    steps = "\n".join(
-        f'<li><span class="step-ico"><svg class="icon" aria-hidden="true"><use href="#i-{ico}"/></svg></span><b>{escape(t)}</b><span>{d}</span></li>'
-        for ico, t, d in PIPELINE
-    )
-    choices = "\n".join(f"<li><b>{escape(t)}.</b> {escape(d)}</li>" for t, d in CHOICES)
-    n_tests = _count_tests()
-    content = f"""
-<div class="wrap prose">
-  <section aria-labelledby="pipeline">
-    <h2 id="pipeline">Le pipeline</h2>
-    <p>Du fichier déposé par un fournisseur à la page publiée, chaque étape est automatique et vérifiée.</p>
-    <ol class="pipeline" aria-label="Étapes du pipeline">
-{steps}
-    </ol>
-  </section>
-
-  <section aria-labelledby="choix">
-    <h2 id="choix">Choix techniques, et pourquoi</h2>
-    <ul>
-{choices}
-    </ul>
-  </section>
-
-  <section aria-labelledby="securite">
-    <h2 id="securite">Sécurité et vie privée</h2>
-    <ul>
-      <li><b>Aucun tiers.</b> La police, les librairies et le fond de carte sont hébergés sur le site ; leurs empreintes SHA-384 sont figées et vérifiées par les tests.</li>
-      <li><b>Aucun cookie, aucun traceur.</b> Seule la préférence de thème est stockée, dans le navigateur, si vous la choisissez (voir les <a href="mentions-legales.html#cookies">mentions légales</a>).</li>
-      <li><b>Politique de sécurité du contenu (CSP) stricte</b>, identique sur toutes les pages : aucun script en ligne, aucune ressource externe, aucune connexion réseau.<br><code class="block">{escape(CONTENT_SECURITY_POLICY)}</code></li>
-      <li><b>Données intégrées sans risque d'injection</b> : les chiffres sont placés dans la page comme données JSON (jamais exécutées), en échappant les caractères qui pourraient fermer une balise.</li>
-      <li><b>Vérifié automatiquement</b> : un test ouvre chaque page dans Chrome avec le réseau externe coupé et vérifie l'absence d'erreur, de violation de CSP, de requête sortante et de cookie.</li>
-    </ul>
-  </section>
-
-  <section aria-labelledby="qualite-code">
-    <h2 id="qualite-code">En chiffres</h2>
-    <ul class="figures">
-      <li><b>{n_tests}</b><span>fonctions de test (Python, Node, Chrome)</span></li>
-      <li><b>20</b><span>contrôles de qualité par import</span></li>
-      <li><b>0</b><span>cookie, traceur ou requête vers un tiers</span></li>
-      <li><b>AA</b><span>contrastes WCAG vérifiés en clair et en sombre</span></li>
-    </ul>
-  </section>
-
-</div>
-"""
-    return site.page(
-        title="Comment c'est construit · Observatoire eSIM",
-        description="Pipeline, choix techniques et sécurité de l'Observatoire eSIM.",
-        eyebrow="Coulisses",
-        heading="Comment c'est construit",
-        lead="Du fichier CSV à la page publiée : pipeline, choix techniques et sécurité.",
-        content=content,
-        active="comment-c-est-construit.html",
-        context=context,
-    )
 
 
 def provider_page(p: dict, market: dict, context: dict, neighbours: tuple[str | None, str | None], paths: dict) -> str:

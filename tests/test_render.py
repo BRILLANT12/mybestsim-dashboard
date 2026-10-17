@@ -234,9 +234,8 @@ def real_site(tmp_path_factory):
     ("index.html", "", ""),
     ("index.html", "?reseau=5G&destination=FR,EU", "document.getElementById('fb-toggle').click();"),
     ("mentions-legales.html", "", ""),
-    ("comment-c-est-construit.html", "", ""),
     ("fournisseurs/ubigi.html", "", ""),
-], ids=["accueil", "accueil-filtres-ouverts", "mentions", "construit", "fiche"])
+], ids=["accueil", "accueil-filtres-ouverts", "mentions", "fiche"])
 def test_nothing_overflows_at_390px(real_site, tmp_path, page, query, action):
     probe = run_page(instrument(real_site / page, OVERFLOW_JS + action + "window.__extra=JSON.stringify(__overflow());"),
                      tmp_path, width=390, query=query)

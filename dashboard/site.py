@@ -15,7 +15,6 @@ ICONS = (Path(__file__).parent / "templates" / "icons.svg").read_text(encoding="
 # Menu des pages (chemin depuis la racine du site, libellé).
 PAGES = [
     ("index.html", "Tableau de bord"),
-    ("comment-c-est-construit.html", "Comment c'est construit"),
     ("mentions-legales.html", "Mentions légales"),
 ]
 
@@ -73,13 +72,11 @@ def _ext(url: str, label: str, icon: str = "") -> str:
 
 
 def footer(root: str, context: dict) -> str:
-    """Pied de page commun : projet, données, technique, méthode, puis barre légale."""
+    """Pied de page commun : projet, données, technique, puis barre légale."""
     meta = context.get("meta", {})
     version = context.get("version", {"repo_url": "", "sha": "", "short_sha": ""})
     repo = version["repo_url"]
     files = meta.get("files_count", 0)
-    commit = (_ext(f"{repo}/commit/{version['sha']}", f"commit {version['short_sha']}") if version["sha"]
-              else "version locale")
     return f"""<footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
@@ -101,14 +98,10 @@ def footer(root: str, context: dict) -> str:
       </section>
       <section aria-labelledby="f-technique">
         <h2 id="f-technique">Technique</h2>
-        <p>Python + pandas, Chart.js, GitHub Actions. Généré depuis le {commit}.</p>
+        <p>Python, pandas, Chart.js, GitHub Actions</p>
         <ul class="foot-links">
           <li>{_ext(repo, "Code source", "code")}</li>
-          <li><a href="{root}comment-c-est-construit.html">Comment c'est construit</a></li>
         </ul>
-      </section>
-      <section aria-labelledby="f-methode">
-        <h2 id="f-methode">Méthode</h2>
       </section>
     </div>
     <div class="foot-bottom">

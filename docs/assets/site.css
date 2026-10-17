@@ -456,7 +456,7 @@ tr.is-best td { background: var(--brand-soft); }
 /* ---------- Pied de page ---------- */
 footer.foot { background: #0b1b3a; color: #b4c6e6; font-size: 13.5px; padding: 64px 0 28px; border-top: 3px solid transparent;
   border-image: linear-gradient(90deg, transparent, var(--accent) 30%, #0ea5e9 70%, transparent) 1; }
-.foot-grid { display: grid; gap: 32px 40px; grid-template-columns: 1.3fr 1fr 1fr 1fr; }
+.foot-grid { display: grid; gap: 32px 40px; grid-template-columns: 1.3fr 1fr 1fr; }
 @media (max-width: 960px) { .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .foot-grid { grid-template-columns: minmax(0, 1fr); } }
 .foot h2 { font-size: 11px; color: #ffd84d; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500; margin: 0 0 12px; }
@@ -517,23 +517,6 @@ footer.foot { background: #0b1b3a; color: #b4c6e6; font-size: 13.5px; padding: 6
   .menu-btn[aria-expanded="true"] + ul { display: flex; }
   .sitenav a { padding: 10px 12px; }
 }
-
-/* ---------- Comment c'est construit ---------- */
-.pipeline { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); counter-reset: step; }
-@media (max-width: 860px) { .pipeline { grid-template-columns: minmax(0, 1fr); } }
-.pipeline li { position: relative; display: grid; gap: 6px; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); counter-increment: step; }
-.pipeline li + li { margin-top: 0; }
-.pipeline li::before { content: counter(step); position: absolute; top: 14px; right: 16px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.12em; }
-.pipeline b { color: var(--ink); font-size: 15px; }
-.pipeline span:not(.step-ico) { color: var(--ink-2); font-size: 14px; line-height: 1.55; }
-.step-ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--brand-soft); color: var(--brand-ink); }
-.figures { list-style: none; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-@media (max-width: 760px) { .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.figures li { display: grid; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); }
-.figures li + li { margin-top: 0; }
-.figures b { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.figures span { color: var(--ink-2); font-size: 13.5px; }
-code.block { display: block; margin-top: 8px; padding: 10px 12px; white-space: normal; word-break: break-word; line-height: 1.6; }
 
 /* ---------- Fiches fournisseurs ---------- */
 .crumbs { margin: 0 0 24px; font-size: 13.5px; color: var(--muted); }

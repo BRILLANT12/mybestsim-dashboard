@@ -167,7 +167,8 @@ def test_footer_is_on_every_page_with_all_links(site):
             assert needed in hrefs, f"{name} : lien {needed} absent"
         assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
         assert not any("NOTES_" + "IA" in h for h in hrefs), f"{name} : lien vers le journal (privé)"
-        assert "plan, validation de chaque étape, tests et relecture à chaque lot" in html, name
+        assert "Python, pandas, Chart.js, GitHub Actions" in html and 'id="f-methode"' not in html, name
+        assert "/commit/" not in html, f"{name} : numéro de commit affiché"
         assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
         assert f"réalisé par {AUTHOR}" in html and "Aucun cookie · aucun traceur" in html, name
         assert "Outil non officiel, inspiré de l'identité visuelle de mybestsim.com" in html, name
@@ -257,13 +258,13 @@ def test_readme_mentions_test_data_and_its_images_exist():
     assert len(images) == 3 and all(Path(i).exists() for i in images)
 
 
-def test_private_journal_is_not_published(site):
+def test_site_presents_the_product_not_its_making(site):
+    assert not (site / "comment-c-est-construit.html").exists()
     for page in pages(site):
         html = page.read_text(encoding="utf-8")
-        assert "NOTES_" + "IA" not in html and "Journal de construction" not in html, page.name
-    built = (site / "comment-c-est-construit.html").read_text(encoding="utf-8")
-    for kept in ('id="pipeline"', 'id="choix"', 'id="securite"'):
-        assert kept in built
+        for banned in ("NOTES_" + "IA", "Journal de construction", "comment-c-est-construit", "Clau" + "de"):
+            assert banned not in html, f"{page.name} : « {banned} »"
+        assert not re.search(r"\bIA\b", html), f"{page.name} : « IA »"
 
 
 def test_no_local_path_or_email_in_tracked_files():

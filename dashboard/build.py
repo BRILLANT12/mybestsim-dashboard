@@ -206,7 +206,6 @@ def write_pages(result: dict, out_dir: Path, offers: dict | None = None) -> None
     """Pages de contenu générées à chaque build."""
     context = page_context(result)
     (out_dir / "mentions-legales.html").write_text(pages.legal_page(context), encoding="utf-8")
-    (out_dir / "comment-c-est-construit.html").write_text(pages.built_page(context), encoding="utf-8")
     if offers and result.get("provider_pages"):
         write_provider_pages(result, offers, out_dir, context)
 
