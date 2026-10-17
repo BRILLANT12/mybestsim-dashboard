@@ -8,7 +8,7 @@ pour que le site fonctionne aussi bien sur GitHub Pages qu'ouvert en double-clic
 from html import escape
 from pathlib import Path
 
-from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, GITHUB_URL, LINKEDIN_URL
+from dashboard.config import AUTHOR, CONTENT_SECURITY_POLICY, LINKEDIN_URL
 
 ICONS = (Path(__file__).parent / "templates" / "icons.svg").read_text(encoding="utf-8")
 
@@ -71,41 +71,62 @@ def _ext(url: str, label: str, icon: str = "") -> str:
     return f'<a href="{escape(url)}" rel="noopener noreferrer">{ico}{escape(label)}</a>'
 
 
-def footer(root: str, context: dict) -> str:
-    """Pied de page commun : projet, données, technique, puis barre légale."""
+# Liens « Explorer » : ancres des sections du tableau de bord.
+EXPLORE = [
+    ("indicateurs", "Indicateurs"),
+    ("comparateur", "Comparateur"),
+    ("fournisseurs", "Fournisseurs"),
+    ("destinations", "Destinations"),
+    ("qualite", "Qualité des données"),
+]
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'s' if n > 1 else ''}"
+
+
+def footer(root: str, context: dict, active: str = "") -> str:
+    """Pied de page commun : à propos, explorer, données, engagements, puis barre légale."""
     meta = context.get("meta", {})
-    version = context.get("version", {"repo_url": "", "sha": "", "short_sha": ""})
-    repo = version["repo_url"]
-    files = meta.get("files_count", 0)
+    quality = context.get("quality", {"checks": 0, "anomalies": 0})
+    providers = meta.get("providers_count", 0)
+    home = "" if active == "index.html" else f"{root}index.html"
+    explore = "\n".join(f'          <li><a href="{home}#{anchor}">{label}</a></li>' for anchor, label in EXPLORE)
     return f"""<footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
-      <section aria-labelledby="f-projet">
-        <h2 id="f-projet">Projet</h2>
-        <p><b>Observatoire eSIM</b>, réalisé par {escape(AUTHOR)} pour le test de recrutement MyBestSim.</p>
+      <section aria-labelledby="f-apropos">
+        <h2 id="f-apropos">À propos</h2>
+        <p><b>Observatoire eSIM</b> : les offres de {providers} fournisseurs, comparées et mises à jour automatiquement chaque jour. Réalisé par {escape(AUTHOR)}.</p>
         <ul class="foot-links">
-          <li>{_ext(GITHUB_URL, "GitHub", "github")}</li>
           <li>{_ext(LINKEDIN_URL, "LinkedIn", "linkedin")}</li>
         </ul>
       </section>
+      <nav aria-labelledby="f-explorer">
+        <h2 id="f-explorer">Explorer</h2>
+        <ul class="foot-links">
+{explore}
+        </ul>
+      </nav>
       <section aria-labelledby="f-donnees">
         <h2 id="f-donnees">Données</h2>
-        <p>{files} {"fichier fournisseur" if files == 1 else "fichiers fournisseurs"} · dernière génération le <span id="footer-gen">{escape(context.get("generated_text", ""))}</span> (heure de Paris).</p>
+        <p>Dernière génération le <span id="footer-gen">{escape(context.get("generated_text", ""))}</span> (heure de Paris).</p>
+        <p><a class="foot-badge" href="{home}#qualite"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>{_plural(quality["checks"], "contrôle")} qualité · {_plural(quality["anomalies"], "anomalie")}</a></p>
         <ul class="foot-links">
           <li><a href="{root}stats.json" download><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>stats.json</a></li>
           <li><a href="{root}{context.get("csv_export", "offres-esim.csv")}" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export CSV complet</a></li>
         </ul>
       </section>
-      <section aria-labelledby="f-technique">
-        <h2 id="f-technique">Technique</h2>
-        <p>Python, pandas, Chart.js, GitHub Actions</p>
+      <section aria-labelledby="f-engagements">
+        <h2 id="f-engagements">Engagements</h2>
         <ul class="foot-links">
-          <li>{_ext(repo, "Code source", "code")}</li>
+          <li><a href="{root}mentions-legales.html#cookies"><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg>Aucun cookie ni traceur</a></li>
+          <li><span class="foot-item"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Aucune ressource tierce</span></li>
+          <li><span class="foot-item"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Accessibilité WCAG AA vérifiée</span></li>
         </ul>
       </section>
     </div>
     <div class="foot-bottom">
-      <a href="{root}mentions-legales.html#cookies"><svg class="icon" aria-hidden="true"><use href="#i-cookie"/></svg>Aucun cookie · aucun traceur</a>
       <span>Outil non officiel, inspiré de l'identité visuelle de mybestsim.com</span>
       <a href="{root}mentions-legales.html">Mentions légales</a>
       <a href="#haut"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg>Retour en haut</a>
@@ -152,4 +173,4 @@ def fill(template: str, *, title: str, description: str, root: str = "", active:
             raise ValueError(f"Le gabarit doit contenir {marker} exactement une fois.")
     return (template.replace("<!--@HEAD-->", head(title, description, root, scripts))
             .replace("<!--@TOPBAR-->", topbar(root, active))
-            .replace("<!--@FOOTER-->", footer(root, context)))
+            .replace("<!--@FOOTER-->", footer(root, context, active)))

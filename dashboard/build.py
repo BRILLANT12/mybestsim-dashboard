@@ -114,7 +114,10 @@ def source_version() -> dict:
 def page_context(result: dict) -> dict:
     """Informations communes aux pages (pied de page, etc.)."""
     generated = datetime.fromisoformat(result["meta"]["generated_at"])
-    return {"generated_text": french_date(generated), "meta": result["meta"], "version": source_version(), "csv_export": CSV_EXPORT}
+    report = result.get("anomalies", {})
+    quality = {"checks": len(report.get("checks", [])), "anomalies": report.get("errors", 0) + report.get("warnings", 0)}
+    return {"generated_text": french_date(generated), "meta": result["meta"], "version": source_version(),
+            "csv_export": CSV_EXPORT, "quality": quality}
 
 
 def offers_csv(offers: dict) -> str:

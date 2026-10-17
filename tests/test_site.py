@@ -136,7 +136,7 @@ def test_theme_choice_is_the_only_thing_stored(site, tmp_path):
 # --- Pied de page, mentions légales, liens (lot C) ------------------------------------
 
 from dashboard.build import offers_csv, source_version  # noqa: E402
-from dashboard.config import AUTHOR, GITHUB_URL, HOST, LEGAL_UPDATED, LINKEDIN_URL  # noqa: E402
+from dashboard.config import AUTHOR, HOST, LEGAL_UPDATED, LINKEDIN_URL  # noqa: E402
 
 
 class Links(HTMLParser):
@@ -161,17 +161,37 @@ def parse_links(page: Path) -> Links:
 def test_footer_is_on_every_page_with_all_links(site):
     for page in pages(site):
         html = page.read_text(encoding="utf-8")
-        hrefs = parse_links(page).hrefs
+        footers = re.findall(r"<footer.*?</footer>", html, re.S)
         name = page.relative_to(site)
-        for needed in (GITHUB_URL, LINKEDIN_URL):
-            assert needed in hrefs, f"{name} : lien {needed} absent"
+        assert len(footers) == 1, name
+        foot = Links()
+        foot.feed(footers[0])
+        hrefs, text = foot.hrefs, footers[0]
+        assert LINKEDIN_URL in hrefs, name
+        assert not any("github.com" in h for h in hrefs), f"{name} : lien GitHub (profil ou code) dans le pied de page"
+        assert "Code source" not in text and "/commit/" not in text, name
+        for title in ("À propos", "Explorer", "Données", "Engagements"):
+            assert f">{title}</h2>" in text, f"{name} : colonne {title} absente"
+        home = "" if page.name == "index.html" else ("../" if page.parent != site else "") + "index.html"
+        for anchor in ("indicateurs", "comparateur", "fournisseurs", "destinations", "qualite"):
+            assert f"{home}#{anchor}" in hrefs, f"{name} : lien vers #{anchor} absent"
         assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
-        assert not any("NOTES_" + "IA" in h for h in hrefs), f"{name} : lien vers le journal (privé)"
-        assert "Python, pandas, Chart.js, GitHub Actions" in html and 'id="f-methode"' not in html, name
-        assert "/commit/" not in html, f"{name} : numéro de commit affiché"
+        assert "20 contrôles qualité · 0 anomalie<" in text, name
         assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
-        assert f"réalisé par {AUTHOR}" in html and "Aucun cookie · aucun traceur" in html, name
-        assert "Outil non officiel, inspiré de l'identité visuelle de mybestsim.com" in html, name
+        assert f"Réalisé par {AUTHOR}." in text and re.search(r"les offres de \d+ fournisseurs", text), name
+        for pledge in ("Aucun cookie ni traceur", "Aucune ressource tierce", "Accessibilité WCAG AA vérifiée"):
+            assert pledge in text, name
+        assert "Outil non officiel, inspiré de l'identité visuelle de mybestsim.com" in text, name
+        assert "heure de Paris" in text, name
+
+
+def test_footer_quality_badge_counts_anomalies():
+    from dashboard.site import footer
+
+    ctx = {"meta": {"providers_count": 2}, "quality": {"checks": 1, "anomalies": 3}}
+    html = footer("", ctx, "index.html")
+    assert "1 contrôle qualité · 3 anomalies" in html and 'href="#qualite"' in html
+    assert 'href="../index.html#comparateur"' in footer("../", ctx)
 
 
 def test_no_email_or_phone_number_anywhere(site):
