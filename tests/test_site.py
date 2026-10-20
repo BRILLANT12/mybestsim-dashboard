@@ -176,7 +176,7 @@ def test_footer_is_on_every_page_with_all_links(site):
         for anchor in ("indicateurs", "comparateur", "fournisseurs", "destinations", "qualite"):
             assert f"{home}#{anchor}" in hrefs, f"{name} : lien vers #{anchor} absent"
         assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
-        assert "21 contrôles qualité · 0 anomalie<" in text, name
+        assert "21 contrôles qualité · aucune anomalie<" in text, name
         assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
         assert f"Réalisé par {AUTHOR}." in text and re.search(r"les offres de \d+ fournisseurs", text), name
         for pledge in ("Aucun cookie ni traceur", "Aucune ressource tierce", "Accessibilité WCAG AA vérifiée"):
@@ -188,9 +188,14 @@ def test_footer_is_on_every_page_with_all_links(site):
 def test_footer_quality_badge_counts_anomalies():
     from dashboard.site import footer
 
-    ctx = {"meta": {"providers_count": 2}, "quality": {"checks": 1, "anomalies": 3}}
+    ctx = {"meta": {"providers_count": 2}, "quality": {"checks": 1, "errors": 0, "warnings": 3}}
     html = footer("", ctx, "index.html")
-    assert "1 contrôle qualité · 3 anomalies" in html and 'href="#qualite"' in html
+    assert "1 contrôle qualité · 3 avertissements<" in html and 'href="#qualite"' in html
+    assert "anomalie" not in html  # des avertissements ne sont pas appelés « anomalies »
+    ctx["quality"] = {"checks": 21, "errors": 2, "warnings": 1}
+    assert "21 contrôles qualité · 2 erreurs · 1 avertissement<" in footer("", ctx)
+    ctx["quality"] = {"checks": 21, "errors": 0, "warnings": 0}
+    assert "21 contrôles qualité · aucune anomalie<" in footer("", ctx)
     assert 'href="../index.html#comparateur"' in footer("../", ctx)
 
 

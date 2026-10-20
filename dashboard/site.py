@@ -85,10 +85,18 @@ def _plural(n: int, word: str) -> str:
     return f"{n} {word}{'s' if n > 1 else ''}"
 
 
+def quality_counts(errors: int, warnings: int) -> str:
+    """Bilan qualité, même formulation que le badge du hero et le rapport (dashboard.js) :
+    les erreurs n'apparaissent que s'il y en a, et un avertissement n'est pas appelé « anomalie »."""
+    if errors:
+        return f"{_plural(errors, 'erreur')} · {_plural(warnings, 'avertissement')}"
+    return _plural(warnings, "avertissement") if warnings else "aucune anomalie"
+
+
 def footer(root: str, context: dict, active: str = "") -> str:
     """Pied de page commun : à propos, explorer, données, engagements, puis barre légale."""
     meta = context.get("meta", {})
-    quality = context.get("quality", {"checks": 0, "anomalies": 0})
+    quality = context.get("quality", {"checks": 0, "errors": 0, "warnings": 0})
     providers = meta.get("providers_count", 0)
     home = "" if active == "index.html" else f"{root}index.html"
     explore = "\n".join(f'          <li><a href="{home}#{anchor}">{label}</a></li>' for anchor, label in EXPLORE)
@@ -111,7 +119,7 @@ def footer(root: str, context: dict, active: str = "") -> str:
       <section aria-labelledby="f-donnees">
         <h2 id="f-donnees">Données</h2>
         <p>Dernière génération le <span id="footer-gen">{escape(context.get("generated_text", ""))}</span> (heure de Paris).</p>
-        <p><a class="foot-badge" href="{home}#qualite"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>{_plural(quality["checks"], "contrôle")} qualité · {_plural(quality["anomalies"], "anomalie")}</a></p>
+        <p><a class="foot-badge" href="{home}#qualite"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>{_plural(quality["checks"], "contrôle")} qualité · {quality_counts(quality["errors"], quality["warnings"])}</a></p>
         <ul class="foot-links">
           <li><a href="{root}stats.json" download><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>stats.json</a></li>
           <li><a href="{root}{context.get("csv_export", "offres-esim.csv")}" download><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export CSV complet</a></li>

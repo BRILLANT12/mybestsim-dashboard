@@ -22,6 +22,12 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function $(id) { return document.getElementById(id); }
   function plural(n, one, many) { return n > 1 ? many : one; }
+  // Bilan qualité, même formulation que le pied de page (site.quality_counts) : les erreurs
+  // n'apparaissent que s'il y en a, et un avertissement n'est pas appelé « anomalie ».
+  function qualityCounts(Q) {
+    var w = num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements");
+    return Q.errors ? num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + w : Q.warnings ? w : "aucune anomalie";
+  }
   function icon(name) { return '<svg class="icon" aria-hidden="true"><use href="#i-' + name + '"/></svg>'; }
   function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
@@ -144,10 +150,7 @@
     $("hero-date").textContent = "Mis à jour le " + genText + " (heure de Paris)";
     var q = $("hero-quality");
     q.className = "chip" + (level === "ok" ? "" : " " + level);
-    var warnings = num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements");
-    q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (level === "ok" ? "Données vérifiées · aucune anomalie"
-      : level === "warn" ? "Données vérifiées · " + warnings
-      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + warnings);
+    q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (Q.errors ? "" : "Données vérifiées · ") + qualityCounts(Q);
     var fills = { threshold: eur(S.headline.expensive.threshold, 0), "mean-gb": gb(S.headline.data.mean_gb), "median-gb": gb(S.headline.data.median_gb, 0) };
     document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
     renderInsights();
@@ -343,8 +346,7 @@
 
   function renderQuality() {
     var Q = S.anomalies, level = Q.errors ? "crit" : Q.warnings ? "warn" : "ok";
-    var title = level === "ok" ? "Aucune anomalie détectée"
-      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements");
+    var title = level === "ok" ? "Aucune anomalie détectée" : qualityCounts(Q);
     $("quality-status").innerHTML = '<div class="status ' + level + '" role="status">' + icon(level === "ok" ? "check" : level === "warn" ? "alert" : "x") +
       "<div><strong>" + title + "</strong><span>" + num(Q.rows_read) + " lignes lues, " +
       (Q.rows_excluded ? num(Q.rows_excluded) + " " + plural(Q.rows_excluded, "exclue", "exclues") : "aucune exclue") + " des calculs, " +
@@ -381,8 +383,9 @@
     if (Q.details.length) {
       var MAX = 300;
       $("details-card").hidden = false;
-      $("details-sub").textContent = Q.details.length > MAX ? "Les " + num(MAX) + " premières sur " + num(Q.details.length) + " (liste complète dans stats.json)."
-        : num(Q.details.length) + " " + plural(Q.details.length, "anomalie", "anomalies") + ", triées par fichier puis par ligne.";
+      var counts = qualityCounts(Q).replace(" · ", " et ");
+      $("details-sub").textContent = Q.details.length > MAX ? counts + " : les " + num(MAX) + " premiers signalements affichés (liste complète dans stats.json)."
+        : counts + ", triés par fichier puis par ligne.";
       table($("table-details"), [
         { label: "Niveau", fmt: function (x) { return sev(x.severity); } },
         { label: "Fichier", fmt: function (x) { return "<code>" + esc(x.file) + "</code>"; } },

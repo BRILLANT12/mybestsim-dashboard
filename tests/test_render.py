@@ -276,20 +276,29 @@ def test_filter_bar_is_one_line_with_panel_at_390px(real_site, tmp_path):
 # --- Qualité : badge du hero et carte « Même offre, prix différents » ---------------
 
 QUALITY_PROBE = ("window.__extra=[document.getElementById('hero-quality').textContent,"
+                 "document.querySelector('#quality-status strong').textContent,"
+                 "document.getElementById('details-sub').textContent,"
+                 "document.querySelector('.foot-badge').textContent,"
                  "document.getElementById('same-offer-card').hidden,"
                  "document.querySelectorAll('#table-same-offer-providers tbody tr').length].join('|');")
 
 
+# Même formulation partout : badge du hero, bandeau du rapport, détail, pied de page.
 @pytest.mark.parametrize("files, expected", [
-    (["calculs/prov_a.csv", "calculs/prov_b.csv"], "Données vérifiées · aucune anomalie|true|0"),
-    (["meme_offre/autre.csv"], "Données vérifiées · 1 avertissement|false|1"),  # avertissements seuls
-    (["meme_offre/autre.csv", "meme_offre/piege.csv"], "2 erreurs · 6 avertissements|false|2"),
+    (["calculs/prov_a.csv", "calculs/prov_b.csv"],
+     ["Données vérifiées · aucune anomalie", "Aucune anomalie détectée", "", "21 contrôles qualité · aucune anomalie", "true", "0"]),
+    (["meme_offre/autre.csv"],  # avertissements seuls : jamais appelés « anomalies »
+     ["Données vérifiées · 1 avertissement", "1 avertissement", "1 avertissement, triés par fichier puis par ligne.",
+      "21 contrôles qualité · 1 avertissement", "false", "1"]),
+    (["meme_offre/autre.csv", "meme_offre/piege.csv"],
+     ["2 erreurs · 6 avertissements", "2 erreurs · 6 avertissements", "2 erreurs et 6 avertissements, triés par fichier puis par ligne.",
+      "21 contrôles qualité · 2 erreurs · 6 avertissements", "false", "2"]),
 ], ids=["ok", "avertissements", "erreurs"])
-def test_hero_badge_and_same_offer_card(files, expected, tmp_path):
+def test_quality_wording_is_the_same_everywhere(files, expected, tmp_path):
     data = tmp_path / "data"
     data.mkdir()
     for f in files:
         shutil.copy(FIXTURES / f, data)
     probe = render(data, tmp_path / "site", action=QUALITY_PROBE)
     assert probe["errors"] == []
-    assert probe["extra"] == expected
+    assert [x.strip() for x in probe["extra"].split("|")] == expected
