@@ -1,0 +1,15 @@
+sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up
+p-1,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,8.20,EUR,4G,oui
+p-2,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,7.06,EUR,4G,oui
+p-3,Piège,eSIM Japon 5 Go 15 jours,JP,Japon,5,5 Go,15,10.00,EUR,5G,non
+p-4,Piège,eSIM Japon 5 Go 15 jours,JP,Japon,5,5 Go,15,10.00,EUR,5G,non
+p-5,Piège,eSIM Japon 5 Go 15 jours,JP,Japon,5,5 Go,15,14.00,EUR,5G,non
+p-6,Piège,eSIM Pérou 3 Go 7 jours,PE,Pérou,3,3 Go,7,9.00,EUR,4G,oui
+p-7,Piège,eSIM Pérou 3 Go 7 jours,PE,Pérou,3,3 Go,7,9.00,EUR,4G,oui
+p-8,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,9.50,EUR,5G,oui
+p-9,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,6.00,EUR,4G,non
+p-10,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,15,5.00,EUR,4G,oui
+p-11,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,3.00,USD,4G,oui
+p-2,Piège,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,1.00,EUR,4G,oui
+p-12,Piège,eSIM Monde Illimité 30 jours,WW,Monde,,Illimité,30,96.06,EUR,5G,oui
+p-13,Piège,eSIM Monde Illimité 30 jours,WW,Monde,,Illimité,30,140.24,EUR,5G,oui

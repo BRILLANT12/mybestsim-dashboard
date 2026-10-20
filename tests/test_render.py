@@ -5,6 +5,7 @@ machines GitHub Actions).
 """
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -270,3 +271,25 @@ def test_filter_bar_is_one_line_with_panel_at_390px(real_site, tmp_path):
     height, closed, opened, expanded, after, focus_back, export_text = probe["extra"].split("|")
     assert int(height) <= 70, f"barre de {height} px"
     assert (closed, opened, expanded, after, focus_back, export_text) == ("none", "flex", "true", "none", "true", "1px")
+
+
+# --- Qualité : badge du hero et carte « Même offre, prix différents » ---------------
+
+QUALITY_PROBE = ("window.__extra=[document.getElementById('hero-quality').textContent,"
+                 "document.getElementById('same-offer-card').hidden,"
+                 "document.querySelectorAll('#table-same-offer-providers tbody tr').length].join('|');")
+
+
+@pytest.mark.parametrize("files, expected", [
+    (["calculs/prov_a.csv", "calculs/prov_b.csv"], "Données vérifiées · aucune anomalie|true|0"),
+    (["meme_offre/autre.csv"], "Données vérifiées · 1 avertissement|false|1"),  # avertissements seuls
+    (["meme_offre/autre.csv", "meme_offre/piege.csv"], "2 erreurs · 6 avertissements|false|2"),
+], ids=["ok", "avertissements", "erreurs"])
+def test_hero_badge_and_same_offer_card(files, expected, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    for f in files:
+        shutil.copy(FIXTURES / f, data)
+    probe = render(data, tmp_path / "site", action=QUALITY_PROBE)
+    assert probe["errors"] == []
+    assert probe["extra"] == expected

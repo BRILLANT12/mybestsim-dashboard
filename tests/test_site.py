@@ -176,7 +176,7 @@ def test_footer_is_on_every_page_with_all_links(site):
         for anchor in ("indicateurs", "comparateur", "fournisseurs", "destinations", "qualite"):
             assert f"{home}#{anchor}" in hrefs, f"{name} : lien vers #{anchor} absent"
         assert any(h.endswith("stats.json") for h in hrefs) and any(h.endswith("offres-esim.csv") for h in hrefs), name
-        assert "20 contrôles qualité · 0 anomalie<" in text, name
+        assert "21 contrôles qualité · 0 anomalie<" in text, name
         assert any(h.endswith("mentions-legales.html#cookies") for h in hrefs) and "#haut" in hrefs, name
         assert f"Réalisé par {AUTHOR}." in text and re.search(r"les offres de \d+ fournisseurs", text), name
         for pledge in ("Aucun cookie ni traceur", "Aucune ressource tierce", "Accessibilité WCAG AA vérifiée"):

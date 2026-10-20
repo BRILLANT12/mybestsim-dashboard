@@ -130,7 +130,7 @@ a { color: var(--brand-ink); text-decoration-thickness: 1px; text-underline-offs
 h1, h2, h3 { margin: 0; letter-spacing: -0.015em; font-weight: 600; }
 b, strong { font-weight: 600; }
 /* Étiquettes : petites capitales espacées (sur-titres, en-têtes de tableau, libellés, menus). */
-.eyebrow, .kicker, .tag, th, .kpi-top, .glass-top, .fb-group > span, .secnav a, .sitenav a, .best .k, .zones h4, .dd-list h4 {
+.eyebrow, .kicker, .tag, th, .kpi-top, .glass-top, .fb-group > span, .secnav a, .sitenav a, .best .k, .zones h4, .same-offer h4, .dd-list h4 {
   text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
 }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
@@ -376,7 +376,7 @@ code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; background: 
 .zones li b { display: block; }
 .zones li small { color: var(--muted); }
 .zones li .v { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
-.zones h4 { margin: 14px 0 6px; font-size: 11px; color: var(--muted); }
+.zones h4, .same-offer h4 { margin: 14px 0 6px; font-size: 11px; color: var(--muted); }
 
 /* Comparateur */
 .cmp-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 12px 16px; align-items: end; }

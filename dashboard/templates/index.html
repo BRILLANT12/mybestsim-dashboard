@@ -320,6 +320,20 @@
           <p class="sub">Tout fichier <code>.csv</code> déposé dans <code>data/</code> est pris en compte automatiquement</p>
           <div class="table-wrap"><table id="table-files"></table></div>
         </div>
+        <div class="card span-2 same-offer" id="same-offer-card" hidden>
+          <h3>Même offre, prix différents</h3>
+          <p class="sub" id="same-offer-sub"></p>
+          <div class="grid g-2">
+            <div>
+              <h4>Par fournisseur</h4>
+              <div class="table-wrap"><table id="table-same-offer-providers"></table></div>
+            </div>
+            <div>
+              <h4>Plus grands écarts</h4>
+              <div class="table-wrap"><table id="table-same-offer-examples"></table></div>
+            </div>
+          </div>
+        </div>
         <div class="card span-2" id="details-card" hidden>
           <h3>Détail des anomalies</h3>
           <p class="sub" id="details-sub"></p>
@@ -369,12 +383,15 @@
         <div class="card">
           <h3><svg class="icon"><use href="#i-globe"/></svg>Pays et zones</h3>
           <p>Les codes <code>EU</code> (Europe), <code>AS</code> (Asie), <code>NA</code> (Amérique du Nord) et <code>WW</code> (Monde) sont des zones, comptées à part des pays. Les fichiers sont lus de façon à ce que le code <code>NA</code> ne soit pas confondu avec une valeur manquante, piège classique de la lecture de CSV.</p>
+          <p class="callout"><svg class="icon"><use href="#i-alert"/></svg><span><b>Risque de collision</b> : <code>NA</code> et <code>AS</code> sont aussi des codes pays ISO (Namibie, Samoa américaines). Si ces pays apparaissaient un jour sous ces codes, leurs offres seraient comptées comme des zones.</span></p>
         </div>
         <div class="card">
           <h3><svg class="icon"><use href="#i-shield"/></svg>Validation des données</h3>
           <ul>
             <li><b>Erreur, ligne exclue</b> : champ obligatoire vide, prix illisible, nul ou négatif, devise autre que EUR (aucun taux de conversion n'est fourni), durée ou volume invalide, SKU en double.</li>
-            <li><b>Avertissement, ligne conservée</b> : réseau ou recharge inconnus, incohérence data_gb / data_display, prix aberrant, offre identique sous un autre SKU.</li>
+            <li><b>Avertissement, ligne conservée</b> : réseau ou recharge inconnus, incohérence data_gb / data_display, prix aberrant, offre identique sous un autre SKU, même offre à des prix différents.</li>
+            <li><b>Même offre, prix différents</b> : même fournisseur, nom de produit, destination, volume affiché, durée, réseau et recharge, mais SKU et prix différents. Un avertissement par offre, sur sa première ligne.</li>
+            <li>Les avertissements ne retirent aucune ligne : <b>les KPI restent calculés sur toutes les lignes valides</b>, doublons de prix compris (aucun prix n'est choisi à la place du fournisseur).</li>
             <li><b>SKU en double</b> : la première occurrence valide est gardée (fichiers par ordre alphabétique).</li>
             <li><b>Prix aberrant</b> : plus de 5 fois, ou moins d'un cinquième de, la médiane des offres comparables (même volume, même durée, 5 offres au moins). Un seuil global signalerait à tort tous les forfaits illimités.</li>
             <li>Un fichier vide, illisible ou incomplet est signalé et ignoré : il ne bloque jamais la génération.</li>

@@ -37,7 +37,7 @@ VENDOR_ASSETS = {
 DASHBOARD_SCRIPTS = ("vendor/chart.umd.min.js", "vendor/chartjs-chart-geo.umd.min.js", "vendor/world-110m.js", "analytics.js", "dashboard.js")
 
 
-def anomaly_report(anomalies, files, total_rows, excluded_rows) -> dict:
+def anomaly_report(anomalies, files, total_rows, excluded_rows, same_offer=None) -> dict:
     by_rule = Counter((a.severity, a.rule) for a in anomalies)
     return {
         "errors": sum(1 for a in anomalies if a.severity == ERROR),
@@ -55,6 +55,7 @@ def anomaly_report(anomalies, files, total_rows, excluded_rows) -> dict:
         # Ordre de lecture : fichier, puis ligne (les anomalies de niveau fichier en tête).
         "details": [a.to_dict() for a in sorted(anomalies, key=lambda a: (a.file, a.line or 0, a.severity != ERROR))],
         "files": files,
+        "same_offer": same_offer or {"offers": 0, "rows": 0, "max_gap": None, "by_provider": [], "examples": []},
     }
 
 
@@ -66,7 +67,7 @@ def build(data_dir: Path, now: datetime | None = None) -> tuple[dict, dict]:
     """Renvoie (statistiques globales, offres valides encodées pour les filtres)."""
     loaded = load_providers(data_dir)
     validated = validate(loaded.rows)
-    result = stats.compute(validated.clean)
+    result = stats.compute(validated.clean, validated.same_offer)
     result["meta"] = {
         "generated_at": (now or datetime.now(TIMEZONE)).isoformat(timespec="seconds"),
         "files_count": sum(1 for f in loaded.files if f["status"] == "ok"),
@@ -75,7 +76,8 @@ def build(data_dir: Path, now: datetime | None = None) -> tuple[dict, dict]:
     # Une fiche par fournisseur : le tableau de bord pointe vers chacune.
     result["provider_pages"] = profiles.page_paths([p["provider"] for p in result["providers"]])
     result["anomalies"] = anomaly_report(
-        loaded.anomalies + validated.anomalies, loaded.files, validated.total_rows, validated.excluded_rows
+        loaded.anomalies + validated.anomalies, loaded.files, validated.total_rows, validated.excluded_rows,
+        validated.same_offer,
     )
     return result, encode_offers(validated.clean)
 

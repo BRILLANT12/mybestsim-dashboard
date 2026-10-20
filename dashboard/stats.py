@@ -307,7 +307,7 @@ def coverage(df: pd.DataFrame) -> dict:
     }
 
 
-def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
+def insights(h: dict, providers: list[dict], p: dict, dist: dict, same_offer: dict | None = None) -> list[dict]:
     """Constats calculés (jamais écrits en dur) : chaque texte dépend des données."""
     out = []
     exp = h["expensive"]
@@ -403,10 +403,27 @@ def insights(h: dict, providers: list[dict], p: dict, dist: dict) -> list[dict]:
                        "tied": tied, "worst": worst["provider"], "best_by_index": by_index["provider"],
                        "index_min": lo_idx, "index_max": hi_idx},
         })
+
+    if same_offer and same_offer["offers"]:
+        n, worst = same_offer["offers"], same_offer["examples"][0]
+        top = same_offer["by_provider"][0]
+        out.append({
+            "id": "same_offer_price_gap", "highlight": False,
+            "title": (f"{fmt.number(n)} offres affichées à plusieurs prix chez le même fournisseur" if n > 1
+                      else "Une offre affichée à plusieurs prix chez le même fournisseur"),
+            "text": f"{fmt.number(same_offer['rows'])} lignes décrivent {'ces' if n > 1 else 'cette'} offre{'s' if n > 1 else ''} "
+                    "(même destination, volume, durée, réseau et recharge) sous des SKU et des prix différents, "
+                    f"jusqu'à {fmt.percent(same_offer['max_gap'])} d'écart ({worst['provider']}, « {worst['product_name']} » : "
+                    f"{fmt.euros(worst['min_price'])} ou {fmt.euros(worst['max_price'])}). Pour un comparateur, une même offre "
+                    f"peut donc s'afficher à des prix différents selon la ligne retenue. {top['provider']} est le plus concerné "
+                    f"({fmt.number(top['offers'])} offre{'s' if top['offers'] > 1 else ''}).",
+            "values": {"offers": n, "rows": same_offer["rows"], "max_gap": same_offer["max_gap"],
+                       "top_provider": top["provider"]},
+        })
     return out
 
 
-def compute(df: pd.DataFrame) -> dict:
+def compute(df: pd.DataFrame, same_offer: dict | None = None) -> dict:
     h = headline(df)
     providers = by_provider(df)
     p = pricing(df)
@@ -418,5 +435,5 @@ def compute(df: pd.DataFrame) -> dict:
         "pricing": p,
         "distributions": dist,
         "coverage": coverage(df),
-        "insights": insights(h, providers, p, dist),
+        "insights": insights(h, providers, p, dist, same_offer),
     }

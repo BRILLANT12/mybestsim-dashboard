@@ -1637,10 +1637,22 @@
         "index_min": 98.4,
         "index_max": 101.9
       }
+    },
+    {
+      "id": "same_offer_price_gap",
+      "highlight": false,
+      "title": "219 offres affichées à plusieurs prix chez le même fournisseur",
+      "text": "458 lignes décrivent ces offres (même destination, volume, durée, réseau et recharge) sous des SKU et des prix différents, jusqu'à 46 % d'écart (JamboSIM, « eSIM Monde Illimité 30 jours » : 96,06 € ou 140,24 €). Pour un comparateur, une même offre peut donc s'afficher à des prix différents selon la ligne retenue. Airalo est le plus concerné (60 offres).",
+      "values": {
+        "offers": 219,
+        "rows": 458,
+        "max_gap": 0.4599,
+        "top_provider": "Airalo"
+      }
     }
   ],
   "meta": {
-    "generated_at": "2026-10-17T04:54:10+02:00",
+    "generated_at": "2026-10-20T19:34:42+02:00",
     "files_count": 18,
     "providers_count": 18
   },
@@ -1666,10 +1678,16 @@
   },
   "anomalies": {
     "errors": 0,
-    "warnings": 0,
+    "warnings": 219,
     "rows_read": 5056,
     "rows_excluded": 0,
-    "by_rule": [],
+    "by_rule": [
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "count": 219
+      }
+    ],
     "checks": [
       {
         "rule": "fichier_vide",
@@ -1790,9 +1808,1768 @@
         "severity": "avertissement",
         "label": "Prix aberrant par rapport aux offres comparables",
         "count": 0
+      },
+      {
+        "rule": "meme_offre_prix_differents",
+        "severity": "avertissement",
+        "label": "Même offre, prix différents",
+        "count": 219
       }
     ],
-    "details": [],
+    "details": [
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (4sesim-104981 à 13.06 €, 4sesim-105002 à 13.31 €) : écart de 2 %.",
+        "file": "4sesim.csv",
+        "line": 18,
+        "sku": "4sesim-104981"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (4sesim-105013 à 11.98 €, 4sesim-105031 à 11.39 €) : écart de 5 %.",
+        "file": "4sesim.csv",
+        "line": 50,
+        "sku": "4sesim-105013"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100003 à 7.34 €, airalo-100176 à 7.76 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 4,
+        "sku": "airalo-100003"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100004 à 12.32 €, airalo-100110 à 14.67 €) : écart de 19 %.",
+        "file": "airalo.csv",
+        "line": 5,
+        "sku": "airalo-100004"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100011 à 10.19 €, airalo-100567 à 9.90 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 12,
+        "sku": "airalo-100011"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100014 à 14.24 €, airalo-100451 à 14.92 €) : écart de 5 %.",
+        "file": "airalo.csv",
+        "line": 15,
+        "sku": "airalo-100014"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100021 à 5.54 €, airalo-100292 à 5.70 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 22,
+        "sku": "airalo-100021"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 4 SKU à des prix différents (airalo-100030 à 13.19 €, airalo-100216 à 13.56 €, airalo-100231 à 14.31 €, airalo-100609 à 14.49 €) : écart de 10 %.",
+        "file": "airalo.csv",
+        "line": 31,
+        "sku": "airalo-100030"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100031 à 5.97 €, airalo-100272 à 7.03 €, airalo-100608 à 6.62 €) : écart de 18 %.",
+        "file": "airalo.csv",
+        "line": 32,
+        "sku": "airalo-100031"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100034 à 10.37 €, airalo-100470 à 9.83 €, airalo-100576 à 11.20 €) : écart de 14 %.",
+        "file": "airalo.csv",
+        "line": 35,
+        "sku": "airalo-100034"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100036 à 25.69 €, airalo-100390 à 28.65 €) : écart de 12 %.",
+        "file": "airalo.csv",
+        "line": 37,
+        "sku": "airalo-100036"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100045 à 27.92 €, airalo-100678 à 28.53 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 46,
+        "sku": "airalo-100045"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100064 à 6.15 €, airalo-100700 à 6.40 €) : écart de 4 %.",
+        "file": "airalo.csv",
+        "line": 65,
+        "sku": "airalo-100064"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100067 à 8.55 €, airalo-100088 à 9.27 €, airalo-100460 à 8.32 €) : écart de 11 %.",
+        "file": "airalo.csv",
+        "line": 68,
+        "sku": "airalo-100067"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100076 à 18.07 €, airalo-100692 à 17.11 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 77,
+        "sku": "airalo-100076"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100082 à 27.07 €, airalo-100364 à 28.16 €) : écart de 4 %.",
+        "file": "airalo.csv",
+        "line": 83,
+        "sku": "airalo-100082"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100097 à 34.40 €, airalo-100187 à 38.94 €) : écart de 13 %.",
+        "file": "airalo.csv",
+        "line": 98,
+        "sku": "airalo-100097"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100100 à 7.26 €, airalo-100582 à 8.44 €) : écart de 16 %.",
+        "file": "airalo.csv",
+        "line": 101,
+        "sku": "airalo-100100"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100109 à 22.33 €, airalo-100648 à 24.04 €) : écart de 8 %.",
+        "file": "airalo.csv",
+        "line": 110,
+        "sku": "airalo-100109"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100114 à 48.07 €, airalo-100393 à 48.14 €) : écart de 0 %.",
+        "file": "airalo.csv",
+        "line": 115,
+        "sku": "airalo-100114"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100135 à 7.53 €, airalo-100452 à 8.09 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 136,
+        "sku": "airalo-100135"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100145 à 8.20 €, airalo-100471 à 8.45 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 146,
+        "sku": "airalo-100145"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100148 à 24.91 €, airalo-100688 à 25.45 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 149,
+        "sku": "airalo-100148"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100149 à 28.23 €, airalo-100396 à 29.81 €, airalo-100636 à 29.32 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 150,
+        "sku": "airalo-100149"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 4 SKU à des prix différents (airalo-100152 à 51.29 €, airalo-100456 à 47.90 €, airalo-100649 à 48.72 €, airalo-100712 à 49.88 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 153,
+        "sku": "airalo-100152"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100158 à 42.65 €, airalo-100439 à 40.36 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 159,
+        "sku": "airalo-100158"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100159 à 31.08 €, airalo-100527 à 32.46 €) : écart de 4 %.",
+        "file": "airalo.csv",
+        "line": 160,
+        "sku": "airalo-100159"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100162 à 30.18 €, airalo-100250 à 26.06 €, airalo-100309 à 29.77 €) : écart de 16 %.",
+        "file": "airalo.csv",
+        "line": 163,
+        "sku": "airalo-100162"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100174 à 7.37 €, airalo-100569 à 8.33 €, airalo-100716 à 8.11 €) : écart de 13 %.",
+        "file": "airalo.csv",
+        "line": 175,
+        "sku": "airalo-100174"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100190 à 18.31 €, airalo-100606 à 17.85 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 191,
+        "sku": "airalo-100190"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100192 à 35.52 €, airalo-100568 à 39.39 €) : écart de 11 %.",
+        "file": "airalo.csv",
+        "line": 193,
+        "sku": "airalo-100192"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100218 à 10.21 €, airalo-100513 à 9.53 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 219,
+        "sku": "airalo-100218"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100224 à 8.04 €, airalo-100613 à 7.12 €) : écart de 13 %.",
+        "file": "airalo.csv",
+        "line": 225,
+        "sku": "airalo-100224"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 4 SKU à des prix différents (airalo-100229 à 20.79 €, airalo-100260 à 21.40 €, airalo-100305 à 22.04 €, airalo-100640 à 24.70 €) : écart de 19 %.",
+        "file": "airalo.csv",
+        "line": 230,
+        "sku": "airalo-100229"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100241 à 6.60 €, airalo-100571 à 5.93 €) : écart de 11 %.",
+        "file": "airalo.csv",
+        "line": 242,
+        "sku": "airalo-100241"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100267 à 12.75 €, airalo-100645 à 11.15 €) : écart de 14 %.",
+        "file": "airalo.csv",
+        "line": 268,
+        "sku": "airalo-100267"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100282 à 49.03 €, airalo-100562 à 52.65 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 283,
+        "sku": "airalo-100282"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100284 à 14.40 €, airalo-100708 à 13.78 €) : écart de 4 %.",
+        "file": "airalo.csv",
+        "line": 285,
+        "sku": "airalo-100284"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100301 à 16.28 €, airalo-100709 à 16.82 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 302,
+        "sku": "airalo-100301"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100310 à 6.81 €, airalo-100526 à 6.38 €, airalo-100657 à 6.53 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 311,
+        "sku": "airalo-100310"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100324 à 18.47 €, airalo-100554 à 18.50 €) : écart de 0 %.",
+        "file": "airalo.csv",
+        "line": 325,
+        "sku": "airalo-100324"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100325 à 18.32 €, airalo-100392 à 18.25 €) : écart de 0 %.",
+        "file": "airalo.csv",
+        "line": 326,
+        "sku": "airalo-100325"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100336 à 14.49 €, airalo-100490 à 13.47 €) : écart de 8 %.",
+        "file": "airalo.csv",
+        "line": 337,
+        "sku": "airalo-100336"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100362 à 8.96 €, airalo-100369 à 9.17 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 363,
+        "sku": "airalo-100362"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100367 à 14.80 €, airalo-100622 à 14.16 €) : écart de 5 %.",
+        "file": "airalo.csv",
+        "line": 368,
+        "sku": "airalo-100367"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100368 à 24.56 €, airalo-100433 à 24.45 €) : écart de 0 %.",
+        "file": "airalo.csv",
+        "line": 369,
+        "sku": "airalo-100368"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100372 à 25.83 €, airalo-100673 à 29.90 €) : écart de 16 %.",
+        "file": "airalo.csv",
+        "line": 373,
+        "sku": "airalo-100372"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100373 à 30.36 €, airalo-100493 à 28.71 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 374,
+        "sku": "airalo-100373"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100375 à 9.29 €, airalo-100494 à 9.22 €) : écart de 1 %.",
+        "file": "airalo.csv",
+        "line": 376,
+        "sku": "airalo-100375"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100379 à 85.17 €, airalo-100615 à 84.68 €) : écart de 1 %.",
+        "file": "airalo.csv",
+        "line": 380,
+        "sku": "airalo-100379"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100402 à 11.36 €, airalo-100598 à 9.67 €) : écart de 17 %.",
+        "file": "airalo.csv",
+        "line": 403,
+        "sku": "airalo-100402"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100422 à 11.51 €, airalo-100468 à 13.40 €) : écart de 16 %.",
+        "file": "airalo.csv",
+        "line": 423,
+        "sku": "airalo-100422"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100432 à 17.78 €, airalo-100717 à 18.19 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 433,
+        "sku": "airalo-100432"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (airalo-100434 à 10.38 €, airalo-100658 à 9.45 €, airalo-100665 à 9.67 €) : écart de 10 %.",
+        "file": "airalo.csv",
+        "line": 435,
+        "sku": "airalo-100434"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100442 à 29.64 €, airalo-100491 à 31.84 €) : écart de 7 %.",
+        "file": "airalo.csv",
+        "line": 443,
+        "sku": "airalo-100442"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100455 à 38.57 €, airalo-100497 à 37.69 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 456,
+        "sku": "airalo-100455"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100464 à 58.57 €, airalo-100694 à 56.78 €) : écart de 3 %.",
+        "file": "airalo.csv",
+        "line": 465,
+        "sku": "airalo-100464"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100467 à 17.58 €, airalo-100653 à 18.65 €) : écart de 6 %.",
+        "file": "airalo.csv",
+        "line": 468,
+        "sku": "airalo-100467"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100545 à 30.18 €, airalo-100579 à 29.70 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 546,
+        "sku": "airalo-100545"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100587 à 7.02 €, airalo-100702 à 8.40 €) : écart de 20 %.",
+        "file": "airalo.csv",
+        "line": 588,
+        "sku": "airalo-100587"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100629 à 8.20 €, airalo-100671 à 7.06 €) : écart de 16 %.",
+        "file": "airalo.csv",
+        "line": 630,
+        "sku": "airalo-100629"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (airalo-100631 à 26.21 €, airalo-100691 à 26.69 €) : écart de 2 %.",
+        "file": "airalo.csv",
+        "line": 632,
+        "sku": "airalo-100631"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103046 à 79.87 €, alosim-103124 à 71.00 €) : écart de 12 %.",
+        "file": "alosim.csv",
+        "line": 13,
+        "sku": "alosim-103046"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103049 à 60.59 €, alosim-103080 à 61.52 €) : écart de 2 %.",
+        "file": "alosim.csv",
+        "line": 16,
+        "sku": "alosim-103049"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103061 à 19.48 €, alosim-103126 à 17.55 €) : écart de 11 %.",
+        "file": "alosim.csv",
+        "line": 28,
+        "sku": "alosim-103061"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103066 à 12.28 €, alosim-103294 à 11.81 €) : écart de 4 %.",
+        "file": "alosim.csv",
+        "line": 33,
+        "sku": "alosim-103066"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (alosim-103067 à 18.55 €, alosim-103174 à 16.81 €, alosim-103286 à 18.27 €) : écart de 10 %.",
+        "file": "alosim.csv",
+        "line": 34,
+        "sku": "alosim-103067"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103087 à 11.11 €, alosim-103283 à 13.16 €) : écart de 18 %.",
+        "file": "alosim.csv",
+        "line": 54,
+        "sku": "alosim-103087"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103112 à 14.31 €, alosim-103274 à 13.70 €) : écart de 4 %.",
+        "file": "alosim.csv",
+        "line": 79,
+        "sku": "alosim-103112"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103127 à 14.82 €, alosim-103267 à 13.01 €) : écart de 14 %.",
+        "file": "alosim.csv",
+        "line": 94,
+        "sku": "alosim-103127"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103129 à 26.00 €, alosim-103277 à 28.05 €) : écart de 8 %.",
+        "file": "alosim.csv",
+        "line": 96,
+        "sku": "alosim-103129"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103163 à 28.83 €, alosim-103217 à 29.42 €) : écart de 2 %.",
+        "file": "alosim.csv",
+        "line": 130,
+        "sku": "alosim-103163"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103177 à 31.14 €, alosim-103228 à 32.28 €) : écart de 4 %.",
+        "file": "alosim.csv",
+        "line": 144,
+        "sku": "alosim-103177"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (alosim-103215 à 10.01 €, alosim-103279 à 8.32 €) : écart de 20 %.",
+        "file": "alosim.csv",
+        "line": 182,
+        "sku": "alosim-103215"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101307 à 9.98 €, esimx-101513 à 9.47 €) : écart de 5 %.",
+        "file": "esimx.csv",
+        "line": 24,
+        "sku": "esimx-101307"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101333 à 19.52 €, esimx-101562 à 18.72 €) : écart de 4 %.",
+        "file": "esimx.csv",
+        "line": 50,
+        "sku": "esimx-101333"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (esimx-101350 à 35.94 €, esimx-101391 à 41.87 €, esimx-101692 à 42.47 €) : écart de 18 %.",
+        "file": "esimx.csv",
+        "line": 67,
+        "sku": "esimx-101350"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101360 à 10.52 €, esimx-101440 à 9.90 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 77,
+        "sku": "esimx-101360"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101368 à 9.78 €, esimx-101635 à 9.54 €) : écart de 3 %.",
+        "file": "esimx.csv",
+        "line": 85,
+        "sku": "esimx-101368"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101372 à 55.64 €, esimx-101416 à 58.57 €) : écart de 5 %.",
+        "file": "esimx.csv",
+        "line": 89,
+        "sku": "esimx-101372"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101374 à 15.96 €, esimx-101667 à 15.12 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 91,
+        "sku": "esimx-101374"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101382 à 12.46 €, esimx-101437 à 13.17 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 99,
+        "sku": "esimx-101382"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101402 à 22.07 €, esimx-101563 à 23.53 €) : écart de 7 %.",
+        "file": "esimx.csv",
+        "line": 119,
+        "sku": "esimx-101402"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101404 à 7.26 €, esimx-101648 à 7.15 €) : écart de 2 %.",
+        "file": "esimx.csv",
+        "line": 121,
+        "sku": "esimx-101404"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101507 à 13.36 €, esimx-101666 à 14.15 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 224,
+        "sku": "esimx-101507"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101509 à 46.30 €, esimx-101655 à 53.83 €) : écart de 16 %.",
+        "file": "esimx.csv",
+        "line": 226,
+        "sku": "esimx-101509"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101556 à 5.40 €, esimx-101697 à 5.49 €) : écart de 2 %.",
+        "file": "esimx.csv",
+        "line": 273,
+        "sku": "esimx-101556"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101590 à 23.92 €, esimx-101612 à 22.52 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 307,
+        "sku": "esimx-101590"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101677 à 88.99 €, esimx-101679 à 94.41 €) : écart de 6 %.",
+        "file": "esimx.csv",
+        "line": 394,
+        "sku": "esimx-101677"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101695 à 71.84 €, esimx-101714 à 68.40 €) : écart de 5 %.",
+        "file": "esimx.csv",
+        "line": 412,
+        "sku": "esimx-101695"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (esimx-101715 à 125.09 €, esimx-101716 à 136.53 €) : écart de 9 %.",
+        "file": "esimx.csv",
+        "line": 432,
+        "sku": "esimx-101715"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (flexiroam-104360 à 97.09 €, flexiroam-104528 à 133.01 €) : écart de 37 %.",
+        "file": "flexiroam.csv",
+        "line": 5,
+        "sku": "flexiroam-104360"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (flexiroam-104399 à 86.52 €, flexiroam-104453 à 88.03 €) : écart de 2 %.",
+        "file": "flexiroam.csv",
+        "line": 44,
+        "sku": "flexiroam-104399"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (flexiroam-104408 à 6.88 €, flexiroam-104419 à 7.02 €) : écart de 2 %.",
+        "file": "flexiroam.csv",
+        "line": 53,
+        "sku": "flexiroam-104408"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (flexiroam-104429 à 97.66 €, flexiroam-104501 à 88.17 €) : écart de 11 %.",
+        "file": "flexiroam.csv",
+        "line": 74,
+        "sku": "flexiroam-104429"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102107 à 12.05 €, gigsky-102333 à 13.19 €) : écart de 9 %.",
+        "file": "gigsky.csv",
+        "line": 10,
+        "sku": "gigsky-102107"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102112 à 18.84 €, gigsky-102281 à 18.31 €) : écart de 3 %.",
+        "file": "gigsky.csv",
+        "line": 15,
+        "sku": "gigsky-102112"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102123 à 13.91 €, gigsky-102201 à 13.42 €) : écart de 4 %.",
+        "file": "gigsky.csv",
+        "line": 26,
+        "sku": "gigsky-102123"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102124 à 13.71 €, gigsky-102298 à 13.75 €) : écart de 0 %.",
+        "file": "gigsky.csv",
+        "line": 27,
+        "sku": "gigsky-102124"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102151 à 54.63 €, gigsky-102405 à 58.51 €) : écart de 7 %.",
+        "file": "gigsky.csv",
+        "line": 54,
+        "sku": "gigsky-102151"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102162 à 12.29 €, gigsky-102353 à 13.52 €) : écart de 10 %.",
+        "file": "gigsky.csv",
+        "line": 65,
+        "sku": "gigsky-102162"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102165 à 20.17 €, gigsky-102189 à 20.53 €) : écart de 2 %.",
+        "file": "gigsky.csv",
+        "line": 68,
+        "sku": "gigsky-102165"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102174 à 10.39 €, gigsky-102274 à 9.61 €) : écart de 8 %.",
+        "file": "gigsky.csv",
+        "line": 77,
+        "sku": "gigsky-102174"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102178 à 18.72 €, gigsky-102377 à 17.63 €) : écart de 6 %.",
+        "file": "gigsky.csv",
+        "line": 81,
+        "sku": "gigsky-102178"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102190 à 49.39 €, gigsky-102213 à 47.97 €) : écart de 3 %.",
+        "file": "gigsky.csv",
+        "line": 93,
+        "sku": "gigsky-102190"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102207 à 29.97 €, gigsky-102381 à 30.60 €) : écart de 2 %.",
+        "file": "gigsky.csv",
+        "line": 110,
+        "sku": "gigsky-102207"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102230 à 17.22 €, gigsky-102429 à 14.51 €) : écart de 19 %.",
+        "file": "gigsky.csv",
+        "line": 133,
+        "sku": "gigsky-102230"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102233 à 7.05 €, gigsky-102308 à 7.78 €) : écart de 10 %.",
+        "file": "gigsky.csv",
+        "line": 136,
+        "sku": "gigsky-102233"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102240 à 32.56 €, gigsky-102330 à 28.03 €) : écart de 16 %.",
+        "file": "gigsky.csv",
+        "line": 143,
+        "sku": "gigsky-102240"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102313 à 106.91 €, gigsky-102440 à 122.47 €) : écart de 15 %.",
+        "file": "gigsky.csv",
+        "line": 216,
+        "sku": "gigsky-102313"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102363 à 22.36 €, gigsky-102424 à 22.67 €) : écart de 1 %.",
+        "file": "gigsky.csv",
+        "line": 266,
+        "sku": "gigsky-102363"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (gigsky-102396 à 5.80 €, gigsky-102418 à 6.08 €) : écart de 5 %.",
+        "file": "gigsky.csv",
+        "line": 299,
+        "sku": "gigsky-102396"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (holafly-103347 à 29.40 €, holafly-103447 à 33.26 €) : écart de 13 %.",
+        "file": "holafly.csv",
+        "line": 52,
+        "sku": "holafly-103347"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (holafly-103397 à 67.76 €, holafly-103485 à 61.13 €) : écart de 11 %.",
+        "file": "holafly.csv",
+        "line": 102,
+        "sku": "holafly-103397"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102753 à 27.54 €, instabridge-102785 à 24.38 €) : écart de 13 %.",
+        "file": "instabridge.csv",
+        "line": 2,
+        "sku": "instabridge-102753"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102776 à 22.88 €, instabridge-102902 à 22.52 €) : écart de 2 %.",
+        "file": "instabridge.csv",
+        "line": 25,
+        "sku": "instabridge-102776"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102784 à 8.48 €, instabridge-102798 à 8.14 €) : écart de 4 %.",
+        "file": "instabridge.csv",
+        "line": 33,
+        "sku": "instabridge-102784"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102808 à 13.27 €, instabridge-103031 à 12.89 €) : écart de 3 %.",
+        "file": "instabridge.csv",
+        "line": 57,
+        "sku": "instabridge-102808"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102809 à 14.52 €, instabridge-102854 à 14.34 €) : écart de 1 %.",
+        "file": "instabridge.csv",
+        "line": 58,
+        "sku": "instabridge-102809"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102815 à 33.66 €, instabridge-102898 à 37.44 €) : écart de 11 %.",
+        "file": "instabridge.csv",
+        "line": 64,
+        "sku": "instabridge-102815"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102841 à 56.70 €, instabridge-102940 à 53.89 €) : écart de 5 %.",
+        "file": "instabridge.csv",
+        "line": 90,
+        "sku": "instabridge-102841"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102850 à 32.90 €, instabridge-102924 à 37.15 €) : écart de 13 %.",
+        "file": "instabridge.csv",
+        "line": 99,
+        "sku": "instabridge-102850"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102868 à 105.60 €, instabridge-103033 à 141.03 €) : écart de 34 %.",
+        "file": "instabridge.csv",
+        "line": 117,
+        "sku": "instabridge-102868"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102869 à 13.56 €, instabridge-102944 à 14.97 €) : écart de 10 %.",
+        "file": "instabridge.csv",
+        "line": 118,
+        "sku": "instabridge-102869"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102872 à 13.52 €, instabridge-102916 à 14.44 €) : écart de 7 %.",
+        "file": "instabridge.csv",
+        "line": 121,
+        "sku": "instabridge-102872"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (instabridge-102914 à 5.99 €, instabridge-102956 à 6.05 €) : écart de 1 %.",
+        "file": "instabridge.csv",
+        "line": 163,
+        "sku": "instabridge-102914"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jambosim-104177 à 11.68 €, jambosim-104335 à 13.02 €) : écart de 11 %.",
+        "file": "jambosim.csv",
+        "line": 4,
+        "sku": "jambosim-104177"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jambosim-104240 à 96.06 €, jambosim-104356 à 140.24 €) : écart de 46 %.",
+        "file": "jambosim.csv",
+        "line": 67,
+        "sku": "jambosim-104240"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103764 à 12.66 €, jetpac-103946 à 14.75 €) : écart de 17 %.",
+        "file": "jetpac.csv",
+        "line": 5,
+        "sku": "jetpac-103764"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103767 à 16.65 €, jetpac-103894 à 17.60 €) : écart de 6 %.",
+        "file": "jetpac.csv",
+        "line": 8,
+        "sku": "jetpac-103767"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103783 à 9.85 €, jetpac-103970 à 11.83 €) : écart de 20 %.",
+        "file": "jetpac.csv",
+        "line": 24,
+        "sku": "jetpac-103783"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103784 à 12.44 €, jetpac-103916 à 11.76 €) : écart de 6 %.",
+        "file": "jetpac.csv",
+        "line": 25,
+        "sku": "jetpac-103784"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103800 à 37.91 €, jetpac-103859 à 33.26 €) : écart de 14 %.",
+        "file": "jetpac.csv",
+        "line": 41,
+        "sku": "jetpac-103800"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103864 à 56.48 €, jetpac-103890 à 60.27 €) : écart de 7 %.",
+        "file": "jetpac.csv",
+        "line": 105,
+        "sku": "jetpac-103864"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (jetpac-103903 à 16.00 €, jetpac-103923 à 16.80 €) : écart de 5 %.",
+        "file": "jetpac.csv",
+        "line": 144,
+        "sku": "jetpac-103903"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104698 à 23.33 €, maya-104826 à 24.72 €) : écart de 6 %.",
+        "file": "maya.csv",
+        "line": 9,
+        "sku": "maya-104698"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104718 à 18.79 €, maya-104721 à 21.12 €) : écart de 12 %.",
+        "file": "maya.csv",
+        "line": 29,
+        "sku": "maya-104718"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104720 à 91.55 €, maya-104830 à 98.21 €) : écart de 7 %.",
+        "file": "maya.csv",
+        "line": 31,
+        "sku": "maya-104720"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104734 à 47.79 €, maya-104810 à 53.19 €) : écart de 11 %.",
+        "file": "maya.csv",
+        "line": 45,
+        "sku": "maya-104734"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104738 à 16.16 €, maya-104775 à 16.00 €) : écart de 1 %.",
+        "file": "maya.csv",
+        "line": 49,
+        "sku": "maya-104738"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (maya-104752 à 13.39 €, maya-104813 à 14.52 €) : écart de 8 %.",
+        "file": "maya.csv",
+        "line": 63,
+        "sku": "maya-104752"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102459 à 18.97 €, nomad-102506 à 21.44 €) : écart de 13 %.",
+        "file": "nomad.csv",
+        "line": 20,
+        "sku": "nomad-102459"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102476 à 7.09 €, nomad-102590 à 7.16 €) : écart de 1 %.",
+        "file": "nomad.csv",
+        "line": 37,
+        "sku": "nomad-102476"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102478 à 12.47 €, nomad-102552 à 11.58 €) : écart de 8 %.",
+        "file": "nomad.csv",
+        "line": 39,
+        "sku": "nomad-102478"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102487 à 6.01 €, nomad-102503 à 5.38 €) : écart de 12 %.",
+        "file": "nomad.csv",
+        "line": 48,
+        "sku": "nomad-102487"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102507 à 23.40 €, nomad-102531 à 25.34 €) : écart de 8 %.",
+        "file": "nomad.csv",
+        "line": 68,
+        "sku": "nomad-102507"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102631 à 5.56 €, nomad-102729 à 5.42 €) : écart de 3 %.",
+        "file": "nomad.csv",
+        "line": 192,
+        "sku": "nomad-102631"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102636 à 71.51 €, nomad-102687 à 60.46 €) : écart de 18 %.",
+        "file": "nomad.csv",
+        "line": 197,
+        "sku": "nomad-102636"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102639 à 8.04 €, nomad-102734 à 7.60 €) : écart de 6 %.",
+        "file": "nomad.csv",
+        "line": 200,
+        "sku": "nomad-102639"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (nomad-102642 à 5.57 €, nomad-102684 à 5.48 €) : écart de 2 %.",
+        "file": "nomad.csv",
+        "line": 203,
+        "sku": "nomad-102642"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (roamic-104847 à 34.14 €, roamic-104852 à 35.87 €) : écart de 5 %.",
+        "file": "roamic.csv",
+        "line": 6,
+        "sku": "roamic-104847"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (roamic-104872 à 8.25 €, roamic-104949 à 8.19 €) : écart de 1 %.",
+        "file": "roamic.csv",
+        "line": 31,
+        "sku": "roamic-104872"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (saily-101719 à 32.33 €, saily-101803 à 35.81 €, saily-102027 à 32.19 €) : écart de 11 %.",
+        "file": "saily.csv",
+        "line": 4,
+        "sku": "saily-101719"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101735 à 51.48 €, saily-101847 à 50.26 €) : écart de 2 %.",
+        "file": "saily.csv",
+        "line": 20,
+        "sku": "saily-101735"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101776 à 34.59 €, saily-102049 à 34.82 €) : écart de 1 %.",
+        "file": "saily.csv",
+        "line": 61,
+        "sku": "saily-101776"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101779 à 6.63 €, saily-102036 à 5.95 €) : écart de 11 %.",
+        "file": "saily.csv",
+        "line": 64,
+        "sku": "saily-101779"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101781 à 7.77 €, saily-101990 à 7.42 €) : écart de 5 %.",
+        "file": "saily.csv",
+        "line": 66,
+        "sku": "saily-101781"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101787 à 17.72 €, saily-102057 à 18.24 €) : écart de 3 %.",
+        "file": "saily.csv",
+        "line": 72,
+        "sku": "saily-101787"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101818 à 25.63 €, saily-102067 à 26.10 €) : écart de 2 %.",
+        "file": "saily.csv",
+        "line": 103,
+        "sku": "saily-101818"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101822 à 25.61 €, saily-102022 à 29.66 €) : écart de 16 %.",
+        "file": "saily.csv",
+        "line": 107,
+        "sku": "saily-101822"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101828 à 75.24 €, saily-102023 à 78.32 €) : écart de 4 %.",
+        "file": "saily.csv",
+        "line": 113,
+        "sku": "saily-101828"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101837 à 8.42 €, saily-102031 à 8.80 €) : écart de 5 %.",
+        "file": "saily.csv",
+        "line": 122,
+        "sku": "saily-101837"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101848 à 30.27 €, saily-101930 à 29.46 €) : écart de 3 %.",
+        "file": "saily.csv",
+        "line": 133,
+        "sku": "saily-101848"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101865 à 51.66 €, saily-101916 à 46.40 €) : écart de 11 %.",
+        "file": "saily.csv",
+        "line": 150,
+        "sku": "saily-101865"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101870 à 5.70 €, saily-101890 à 6.27 €) : écart de 10 %.",
+        "file": "saily.csv",
+        "line": 155,
+        "sku": "saily-101870"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101874 à 15.10 €, saily-102028 à 14.06 €) : écart de 7 %.",
+        "file": "saily.csv",
+        "line": 159,
+        "sku": "saily-101874"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101879 à 20.48 €, saily-101934 à 20.92 €) : écart de 2 %.",
+        "file": "saily.csv",
+        "line": 164,
+        "sku": "saily-101879"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101894 à 64.03 €, saily-101984 à 59.51 €) : écart de 8 %.",
+        "file": "saily.csv",
+        "line": 179,
+        "sku": "saily-101894"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101909 à 31.62 €, saily-101994 à 31.75 €) : écart de 0 %.",
+        "file": "saily.csv",
+        "line": 194,
+        "sku": "saily-101909"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101967 à 31.59 €, saily-102014 à 33.23 €) : écart de 5 %.",
+        "file": "saily.csv",
+        "line": 252,
+        "sku": "saily-101967"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (saily-101978 à 6.12 €, saily-102007 à 6.63 €) : écart de 8 %.",
+        "file": "saily.csv",
+        "line": 263,
+        "sku": "saily-101978"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (truphone-103983 à 10.60 €, truphone-104000 à 9.94 €) : écart de 7 %.",
+        "file": "truphone.csv",
+        "line": 12,
+        "sku": "truphone-103983"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (truphone-104004 à 6.32 €, truphone-104147 à 6.79 €) : écart de 7 %.",
+        "file": "truphone.csv",
+        "line": 33,
+        "sku": "truphone-104004"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100726 à 37.63 €, ubigi-101157 à 35.90 €) : écart de 5 %.",
+        "file": "ubigi.csv",
+        "line": 5,
+        "sku": "ubigi-100726"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100732 à 53.91 €, ubigi-100958 à 53.97 €) : écart de 0 %.",
+        "file": "ubigi.csv",
+        "line": 11,
+        "sku": "ubigi-100732"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100734 à 54.02 €, ubigi-100775 à 59.20 €) : écart de 10 %.",
+        "file": "ubigi.csv",
+        "line": 13,
+        "sku": "ubigi-100734"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100753 à 14.05 €, ubigi-101143 à 14.84 €) : écart de 6 %.",
+        "file": "ubigi.csv",
+        "line": 32,
+        "sku": "ubigi-100753"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100756 à 12.97 €, ubigi-101004 à 12.98 €) : écart de 0 %.",
+        "file": "ubigi.csv",
+        "line": 35,
+        "sku": "ubigi-100756"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100760 à 10.38 €, ubigi-100763 à 9.20 €) : écart de 13 %.",
+        "file": "ubigi.csv",
+        "line": 39,
+        "sku": "ubigi-100760"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100774 à 16.74 €, ubigi-100794 à 19.41 €) : écart de 16 %.",
+        "file": "ubigi.csv",
+        "line": 53,
+        "sku": "ubigi-100774"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (ubigi-100780 à 6.06 €, ubigi-100787 à 5.56 €, ubigi-101259 à 5.39 €) : écart de 12 %.",
+        "file": "ubigi.csv",
+        "line": 59,
+        "sku": "ubigi-100780"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100788 à 34.86 €, ubigi-100870 à 35.61 €) : écart de 2 %.",
+        "file": "ubigi.csv",
+        "line": 67,
+        "sku": "ubigi-100788"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100790 à 40.11 €, ubigi-101213 à 39.03 €) : écart de 3 %.",
+        "file": "ubigi.csv",
+        "line": 69,
+        "sku": "ubigi-100790"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100796 à 25.86 €, ubigi-100855 à 30.15 €) : écart de 17 %.",
+        "file": "ubigi.csv",
+        "line": 75,
+        "sku": "ubigi-100796"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100802 à 23.33 €, ubigi-100987 à 24.03 €) : écart de 3 %.",
+        "file": "ubigi.csv",
+        "line": 81,
+        "sku": "ubigi-100802"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100811 à 76.88 €, ubigi-100853 à 79.71 €) : écart de 4 %.",
+        "file": "ubigi.csv",
+        "line": 90,
+        "sku": "ubigi-100811"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100824 à 51.48 €, ubigi-101044 à 47.16 €) : écart de 9 %.",
+        "file": "ubigi.csv",
+        "line": 103,
+        "sku": "ubigi-100824"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100825 à 9.85 €, ubigi-101186 à 11.48 €) : écart de 17 %.",
+        "file": "ubigi.csv",
+        "line": 104,
+        "sku": "ubigi-100825"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100833 à 62.75 €, ubigi-100847 à 64.01 €) : écart de 2 %.",
+        "file": "ubigi.csv",
+        "line": 112,
+        "sku": "ubigi-100833"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (ubigi-100838 à 63.24 €, ubigi-101101 à 66.94 €, ubigi-101194 à 69.73 €) : écart de 10 %.",
+        "file": "ubigi.csv",
+        "line": 117,
+        "sku": "ubigi-100838"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100844 à 11.30 €, ubigi-101183 à 10.41 €) : écart de 9 %.",
+        "file": "ubigi.csv",
+        "line": 123,
+        "sku": "ubigi-100844"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100857 à 54.08 €, ubigi-101094 à 47.20 €) : écart de 15 %.",
+        "file": "ubigi.csv",
+        "line": 136,
+        "sku": "ubigi-100857"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100877 à 7.99 €, ubigi-101001 à 8.44 €) : écart de 6 %.",
+        "file": "ubigi.csv",
+        "line": 156,
+        "sku": "ubigi-100877"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100891 à 66.56 €, ubigi-101202 à 76.28 €) : écart de 15 %.",
+        "file": "ubigi.csv",
+        "line": 170,
+        "sku": "ubigi-100891"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100906 à 9.21 €, ubigi-100967 à 10.19 €) : écart de 11 %.",
+        "file": "ubigi.csv",
+        "line": 185,
+        "sku": "ubigi-100906"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 3 SKU à des prix différents (ubigi-100907 à 13.21 €, ubigi-100995 à 13.39 €, ubigi-101249 à 14.10 €) : écart de 7 %.",
+        "file": "ubigi.csv",
+        "line": 186,
+        "sku": "ubigi-100907"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100910 à 29.64 €, ubigi-101103 à 27.61 €) : écart de 7 %.",
+        "file": "ubigi.csv",
+        "line": 189,
+        "sku": "ubigi-100910"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100929 à 16.01 €, ubigi-101185 à 16.82 €) : écart de 5 %.",
+        "file": "ubigi.csv",
+        "line": 208,
+        "sku": "ubigi-100929"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100931 à 26.69 €, ubigi-101061 à 28.93 €) : écart de 8 %.",
+        "file": "ubigi.csv",
+        "line": 210,
+        "sku": "ubigi-100931"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100953 à 12.60 €, ubigi-101050 à 11.58 €) : écart de 9 %.",
+        "file": "ubigi.csv",
+        "line": 232,
+        "sku": "ubigi-100953"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100971 à 8.23 €, ubigi-101174 à 8.49 €) : écart de 3 %.",
+        "file": "ubigi.csv",
+        "line": 250,
+        "sku": "ubigi-100971"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100976 à 46.13 €, ubigi-101066 à 47.41 €) : écart de 3 %.",
+        "file": "ubigi.csv",
+        "line": 255,
+        "sku": "ubigi-100976"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-100997 à 11.89 €, ubigi-101182 à 11.55 €) : écart de 3 %.",
+        "file": "ubigi.csv",
+        "line": 276,
+        "sku": "ubigi-100997"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-101016 à 20.88 €, ubigi-101100 à 21.97 €) : écart de 5 %.",
+        "file": "ubigi.csv",
+        "line": 295,
+        "sku": "ubigi-101016"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-101026 à 9.86 €, ubigi-101258 à 11.29 €) : écart de 15 %.",
+        "file": "ubigi.csv",
+        "line": 305,
+        "sku": "ubigi-101026"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-101124 à 13.70 €, ubigi-101226 à 12.70 €) : écart de 8 %.",
+        "file": "ubigi.csv",
+        "line": 403,
+        "sku": "ubigi-101124"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-101133 à 37.81 €, ubigi-101187 à 42.02 €) : écart de 11 %.",
+        "file": "ubigi.csv",
+        "line": 412,
+        "sku": "ubigi-101133"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (ubigi-101137 à 14.89 €, ubigi-101154 à 13.23 €) : écart de 13 %.",
+        "file": "ubigi.csv",
+        "line": 416,
+        "sku": "ubigi-101137"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104551 à 29.94 €, yatelo-104618 à 29.16 €) : écart de 3 %.",
+        "file": "yatelo.csv",
+        "line": 24,
+        "sku": "yatelo-104551"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104552 à 50.57 €, yatelo-104559 à 52.15 €) : écart de 3 %.",
+        "file": "yatelo.csv",
+        "line": 25,
+        "sku": "yatelo-104552"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104571 à 38.95 €, yatelo-104629 à 32.91 €) : écart de 18 %.",
+        "file": "yatelo.csv",
+        "line": 44,
+        "sku": "yatelo-104571"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104572 à 17.78 €, yatelo-104589 à 17.61 €) : écart de 1 %.",
+        "file": "yatelo.csv",
+        "line": 45,
+        "sku": "yatelo-104572"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104581 à 23.01 €, yatelo-104625 à 25.31 €) : écart de 10 %.",
+        "file": "yatelo.csv",
+        "line": 54,
+        "sku": "yatelo-104581"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yatelo-104656 à 33.17 €, yatelo-104671 à 30.09 €) : écart de 10 %.",
+        "file": "yatelo.csv",
+        "line": 129,
+        "sku": "yatelo-104656"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yesim-103571 à 6.29 €, yesim-103750 à 5.71 €) : écart de 10 %.",
+        "file": "yesim.csv",
+        "line": 34,
+        "sku": "yesim-103571"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yesim-103572 à 10.07 €, yesim-103598 à 8.39 €) : écart de 20 %.",
+        "file": "yesim.csv",
+        "line": 35,
+        "sku": "yesim-103572"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yesim-103608 à 38.83 €, yesim-103696 à 34.50 €) : écart de 13 %.",
+        "file": "yesim.csv",
+        "line": 71,
+        "sku": "yesim-103608"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yesim-103611 à 13.27 €, yesim-103711 à 11.98 €) : écart de 11 %.",
+        "file": "yesim.csv",
+        "line": 74,
+        "sku": "yesim-103611"
+      },
+      {
+        "severity": "avertissement",
+        "rule": "meme_offre_prix_differents",
+        "message": "Même offre sous 2 SKU à des prix différents (yesim-103669 à 52.74 €, yesim-103699 à 52.51 €) : écart de 0 %.",
+        "file": "yesim.csv",
+        "line": 132,
+        "sku": "yesim-103669"
+      }
+    ],
     "files": [
       {
         "file": "4sesim.csv",
@@ -1884,6 +3661,183 @@
         "rows": 222,
         "status": "ok"
       }
-    ]
+    ],
+    "same_offer": {
+      "offers": 219,
+      "rows": 458,
+      "max_gap": 0.4599,
+      "by_provider": [
+        {
+          "provider": "Airalo",
+          "offers": 60,
+          "rows": 134,
+          "max_gap": 0.1966
+        },
+        {
+          "provider": "Ubigi",
+          "offers": 35,
+          "rows": 73,
+          "max_gap": 0.1659
+        },
+        {
+          "provider": "Saily",
+          "offers": 19,
+          "rows": 39,
+          "max_gap": 0.1581
+        },
+        {
+          "provider": "GigSky",
+          "offers": 17,
+          "rows": 34,
+          "max_gap": 0.1868
+        },
+        {
+          "provider": "eSIMX",
+          "offers": 17,
+          "rows": 35,
+          "max_gap": 0.1817
+        },
+        {
+          "provider": "Instabridge",
+          "offers": 12,
+          "rows": 24,
+          "max_gap": 0.3355
+        },
+        {
+          "provider": "aloSIM",
+          "offers": 12,
+          "rows": 25,
+          "max_gap": 0.2031
+        },
+        {
+          "provider": "Nomad",
+          "offers": 9,
+          "rows": 18,
+          "max_gap": 0.1828
+        },
+        {
+          "provider": "Jetpac",
+          "offers": 7,
+          "rows": 14,
+          "max_gap": 0.201
+        },
+        {
+          "provider": "Maya Mobile",
+          "offers": 6,
+          "rows": 12,
+          "max_gap": 0.124
+        },
+        {
+          "provider": "Yatelo",
+          "offers": 6,
+          "rows": 12,
+          "max_gap": 0.1835
+        },
+        {
+          "provider": "Yesim",
+          "offers": 5,
+          "rows": 10,
+          "max_gap": 0.2002
+        },
+        {
+          "provider": "Flexiroam",
+          "offers": 4,
+          "rows": 8,
+          "max_gap": 0.37
+        },
+        {
+          "provider": "4S eSIM",
+          "offers": 2,
+          "rows": 4,
+          "max_gap": 0.0518
+        },
+        {
+          "provider": "Holafly",
+          "offers": 2,
+          "rows": 4,
+          "max_gap": 0.1313
+        },
+        {
+          "provider": "JamboSIM",
+          "offers": 2,
+          "rows": 4,
+          "max_gap": 0.4599
+        },
+        {
+          "provider": "Roamic",
+          "offers": 2,
+          "rows": 4,
+          "max_gap": 0.0507
+        },
+        {
+          "provider": "Truphone",
+          "offers": 2,
+          "rows": 4,
+          "max_gap": 0.0744
+        }
+      ],
+      "examples": [
+        {
+          "provider": "JamboSIM",
+          "product_name": "eSIM Monde Illimité 30 jours",
+          "rows": 2,
+          "min_price": 96.06,
+          "max_price": 140.24,
+          "gap": 0.4599,
+          "skus": [
+            "jambosim-104240",
+            "jambosim-104356"
+          ]
+        },
+        {
+          "provider": "Flexiroam",
+          "product_name": "eSIM Asie Illimité 30 jours",
+          "rows": 2,
+          "min_price": 97.09,
+          "max_price": 133.01,
+          "gap": 0.37,
+          "skus": [
+            "flexiroam-104360",
+            "flexiroam-104528"
+          ]
+        },
+        {
+          "provider": "Instabridge",
+          "product_name": "eSIM Asie Illimité 30 jours",
+          "rows": 2,
+          "min_price": 105.6,
+          "max_price": 141.03,
+          "gap": 0.3355,
+          "skus": [
+            "instabridge-102868",
+            "instabridge-103033"
+          ]
+        },
+        {
+          "provider": "aloSIM",
+          "product_name": "eSIM Monde 1 Go 15 jours",
+          "rows": 2,
+          "min_price": 8.32,
+          "max_price": 10.01,
+          "gap": 0.2031,
+          "skus": [
+            "alosim-103215",
+            "alosim-103279"
+          ]
+        },
+        {
+          "provider": "Jetpac",
+          "product_name": "eSIM Europe 1 Go 30 jours",
+          "rows": 2,
+          "min_price": 9.85,
+          "max_price": 11.83,
+          "gap": 0.201,
+          "skus": [
+            "jetpac-103783",
+            "jetpac-103970"
+          ]
+        }
+      ]
+    }
   }
 }

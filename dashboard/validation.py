@@ -42,6 +42,12 @@ UNLIMITED_ALIASES = {UNLIMITED_LABEL.casefold(), "illimite", "unlimited"}
 OUTLIER_FACTOR = 5
 OUTLIER_MIN_GROUP = 5
 
+# « Même offre » : mêmes caractéristiques visibles chez le même fournisseur.
+# Deux lignes identiques sur ces colonnes mais de prix différents sont une seule
+# offre affichée à deux prix : le prix retenu dépend de la ligne choisie.
+SAME_OFFER_KEYS = ["provider", "product_name", "country_code", "data_display", "validity_days", "network", "top_up"]
+SAME_OFFER_EXAMPLES = 5
+
 _DISPLAY_RE = re.compile(r"^([\d]+(?:[.,]\d+)?)\s*(go|gb|mo|mb)$", re.IGNORECASE)
 
 
@@ -51,6 +57,7 @@ class ValidationResult:
     anomalies: list[Anomaly]
     total_rows: int
     excluded_rows: int
+    same_offer: dict | None = None  # synthèse du contrôle « même offre, prix différents »
 
 
 def is_unlimited(display: str) -> bool:
@@ -169,6 +176,55 @@ def _price_outliers(clean: pd.DataFrame) -> list[Anomaly]:
     return found
 
 
+def same_offer_price_gaps(clean: pd.DataFrame) -> tuple[list[Anomaly], dict]:
+    """Offres présentes plusieurs fois chez un fournisseur avec des prix différents.
+
+    Un avertissement par offre (et non par ligne), placé sur sa première ligne ; toutes
+    les lignes sont gardées. Renvoie (anomalies, synthèse pour le rapport qualité).
+    """
+    found, groups = [], []
+    if len(clean):
+        ordered = clean.sort_values(["source_file", "line"])
+        for _, g in ordered.groupby(SAME_OFFER_KEYS, sort=False):
+            if g["price"].nunique() < 2:
+                continue
+            lo, hi = g["price"].min(), g["price"].max()
+            first = g.iloc[0]
+            listed = ", ".join(f"{r.sku} à {r.price:.2f} €" for r in g.itertuples())
+            found.append(Anomaly(
+                WARNING,
+                "meme_offre_prix_differents",
+                f"Même offre sous {len(g)} SKU à des prix différents ({listed}) : écart de {(hi / lo - 1) * 100:.0f} %.",
+                first["source_file"],
+                int(first["line"]),
+                first["sku"],
+            ))
+            groups.append({
+                "provider": first["provider"],
+                "product_name": first["product_name"],
+                "rows": len(g),
+                "min_price": round(float(lo), 2),
+                "max_price": round(float(hi), 2),
+                "gap": round(float(hi / lo - 1), 4),
+                "skus": list(g["sku"]),
+            })
+    by_provider = {}
+    for g in groups:
+        p = by_provider.setdefault(g["provider"], {"provider": g["provider"], "offers": 0, "rows": 0, "max_gap": 0.0})
+        p["offers"] += 1
+        p["rows"] += g["rows"]
+        p["max_gap"] = max(p["max_gap"], g["gap"])
+    groups.sort(key=lambda g: (-g["gap"], g["provider"], g["product_name"]))
+    summary = {
+        "offers": len(groups),
+        "rows": sum(g["rows"] for g in groups),
+        "max_gap": groups[0]["gap"] if groups else None,
+        "by_provider": sorted(by_provider.values(), key=lambda p: (-p["offers"], p["provider"])),
+        "examples": groups[:SAME_OFFER_EXAMPLES],
+    }
+    return found, summary
+
+
 def validate(rows: pd.DataFrame) -> ValidationResult:
     anomalies: list[Anomaly] = []
     kept = []
@@ -207,6 +263,8 @@ def validate(rows: pd.DataFrame) -> ValidationResult:
         )
 
     anomalies.extend(_price_outliers(clean))
+    same_offer_found, same_offer = same_offer_price_gaps(clean)
+    anomalies.extend(same_offer_found)
 
     clean = clean.astype({"price": float, "data_gb": float, "validity_days": int, "is_unlimited": bool, "is_region": bool})
     return ValidationResult(
@@ -214,4 +272,5 @@ def validate(rows: pd.DataFrame) -> ValidationResult:
         anomalies=anomalies,
         total_rows=len(rows),
         excluded_rows=len(rows) - len(clean),
+        same_offer=same_offer,
     )

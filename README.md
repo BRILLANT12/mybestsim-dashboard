@@ -32,7 +32,7 @@ Réalisé par Jean Bonheur NGUEMA pour le test de recrutement **Développeur IA 
 - **Analyses** : nuage prix/Go en échelle log avec tendance, histogramme et quantiles, heatmap fournisseur × durée, carte du prix au Go par pays.
 - **Filtres en direct** (fournisseur, pays ou zone, réseau, recharge, durée), vue partageable par lien, **export CSV**.
 - **Comparateur** : destination × volume × durée, forfaits régionaux inclus.
-- **Qualité des données** : 20 contrôles à chaque import, rapport d'anomalies ligne par ligne.
+- **Qualité des données** : 21 contrôles à chaque import, rapport d'anomalies ligne par ligne.
 - **Pages** : une **fiche par fournisseur** (générée automatiquement), mentions légales.
 - Responsive (375 px), thème clair ou sombre, format français, contrastes WCAG AA vérifiés automatiquement.
 

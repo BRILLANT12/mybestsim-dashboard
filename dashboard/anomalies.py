@@ -44,4 +44,5 @@ RULES = {
     "code_pays": (WARNING, "Code pays mal formé"),
     "doublon_probable": (WARNING, "Offre identique sous un autre SKU"),
     "prix_aberrant": (WARNING, "Prix aberrant par rapport aux offres comparables"),
+    "meme_offre_prix_differents": (WARNING, "Même offre, prix différents"),
 }

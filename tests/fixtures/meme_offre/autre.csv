@@ -1,0 +1,4 @@
+sku,provider,product_name,country_code,country_name,data_gb,data_display,validity_days,price,currency,network,top_up
+a-1,Autre,eSIM Argentine 1 Go 30 jours,AR,Argentine,1,1 Go,30,7.50,EUR,4G,oui
+a-2,Autre,eSIM Amérique du Nord 10 Go 30 jours,NA,Amérique du Nord,10,10 Go,30,20.00,EUR,5G,oui
+a-3,Autre,eSIM Amérique du Nord 10 Go 30 jours,NA,Amérique du Nord,10,10 Go,30,22.00,EUR,5G,oui

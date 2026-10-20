@@ -144,9 +144,10 @@
     $("hero-date").textContent = "Mis à jour le " + genText + " (heure de Paris)";
     var q = $("hero-quality");
     q.className = "chip" + (level === "ok" ? "" : " " + level);
-    q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (level === "ok"
-      ? "Données vérifiées · aucune anomalie"
-      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements"));
+    var warnings = num(Q.warnings) + " " + plural(Q.warnings, "avertissement", "avertissements");
+    q.innerHTML = '<span class="dot" aria-hidden="true"></span>' + (level === "ok" ? "Données vérifiées · aucune anomalie"
+      : level === "warn" ? "Données vérifiées · " + warnings
+      : num(Q.errors) + " " + plural(Q.errors, "erreur", "erreurs") + " · " + warnings);
     var fills = { threshold: eur(S.headline.expensive.threshold, 0), "mean-gb": gb(S.headline.data.mean_gb), "median-gb": gb(S.headline.data.median_gb, 0) };
     document.querySelectorAll("[data-fill]").forEach(function (el) { el.textContent = fills[el.dataset.fill]; });
     renderInsights();
@@ -223,7 +224,7 @@
       "La médiane des forfaits (" + eur(P.price_per_gb_median_of_ratios) + "/Go) est plus élevée, car les petits forfaits, chers au Go, y comptent autant que les gros.";
   }
 
-  var INSIGHT_ICONS = { volume_discount: "trend", power_law: "data", "5g_premium": "signal", cheapest_provider: "trophy", expensive_mix: "tag" };
+  var INSIGHT_ICONS = { volume_discount: "trend", power_law: "data", "5g_premium": "signal", cheapest_provider: "trophy", expensive_mix: "tag", same_offer_price_gap: "alert" };
   function renderInsights() {
     var hero = S.insights.filter(function (i) { return i.highlight; })[0];
     var html = "";
@@ -359,6 +360,24 @@
       { label: "Lignes", n: true, fmt: function (x) { return num(x.rows); } },
       { label: "Statut", fmt: function (x) { return x.status === "ok" ? '<span class="ok-mark" aria-hidden="true">✓</span> lu' : '<span class="sev erreur">' + esc(x.status) + "</span>"; } }
     ], Q.files);
+    var SO = Q.same_offer;
+    if (SO && SO.offers) {
+      $("same-offer-card").hidden = false;
+      $("same-offer-sub").innerHTML = "<b>" + num(SO.offers) + " " + plural(SO.offers, "offre", "offres") + "</b> (" + num(SO.rows) + " lignes) " +
+        plural(SO.offers, "apparaît", "apparaissent") + " plusieurs fois chez le même fournisseur avec les mêmes caractéristiques, mais un SKU et un prix différents. " +
+        "Écart de prix maximal : <b>" + pct(SO.max_gap) + "</b>. Lignes conservées dans les calculs.";
+      table($("table-same-offer-providers"), [
+        { label: "Fournisseur", fmt: function (x) { return esc(x.provider); } },
+        { label: "Offres", n: true, fmt: function (x) { return num(x.offers); } },
+        { label: "Lignes", n: true, fmt: function (x) { return num(x.rows); } },
+        { label: "Écart max", n: true, fmt: function (x) { return pct(x.max_gap); } }
+      ], SO.by_provider);
+      table($("table-same-offer-examples"), [
+        { label: "Offre", wrapSm: true, fmt: function (x) { return esc(x.provider) + " · " + esc(x.product_name); } },
+        { label: "Prix", n: true, fmt: function (x) { return eur(x.min_price) + " – " + eur(x.max_price); } },
+        { label: "Écart", n: true, fmt: function (x) { return '<span class="pos">' + pct(x.gap) + "</span>"; } }
+      ], SO.examples);
+    }
     if (Q.details.length) {
       var MAX = 300;
       $("details-card").hidden = false;
